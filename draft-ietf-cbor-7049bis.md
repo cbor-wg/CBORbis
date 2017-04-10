@@ -443,7 +443,7 @@ nested indefinite-length items need exactly as many "break" stop codes
 as there are type bytes starting an indefinite-length item.
 
 For example, assume an encoder wants to represent the abstract array
-[1, [2, 3], [4, 5]].  The definite-length encoding would be
+\[1, \[2, 3], \[4, 5]].  The definite-length encoding would be
 0x8301820203820405:
 
 
@@ -1566,9 +1566,9 @@ optional.
 
 A single underscore can be written after the opening brace of a map or
 the opening bracket of an array to indicate that the data item was
-represented in indefinite-length format.  For example, [_ 1, 2]
+represented in indefinite-length format.  For example, \[_ 1, 2]
 contains an indicator that an indefinite-length representation was
-used to represent the data item [1, 2].
+used to represent the data item \[1, 2].
 
 An underscore followed by a decimal digit n indicates that the
 preceding item (or, for arrays and maps, the item starting with the
@@ -1689,7 +1689,7 @@ Encoding: -
 
 Id: 60
 
-Reference: [RFCthis]
+Reference: \[RFCthis]
 
 
 ## The +cbor Structured Syntax Suffix Registration
@@ -1698,7 +1698,7 @@ Name:  Concise Binary Object Representation (CBOR)
 
 +suffix: +cbor
 
-References: [RFCthis]
+References: \[RFCthis]
 
 Encoding Considerations: CBOR is a binary format.
 
@@ -1878,25 +1878,25 @@ showing a tagged byte string (such as 2(h'010000000000000000')).
 | "\u00fc"                                                                                      |                                                      0x62c3bc |
 | "\u6c34"                                                                                      |                                                    0x63e6b0b4 |
 | "\ud800\udd51"                                                                                |                                                  0x64f0908591 |
-| []                                                                                            |                                                          0x80 |
-| [1, 2, 3]                                                                                     |                                                    0x83010203 |
-| [1, [2, 3], [4, 5]]                                                                           |                                            0x8301820203820405 |
-| [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]   | 0x98190102030405060708090a0b0c0d0e 0f101112131415161718181819 |
+| \[]                                                                                            |                                                          0x80 |
+| \[1, 2, 3]                                                                                     |                                                    0x83010203 |
+| \[1, \[2, 3], \[4, 5]]                                                                           |                                            0x8301820203820405 |
+| \[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]   | 0x98190102030405060708090a0b0c0d0e 0f101112131415161718181819 |
 | {}                                                                                            |                                                          0xa0 |
 | {1: 2, 3: 4}                                                                                  |                                                  0xa201020304 |
-| {"a": 1, "b": [2, 3]}                                                                         |                                          0xa26161016162820203 |
-| ["a", {"b": "c"}]                                                                             |                                            0x826161a161626163 |
+| {"a": 1, "b": \[2, 3]}                                                                         |                                          0xa26161016162820203 |
+| \["a", {"b": "c"}]                                                                             |                                            0x826161a161626163 |
 | {"a": "A", "b": "B", "c": "C", "d": "D", "e": "E"}                                            |                 0xa5616161416162614261636143616461 4461656145 |
 | (_ h'0102', h'030405')                                                                        |                                          0x5f42010243030405ff |
 | (_ "strea", "ming")                                                                           |                                  0x7f657374726561646d696e67ff |
-| [_ ]                                                                                          |                                                        0x9fff |
-| [_ 1, [2, 3], [_ 4, 5]]                                                                       |                                        0x9f018202039f0405ffff |
-| [_ 1, [2, 3], [4, 5]]                                                                         |                                          0x9f01820203820405ff |
-| [1, [2, 3], [_ 4, 5]]                                                                         |                                          0x83018202039f0405ff |
-| [1, [_ 2, 3], [4, 5]]                                                                         |                                          0x83019f0203ff820405 |
-| [_ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25] | 0x9f0102030405060708090a0b0c0d0e0f 101112131415161718181819ff |
-| {_ "a": 1, "b": [_ 2, 3]}                                                                     |                                      0xbf61610161629f0203ffff |
-| ["a", {_ "b": "c"}]                                                                           |                                          0x826161bf61626163ff |
+| \[_ ]                                                                                          |                                                        0x9fff |
+| \[_ 1, \[2, 3], \[_ 4, 5]]                                                                       |                                        0x9f018202039f0405ffff |
+| \[_ 1, \[2, 3], \[4, 5]]                                                                         |                                          0x9f01820203820405ff |
+| \[1, \[2, 3], \[_ 4, 5]]                                                                         |                                          0x83018202039f0405ff |
+| \[1, \[_ 2, 3], \[4, 5]]                                                                         |                                          0x83019f0203ff820405 |
+| \[_ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25] | 0x9f0102030405060708090a0b0c0d0e0f 101112131415161718181819ff |
+| {_ "a": 1, "b": \[_ 2, 3]}                                                                     |                                      0xbf61610161629f0203ffff |
+| \["a", {_ "b": "c"}]                                                                           |                                          0x826161bf61626163ff |
 | {_ "Fun": true, "Amt": -2}                                                                    |                                    0xbf6346756ef563416d7421ff |
 {: #table_examples title='Examples of Encoded CBOR Data Items'}
 
@@ -2222,12 +2222,12 @@ was ever widely used.
 While CBOR's design objective of code compactness for encoders and
 decoders is a higher priority than its objective of conciseness on the
 wire, many people focus on the wire size. {{concise}} shows some
-encoding examples for the simple nested array [1, [2, 3]]; where some
+encoding examples for the simple nested array \[1, \[2, 3]]; where some
 form of indefinite-length encoding is supported by the encoding,
-[_&nbsp;1, [2, 3]] (indefinite length on the outer array) is also
+\[_&nbsp;1, \[2, 3]] (indefinite length on the outer array) is also
 shown.
 
-| Format      | [1, [2, 3]]                                                                                           | [_ 1, [2, 3]]                                |
+| Format      | \[1, \[2, 3]]                                                                                           | \[_ 1, \[2, 3]]                                |
 |-------------+-------------------------------------------------------------------------------------------------------+----------------------------------------------|
 | RFC 713     | c2 05 81 c2 02 82 83                                                                                  |                                              |
 | ASN.1 BER   | 30 0b 02 01 01 30 06 02 01 02 02 01 03                                                                | 30 80 02 01 01 30 06 02 01 02 02 01 03 00 00 |

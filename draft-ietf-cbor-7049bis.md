@@ -526,7 +526,7 @@ BF           -- Start indefinite-length map
    F5        -- First value, true
    63        -- Second key, UTF-8 string length 3
       416d74 --   "Amt"
-   21        -- -2
+   21        -- Second value, -2
    FF        -- "break"
 ~~~~
 

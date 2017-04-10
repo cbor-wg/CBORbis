@@ -18,7 +18,7 @@ title: Concise Binary Object Representation (CBOR)
 abbrev: CBOR
 area: Internet
 kw: parser, encoder, binary format, data interchange format, JSON
-date: 2013-10
+# date: 2013-10
 author:
 - ins: C. Bormann
   name: Carsten Bormann
@@ -105,22 +105,8 @@ informative:
     date: '2009-10-01'
     seriesinfo:
       3rd: Edition
-  RFC4627:
-  CNN-TERMS:
-    title: Terminology for Constrained Node Networks
-    author:
-    - ins: C. Bormann
-      name: Carsten Bormann
-      org: ''
-    - ins: M. Ersue
-      name: Mehmet Ersue
-      org: ''
-    - ins: A. Keranen
-      name: Ari Keranen
-      org: ''
-    date: 2013-07
-    seriesinfo:
-      Work: in Progress
+  RFC7159:
+  RFC7228:
   RFC6838:
   RFC0713:
 
@@ -146,8 +132,8 @@ formats in the latter category are ASN.1's BER and DER {{ASN.1}}.
 
 The format defined here follows some specific design goals that are
 not well met by current formats.  The underlying data model is an
-extended version of the JSON data model {{RFC4627}}.  It is important
-to note that this is not a proposal that the grammar in RFC 4627 be
+extended version of the JSON data model {{RFC7159}}.  It is important
+to note that this is not a proposal that the grammar in RFC 7159 be
 extended in general, since doing so would cause a significant
 backwards incompatibility with already deployed JSON
 documents. Instead, this document simply defines its own data model
@@ -182,7 +168,7 @@ are:
 
     * An encoder and a decoder need to be implementable in a very
       small amount of code (for example, in class 1 constrained nodes
-      as defined in {{CNN-TERMS}}).
+      as defined in {{RFC7228}}).
 
     * The format should use contemporary machine representations of
       data (for example, not requiring binary-to-decimal conversion).
@@ -1354,7 +1340,7 @@ as a JSON null.
   padding and becomes a JSON string.
 
 * A UTF-8 string (major type 3) becomes a JSON string.  Note that JSON
-  requires escaping certain characters (RFC 4627, Section 2.5):
+  requires escaping certain characters (RFC 7159, Section 7):
   quotation mark (U+0022), reverse solidus (U+005C), and the "C0
   control characters" (U+0000 through U+001F).  All other characters
   are copied unchanged into the JSON UTF-8 string.
@@ -1533,7 +1519,7 @@ representing CBOR data items in configuration files may also want to
 consider YAML {{YAML}}.)
 
 The diagnostic notation is loosely based on JSON as it is defined in
-RFC 4627, extending it where needed.
+RFC 7159, extending it where needed.
 
 The notation borrows the JSON syntax for numbers (integer and floating
 point), True (>true\<), False (>false\<), Null (>null\<), UTF-8
@@ -1703,7 +1689,7 @@ Encoding: -
 
 Id: 60
 
-Reference: [RFC7049]
+Reference: [RFCthis]
 
 
 ## The +cbor Structured Syntax Suffix Registration
@@ -1712,7 +1698,7 @@ Name:  Concise Binary Object Representation (CBOR)
 
 +suffix: +cbor
 
-References: [RFC7049]
+References: [RFCthis]
 
 Encoding Considerations: CBOR is a binary format.
 

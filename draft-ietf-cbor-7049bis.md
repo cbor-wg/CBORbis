@@ -30,8 +30,8 @@ author:
   email: cabo@tzi.org
 - ins: P. Hoffman
   name: Paul Hoffman
-  org: VPN Consortium
-  email: paul.hoffman@vpnc.org
+  org: ICANN
+  email: paul.hoffman@icann.org
 normative:
   ECMA262:
     target: http://www.ecma-international.org/publications/files/ecma-st/ECMA-262.pdf

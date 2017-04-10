@@ -720,7 +720,7 @@ eight bytes 0x00). In hexadecimal:
 
 ~~~~
 C2                        -- Tag 2
-   29                     -- Byte string of length 9
+   49                     -- Byte string of length 9
       010000000000000000  -- Bytes content
 ~~~~
 

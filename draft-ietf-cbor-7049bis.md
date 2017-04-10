@@ -695,7 +695,7 @@ Tag value 1 is for numerical representation of seconds relative to
 1970-01-01T00:00Z in UTC time.  (For the non-negative values that the
 Portable Operating System Interface (POSIX) defines, the number of
 seconds is counted in the same way as for POSIX "seconds since the
-epoch" [TIME_T].)  The tagged item can be a positive or negative
+epoch" {{TIME_T}}.)  The tagged item can be a positive or negative
 integer (major types 0 and 1), or a floating-point number (major type
 7 with additional information 25, 26, or 27). Note that the number can
 be negative (time before 1970-01-01T00:00Z) and, if a floating-point

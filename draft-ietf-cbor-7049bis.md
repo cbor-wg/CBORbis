@@ -1120,7 +1120,7 @@ application, such as to save the need to implement 64-bit integers.
 There is an expectation that encoders will use the most compact
 integer representation that can represent a given value.  However, a
 compact application should accept values that use a longer-than-needed
-encoding (such as encoding "0" as 0b000_11101 followed by two bytes of
+encoding (such as encoding "0" as 0b000_11001 followed by two bytes of
 0x00) as long as the application can decode an integer of the given
 size.
 

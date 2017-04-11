@@ -127,6 +127,12 @@ Please contribute on the mailing list there, or in the GitHub
 repository for this draft:
 https://github.com/cbor-wg/CBORbis
 
+The charter for the CBOR Working Group says that it will update RFC 7049
+to fix verified errata. Security issues and clarifications may be
+addressed, but changes to this document will ensure backward
+compatibility for popular deployed codebases. This document
+will be targeted at becoming an Internet Standard.
+
 
 --- middle
 

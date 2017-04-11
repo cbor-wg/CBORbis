@@ -1,6 +1,7 @@
 # Concise Binary Object Representation (CBOR)
 
-This is the working area for the Working Group internet-draft, "Concise Binary Object Representation (CBOR)".
+This is the working area for the Internet-Draft titled "Concise Binary Object Representation (CBOR)".
+That draft is part of the work of the [IETF's CBOR Working Group](https://datatracker.ietf.org/wg/cbor/about/).
 
 * [Editor's copy](https://cbor-wg.github.io/CBORbis/)  [![Build Status](https://travis-ci.org/cbor-wg/CBORbis.svg?branch=master)](https://travis-ci.org/cbor-wg/CBORbis)
 * [Working Group Draft](https://tools.ietf.org/html/draft-ietf-cbor-7049bis)
@@ -9,7 +10,7 @@ This is the working area for the Working Group internet-draft, "Concise Binary O
 
 ## Building the Draft
 
-Formatted text and HTML versions of the draft can be built using `make`.
+Formatted text and HTML versions of the draft can be built using `make` (as long as you have the right tools on your system).
 
 ```sh
 $ make

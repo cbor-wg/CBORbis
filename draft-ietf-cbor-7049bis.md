@@ -120,6 +120,14 @@ need for version negotiation. These design goals make it different from earlier
 binary
 serializations such as ASN.1 and MessagePack.
 
+--- note_Contributing
+
+This document is being worked on in the CBOR Working Group.
+Please contribute on the mailing list there, or in the GitHub
+repository for this draft:
+https://github.com/cbor-wg/CBORbis
+
+
 --- middle
 
 # Introduction

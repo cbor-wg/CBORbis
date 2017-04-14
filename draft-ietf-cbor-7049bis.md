@@ -2250,3 +2250,19 @@ shown.
 | UBJSON      | 61 02 42 01 61 02 42 02 42 03                                                                         | 61 ff 42 01 61 02 42 02 42 03 45             |
 | CBOR        | 82 01 82 02 03                                                                                        | 9f 01 82 02 03 ff                            |
 {: #concise title='Examples for Different Levels of Conciseness' cols='l 40l 40l'}
+
+# Changes from RFC 7049
+
+The following is a list of known changes from RFC 7049. This list
+is non-authoritative. It is meant to help reviewers see the
+significant differences.
+
+* Updated reference for \[RFC4267\] to {{RFC7159}} in many places
+
+* Updated reference for \[CNN-TERMS\] to {{RFC7228}}
+
+* Added a comment to the last example in Section 2.2.1 (added "Second value")
+
+* Fixed a bug in the example in Section 2.4.2 ("29" -> "49")
+
+* Fixed a bug in the last paragraph of Section 3.6 ("0b000_11101" -> "0b000_11001")

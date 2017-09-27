@@ -16,8 +16,7 @@ will provide their own application-specific encoders and/or decoders.
 
 In the basic (un-extended) generic data model, a data item is one of:
 
-* an integer in one of the ranges 0..2\*\*64-1 ("unsigned") and
-  -2\*\*64..-1 ("negative")
+* an integer in the range -2\*\*64..2\*\*64-1 inclusive
 * a simple value, identified by a number
   between 0 and 255, but distinct from that number
 * a floating point value, distinct from an integer, out of the set

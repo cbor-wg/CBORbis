@@ -635,6 +635,12 @@ IEEE 754 binary floating-point values.  These floating-point values
 are encoded in the additional bytes of the appropriate size.  (See
 {{half-precision}} for some information about 16-bit floating point.)
 
+An encoder
+MUST NOT encode False as the two-byte sequence of 0xf814,
+MUST NOT encode True as the two-byte sequence of 0xf815, 
+MUST NOT encode Null as the two-byte sequence of 0xf816, and
+MUST NOT encode Undefined value as the two-byte sequence of 0xf817.
+A decoder MUST treat these two-byte sequences as an error.
 
 ## Optional Tagging of Items {#tags}
 

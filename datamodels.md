@@ -62,7 +62,7 @@ implementation quality.
 
 A specific data model usually subsets the extended generic data model
 and assigns application semantics to the data items within this subset
-ands its components.  When documenting such specific data models,
+and its components.  When documenting such specific data models,
 where it is desired to specify the types of data items, it is
 preferred to identify the types by their names in the generic data
 model ("negative integer", "array") instead of by referring to aspects

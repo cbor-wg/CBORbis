@@ -641,6 +641,7 @@ MUST NOT encode True as the two-byte sequence of 0xf815,
 MUST NOT encode Null as the two-byte sequence of 0xf816, and
 MUST NOT encode Undefined value as the two-byte sequence of 0xf817.
 A decoder MUST treat these two-byte sequences as an error.
+Similar prohibitions apply to the unassigned simple values as well.
 
 ## Optional Tagging of Items {#tags}
 

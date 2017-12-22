@@ -637,7 +637,7 @@ are encoded in the additional bytes of the appropriate size.  (See
 
 An encoder
 MUST NOT encode False as the two-byte sequence of 0xf814,
-MUST NOT encode True as the two-byte sequence of 0xf815, 
+MUST NOT encode True as the two-byte sequence of 0xf815,
 MUST NOT encode Null as the two-byte sequence of 0xf816, and
 MUST NOT encode Undefined value as the two-byte sequence of 0xf817.
 A decoder MUST treat these two-byte sequences as an error.
@@ -1281,45 +1281,45 @@ Some protocols may want encoders to only emit CBOR in a particular
 canonical format; those protocols might also have the decoders check
 that their input is canonical. Those protocols are free to define what
 they mean by a canonical format and what encoders and decoders are
-expected to do. This section lists some suggestions for such
-protocols.
+expected to do. This section defines a set of restrictions that can
+serve as the base of such a canonical format.
 
-If a protocol considers "canonical" to mean that two encoder
-implementations starting with the same input data will produce the
-same CBOR output, the following four rules would suffice:
+A CBOR encoding satisfies the "core canonicalization requirements" if
+it satisfies the following restrictions:
 
-* Integers must be as small as possible.
+* Integers MUST be as short as possible. In particular:
 
-  * 0 to 23 and -1 to -24 must be expressed in the same byte as the
+  * 0 to 23 and -1 to -24 MUST be expressed in the same byte as the
     major type;
 
-  * 24 to 255 and -25 to -256 must be expressed only with an
+  * 24 to 255 and -25 to -256 MUST be expressed only with an
     additional uint8_t;
 
-  * 256 to 65535 and -257 to -65536 must be expressed only with an
+  * 256 to 65535 and -257 to -65536 MUST be expressed only with an
     additional uint16_t;
 
-  * 65536 to 4294967295 and -65537 to -4294967296 must be expressed
+  * 65536 to 4294967295 and -65537 to -4294967296 MUST be expressed
     only with an additional uint32_t.
 
-* The expression of lengths in major types 2 through 5 must be as
+* The expression of lengths in major types 2 through 5 MUST be as
   short as possible. The rules for these lengths follow the above rule
   for integers.
 
-* The keys in every map must be sorted lowest value to
-  highest. Sorting is performed on the bytes of the representation of
-  the key data items without paying attention to the 3/5 bit splitting
-  for major types.  (Note that this rule allows maps that have keys of
-  different types, even though that is probably a bad practice that
-  could lead to errors in some canonicalization implementations.) The
-  sorting rules are:
+* The keys in every map MUST be sorted in the bytewise lexicographic
+  order of their canonical encodings. For example, the following keys
+  are sorted correctly:
 
-  * If two keys have different lengths, the shorter one sorts earlier;
+  1. 10, encoded as 0x0a.
+  1. 100, encoded as 0x1864.
+  1. -1, encoded as 0x20.
+  1. "z", encoded as 0x617a.
+  1. "aa", encoded as 0x626161.
+  1. \[100], encoded as 0x811864.
+  1. \[-1], encoded as 0x8120.
+  1. false, encoded as 0xf4.
 
-  * If two keys have the same length, the one with the lower value in
-    (byte-wise) lexical order sorts earlier.
-
-* Indefinite-length items must be made into definite-length items.
+* Indefinite-length items MUST not appear. They can be encoded as
+  definite-length items instead.
 
 If a protocol allows for IEEE floats, then additional canonicalization
 rules might need to be added.  One example rule might be to have all
@@ -1339,6 +1339,33 @@ needs to appear in the canonical format. A CBOR-based protocol that
 uses canonicalization might instead say that all tags that appear in a
 message must be retained regardless of whether they are optional.
 
+### Length-first map key ordering
+
+The core canonicalization requirements sort map keys in a different
+order from the one suggested by {{?RFC7049}}. Protocols that need to
+be compatible with {{?RFC7049}}'s order can instead be specified in
+terms of this specification's "length-first core canonicalization
+requirements":
+
+A CBOR encoding satisfies the "length-first core canonicalization
+requirements" if it satisfies the core canonicalization requirements
+except that the keys in every map MUST be sorted such that:
+
+1. If two keys have different lengths, the shorter one sorts earlier;
+1. If two keys have the same length, the one with the lower value in
+   (byte-wise) lexical order sorts earlier.
+
+For example, under the length-first core canonicalization
+requirements, the following keys are sorted correctly:
+
+1. 10, encoded as 0x0a.
+1. -1, encoded as 0x20.
+1. false, encoded as 0xf4.
+1. 100, encoded as 0x1864.
+1. "z", encoded as 0x617a.
+1. \[-1], encoded as 0x8120.
+1. "aa", encoded as 0x626161.
+1. \[100], encoded as 0x811864.
 
 ## Strict Mode {#strict-mode}
 

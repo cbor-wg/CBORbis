@@ -1328,10 +1328,13 @@ example:
 * If a protocol includes a field that can express floating values
   ({{fpnocont}}), the protocol's canonicalization needs to specify
   whether the integer 1.0 is encoded as 0x01, 0xf93c00, 0xfa3f800000,
-  or 0xfb3ff0000000000000. Two sensible rules for this are:
+  or 0xfb3ff0000000000000. Three sensible rules for this are:
   1. Encode integral values that fit in 64 bits as values from major
      types 0 and 1, and other values as the smallest of 16-, 32-, or
-     64-bit floating point that accurately represents the value, or
+     64-bit floating point that accurately represents the value,
+  1. Encode all values as the smallest of 16-, 32-, or 64-bit floating
+     point that accurately represents the value, even for integral
+     values, or
   1. Encode all values as 64-bit floating point.
 
   If NaN is an allowed value, the protocol needs to pick a single

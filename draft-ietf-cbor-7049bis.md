@@ -795,10 +795,7 @@ tag and interpret the tagged data item itself.
 
 A tag always applies to the item that is directly followed by it.
 Thus, if tag A is followed by tag B, which is followed by data item C,
-tag A applies to the result of applying tag B on data item C.  That
-is, a tagged item is a data item consisting of a tag and a value.  The
-content of the tagged item is the data item (the value) that is being
-tagged.
+tag A applies to the result of applying tag B on data item C.
 
 IANA maintains a registry of tag values as described in {{ianatags}}.
 {{tagvalues}} provides a list of initial values, with definitions in
@@ -835,17 +832,21 @@ Protocols using tag values 0 and 1 extend the generic data model
 
 ### Standard Date/Time String {#stringdatetimesect}
 
-Tag value 0 is for date/time strings that follow the standard format
-described in {{RFC3339}}, as refined by Section 3.3 of {{RFC4287}}.
+Tag value 0 contains a text string in the standard format described by
+the `date-time` production in {{RFC3339}}, as refined by Section 3.3
+of {{RFC4287}}, representing the point in time described there. A
+nested item of another type or that doesn't match the {{RFC4287}}
+format is invalid.
 
 ### Epoch-based Date/Time {#epochdatetimesect}
 
-Tag value 1 is for numerical representation of civil time expressed in
-seconds relative to 1970-01-01T00:00Z (in UTC time).
+Tag value 1 contains a numerical value counting the number of seconds
+from 1970-01-01T00:00Z in UTC time to the represented point in civil
+time.
 
 The tagged item MUST be an unsigned or negative integer (major types 0
 and 1), or a floating-point number (major type 7 with additional
-information 25, 26, or 27).
+information 25, 26, or 27). Other contained types are invalid.
 
 Non-negative values (major type 0 and non-negative floating-point
 numbers) stand for time values on or after 1970-01-01T00:00Z UTC and
@@ -882,7 +883,8 @@ define that equivalence, and preferred encoding never makes use of
 bignums that also can be expressed as basic integers (see below).
 
 Bignums are encoded as a byte string data item, which is interpreted
-as an unsigned integer n in network byte order.  For tag value 2, the
+as an unsigned integer n in network byte order.  Contained items of
+other types are invalid.  For tag value 2, the
 value of the bignum is n.  For tag value 3, the value of the bignum is
 -1 - n.  The preferred encoding of the byte string is to leave out any
 leading zeroes (note that this means the preferred encoding for n = 0
@@ -940,7 +942,8 @@ Decimal fractions (tag 4) use base-10 exponents; the value of a
 decimal fraction data item is m\*(10\*\*e).  Bigfloats (tag 5) use
 base-2 exponents; the value of a bigfloat data item is m\*(2\*\*e).
 The exponent e MUST be represented in an integer of major type 0 or 1,
-while the mantissa also can be a bignum ({{bignums}}).
+while the mantissa also can be a bignum ({{bignums}}).  Contained
+items with other structures are invalid.
 
 An example of a decimal fraction is that the number 273.15 could be
 represented as 0b110_00100 (major type of 6 for the tag, additional
@@ -996,7 +999,9 @@ data model.
 Sometimes it is beneficial to carry an embedded CBOR data item that is
 not meant to be decoded immediately at the time the enclosing data
 item is being decoded.  Tag 24 (CBOR data item) can be used to tag the
-embedded byte string as a data item encoded in CBOR format.
+embedded byte string as a data item encoded in CBOR format.  Contained
+items that aren't byte strings are invalid.  Any contained byte string
+is valid, even if it encodes an invalid or ill-formed CBOR item.
 
 
 #### Expected Later Encoding for CBOR-to-JSON Converters {#convexpect}
@@ -1034,12 +1039,22 @@ encoding of the empty byte string is the empty text string.
 Some text strings hold data that have formats widely used on the
 Internet, and sometimes those formats can be validated and presented
 to the application in appropriate form by the decoder. There are tags
-for some of these formats.
+for some of these formats. As with tags 21 to 23, if these tags are
+applied to an item other than a text string, they apply to all text
+string data items it contains.
 
-* Tag 32 is for URIs, as defined in {{RFC3986}};
+* Tag 32 is for URIs, as defined in {{RFC3986}}.  If the text string
+  doesn't match the `URI-reference` production, the string is invalid.
 
 * Tags 33 and 34 are for base64url- and base64-encoded text strings,
-  as defined in {{RFC4648}};
+  as defined in {{RFC4648}}.  If any of:
+  * the encoded text string contains non-alphabet characters or only 1
+    character in the last block of 4, or
+  * the padding bits in a 2- or 3-character block are not 0, or
+  * the base64 encoding has the wrong number of padding characters, or
+  * the base64url encoding has padding characters,
+
+  the string is invalid.
 
 * Tag 35 is for regular expressions that are roughly in Perl
   Compatible Regular Expressions (PCRE/PCRE2) form {{PCRE}} or a
@@ -1047,10 +1062,11 @@ for some of these formats.
   (Note that more specific identification may be necessary if the
   actual version of the specification underlying the regular
   expression, or more than just the text of the regular expression
-  itself, need to be conveyed.)
+  itself, need to be conveyed.) Any contained string value is valid.
 
 * Tag 36 is for MIME messages (including all headers), as defined in
-  {{RFC2045}};
+  {{RFC2045}}. A text string that isn't a valid MIME message is
+  invalid.
 
 Note that tags 33 and 34 differ from 21 and 22 in that the data is
 transported in base-encoded form for the former and in raw byte string

@@ -1318,11 +1318,10 @@ application, directly using the numbers for the keys is useful.
 If multiple types of keys are to be used, consideration should be
 given to how these types would be represented in the specific
 programming environments that are to be used.  For example, in
-JavaScript objects, a key of integer 1 cannot be distinguished from a
-key of string "1".  This means that, if integer keys are used, the
-simultaneous use of string keys that look like numbers needs to be
-avoided. Again, this leads to the conclusion that keys should be of a
-single CBOR type.
+JavaScript Maps, a key of integer 1 cannot be distinguished from a key
+of floating 1.0. This means that, if integer keys are used, the
+protocol needs to avoid use of integer-valued floating-point keys in
+the same map.
 
 Decoders that deliver data items nested within a CBOR data item
 immediately on decoding them ("streaming decoders") often do not keep

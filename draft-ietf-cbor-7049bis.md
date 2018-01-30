@@ -287,7 +287,8 @@ Well-formed:
 : A data item that follows the syntactic structure of CBOR.  A
   well-formed data item uses the initial bytes and the byte strings
   and/or data items that are implied by their values as defined in
-  CBOR and is not followed by extraneous data.
+  CBOR and is not followed by extraneous data. CBOR parsers only
+  return contents from well-formed data items.
 
 Valid:
 : A data item that is well-formed and also follows the semantic
@@ -408,27 +409,31 @@ floats as integers or vice versa, perhaps to save encoded bytes.
 
 A CBOR data item  ({{cbor-data-models}}) is encoded to or decoded from
 a byte string as described in this section.  The encoding is
-summarized in {{jumptable}}.
+summarized in {{jumptable}}.  An encoder MUST produce only valid
+items.  A decoder MUST stop and return an error with no data when it
+encounters a non-well-formed item.
 
 The initial byte of each encoded data item contains both information
 about the major type (the high-order 3 bits, described in
 {{majortypes}}) and additional information (the low-order 5 bits).
-Additional information value
-31 is used for indefinite-length items, described in {{indefinite}}.
-Additional information values 28 to 30 are reserved for future
-expansion.
+For major types except for 7, the additional information's value
+describes how to load an argument:
 
-Additional information values from 0 to 27 describes how to construct an
-"argument", possibly consuming additional bytes.  For major type 7 and
-additional information 25 to 27 (floating
-point numbers), there is a special case; in all other cases
-the additional information value, possibly combined with following
-bytes, the argument constructed is an unsigned integer.
+Less than 24:
+: The argument's value is the value of the additional information.
 
-When the value of the
-additional information is less than 24, it is directly used as the
-argument's value.  When it is 24 to 27, the argument's value is held
-in the following 1, 2, 4, or 8, respectively, bytes, in network byte order.
+24, 25, 26, or 27:
+: The argument's value is held in the following 1, 2, 4, or 8,
+  respectively, bytes, in network byte order.
+
+28, 29, 30:
+: These values are reserved for future expansion.  In this version of
+  CBOR, the encoded item is not well-formed.
+
+31:
+: If the major type is 0, 1, or 6, the encoded item is
+  not well-formed. Otherwise, the item's length is indefinite, as described
+  in {{indefinite}}.
 
 The meaning of this argument depends on the major type.
 For example, in major type 0, the argument is the value of the data
@@ -437,11 +442,11 @@ computed from the argument); in major type 2 and 3 it gives the length
 of the string data in bytes that follows; and in major types 4 and 5 it is used to
 determine the number of data items enclosed.
 
-If the encoded sequence of bytes ends before the end of a data item
-would be reached, that encoding is not well-formed. If the encoded
+If the encoded sequence of bytes ends before the end of a data item,
+that item is not well-formed. If the encoded
 sequence of bytes still has bytes remaining
-after the outermost encoded item is decoded, that encoding is not a
-single well-formed CBOR item.
+after the outermost encoded item is decoded, that outer item is
+not well-formed.
 
 A CBOR decoder implementation can be based on a jump table with all
 256 defined values for the initial byte ({{jumptable}}).  A decoder in
@@ -715,14 +720,15 @@ information is in the initial bytes.
 |          25 | IEEE 754 Half-Precision Float (16 bits follow)            |
 |          26 | IEEE 754 Single-Precision Float (32 bits follow)          |
 |          27 | IEEE 754 Double-Precision Float (64 bits follow)          |
-|       28-30 | (Unassigned)                                              |
+|       28-30 | Not well-formed                                           |
 |          31 | "break" stop code for indefinite-length items ({{break}}) |
 {: #fpnoconttbl title='Values for Additional Information in Major Type 7'}
 
 As with all other major types, the 5-bit value 24 signifies a
 single-byte extension: it is followed by an additional byte to
 represent the simple value. (To minimize confusion, only the values 32
-to 255 are used.)  This maintains the structure of the initial bytes:
+-to 255 are used.)  This maintains the structure of the
+initial bytes:
 as for the other major types, the length of these always depends on
 the additional information in the first byte. {{fpnoconttbl2}} lists
 the values assigned and available for simple types.
@@ -761,8 +767,6 @@ data, this structure is encoded into the nested data item.  The
 definition of a tag usually restricts what kinds of nested data item
 or items are valid.
 
-The initial bytes of the tag follow the rules for positive integers
-(major type 0). The tag is followed by a single data item of any type.
 For example, assume that a byte string of length 12 is marked with a
 tag to indicate it is a positive bignum ({{bignums}}).  This would be
 marked as 0b110_00010 (major type 6, additional information 2 for the
@@ -1085,7 +1089,9 @@ subsequent values are zero or more floating-point numbers" or "the
 item is a map that has byte strings for keys and contains at least one
 pair whose key is 0xab01".
 
-This specification puts no restrictions on CBOR-based protocols. An
+CBOR-based protocols MUST specify how their decoders handle
+invalid and other unexpected data.  CBOR-based protocols
+MAY specify that they treat arbitrary valid data as unexpected.  An
 encoder can be capable of encoding as many or as few types of values
 as is required by the protocol in which it is used; a decoder can be
 capable of understanding as many or as few types of values as is
@@ -1094,9 +1100,7 @@ restrictions allows CBOR to be used in extremely constrained
 environments.
 
 This section discusses some considerations in creating CBOR-based
-protocols.  It is advisory only and explicitly excludes any language
-from RFC 2119 other than words that could be interpreted as "MAY" in
-the sense of RFC 2119.
+protocols.
 
 ## CBOR in Streaming Applications
 
@@ -1124,18 +1128,15 @@ applications but not others.
 ## Generic Encoders and Decoders {#generic}
 
 A generic CBOR decoder can decode all well-formed CBOR data and
-present them to an application.  CBOR data is well-formed if it uses
-the initial bytes, as well as the byte strings and/or data items that
-are implied by their values, in the manner defined by CBOR, and no
-extraneous data follows ({{pseudocode}}).
+present them to an application.  See {{pseudocode}}.
 
 Even though CBOR attempts to minimize these cases, not all well-formed
-CBOR data is valid: for example, the format excludes simple values
-below 32 that are encoded with an extension byte.  Also, specific tags
-may make semantic constraints that may be violated, such as by
-including a tag in a bignum tag or by following a byte string within a
-date tag.  Finally, the data may be invalid, such as invalid UTF-8
-strings or date strings that do not conform to {{RFC3339}}.  There is
+CBOR data is valid: for example, the text string `0x62c0ae` is not
+valid UTF-8 and so not a valid CBOR item.  Also, specific tags may
+make semantic constraints that may be violated, such as a bignum tag
+containing another tag, or a date tag containing a byte string or a
+text string with contents that don't match {{RFC3339}}'s `date-time`
+production.  There is
 no requirement that generic encoders and decoders make unnatural
 choices for their application interface to enable the processing of
 invalid data.  Generic encoders and decoders are expected to forward
@@ -1153,75 +1154,23 @@ application to specify any well-formed value, including simple values
 and tags unknown to the encoder.
 
 
-## Syntax Errors
+## Invalid Items {#semantic-errors}
 
-A decoder encountering a CBOR data item that is not well-formed
-generally can choose to completely fail the decoding (issue an error
-and/or stop processing altogether), substitute the problematic data
-and data items using a decoder-specific convention that clearly
-indicates there has been a problem, or take some other action.
+A well-formed but invalid CBOR data item presents a problem with
+interpreting the data encoded in it in the CBOR data model.  A
+CBOR-based protocol could be specified in several layers, in which the
+lower layers don't process the semantics of some of the CBOR data they
+forward.  These layers can't notice the invalidity in data they don't
+process and MUST forward that data as-is.  The first layer that does
+process the semantics of an invalid CBOR item MUST take one of two
+choices:
 
-### Incomplete CBOR Data Items
+1. Replace the problematic item with an error marker and continue with
+   the next item, or
+1. Issue an error and stop processing altogether.
 
-The representation of a CBOR data item has a specific length,
-determined by its initial bytes and by the structure of any data items
-enclosed in the data items.  If less data is available, this can be
-treated as a syntax error.  A decoder may also decode incrementally,
-that is, decode the data item as far as it is available and
-present the data found so far (such as in an event-based interface),
-with the option of continuing the decoding once further data is
-available.
-
-Examples of incomplete data items include:
-
-* A decoder expects a certain number of array or map entries but
-  instead encounters the end of the data.
-
-* A decoder processes what it expects to be the last pair in a map and
-  comes to the end of the data.
-
-* A decoder has just seen a tag and then encounters the end of the
-  data.
-
-* A decoder has seen the beginning of an indefinite-length item but
-  encounters the end of the data before it sees the "break" stop code.
-
-
-
-### Malformed Indefinite-Length Items
-
-Examples of malformed indefinite-length data items include:
-
-* Within an indefinite-length byte string or text, a decoder finds an
-  item that is not of the appropriate major type before it finds the
-  "break" stop code.
-
-* Within an indefinite-length map, a decoder encounters the "break"
-  stop code immediately after reading a key (the value is missing).
-
-Another error is finding a "break" stop code at a point in the data
-where there is no immediately enclosing (unclosed) indefinite-length
-item.
-
-
-### Unknown Additional Information Values
-
-At the time of writing, some additional information values are
-unassigned and reserved for future versions of this document (see
-{{curating}}).  Since the overall syntax for these additional
-information values is not yet defined, a decoder that sees an
-additional information value that it does not understand cannot
-continue decoding.
-
-
-## Other Decoding Errors {#semantic-errors}
-
-A CBOR data item may be syntactically well-formed but present a
-problem with interpreting the data encoded in it in the CBOR data
-model.  Generally speaking, a decoder that finds a data item with such
-a problem might issue a warning, might stop processing altogether,
-might handle the error and make the problematic value available to the
-application as such, or take some other type of action.
+A CBOR-based protocol MUST specify which of these options its decoders
+take, for each kind of invalid item they might encounter.
 
 Such problems might include:
 
@@ -1272,14 +1221,6 @@ item only to the application, or take some other type of action.
 
 
 ## Numbers {#numbers}
-
-An application or protocol that uses CBOR might restrict the
-representations of numbers.  For instance, a protocol that only deals
-with integers might say that floating-point numbers may not be used
-and that decoders of that protocol do not need to be able to handle
-floating-point numbers. Similarly, a protocol or application that uses
-CBOR might say that decoders need to be able to handle either type of
-number.
 
 CBOR-based protocols should take into account that different language
 environments pose different restrictions on the range and precision of
@@ -1338,19 +1279,12 @@ floating-point keys the values of which happen to be integer numbers in the same
 Decoders that deliver data items nested within a CBOR data item
 immediately on decoding them ("streaming decoders") often do not keep
 the state that is necessary to ascertain uniqueness of a key in a map.
+In this case, the surrounding application is responsible for satisfying
+the requirement that an non-well-formed map with duplicate keys is rejected.
 Similarly, an encoder that can start encoding data items before the
 enclosing data item is completely available ("streaming encoder") may
 want to reduce its overhead significantly by relying on its data
 source to maintain uniqueness.
-
-A CBOR-based protocol should make an intentional decision about what
-to do when a receiving application does see multiple identical keys in
-a map.  The resulting rule in the protocol should respect the CBOR
-data model: it cannot prescribe a specific handling of the entries
-with the identical keys, except that it might have a rule that having
-identical keys in a map indicates a malformed map and that the decoder
-has to stop with an error. Duplicate keys are also prohibited by CBOR
-decoders that are using strict mode ({{strict-mode}}).
 
 The CBOR data model for maps does not allow ascribing semantics to the
 order of the key/value pairs in the map representation.  Thus, a
@@ -1613,14 +1547,11 @@ that firewalls and other security systems that decode CBOR will only
 decode in strict mode.
 
 A decoder in strict mode will reliably reject any data that could be
-interpreted by other decoders in different ways.  It will reliably
-reject data items with syntax errors ({{syntax-errors}}).  It will
-also expend the effort to reliably detect other decoding errors
-({{semantic-errors}}). In particular, a strict decoder needs to have
-an API that reports an error (and does not return data) for a CBOR
-data item that contains any of the following:
-
-* a map (major type 5) that has more than one entry with the same key
+interpreted by other decoders in different ways.  It will expend
+the effort to reliably detect invalid data items
+({{semantic-errors}}). For example, a strict decoder needs to have an
+API that reports an error (and does not return data) for a CBOR data
+item that contains any of the following:
 
 * a tag that is used on a data item of the incorrect type
 

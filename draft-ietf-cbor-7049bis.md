@@ -1342,9 +1342,9 @@ has to stop with an error. Duplicate keys are also prohibited by CBOR
 decoders that are using strict mode ({{strict-mode}}).
 
 The CBOR data model for maps does not allow ascribing semantics to the
-order of the key/value pairs in the map representation.
-Thus, it would be a very bad practice to define a CBOR-based protocol
-in such a way that changing the key/value pair order in a map would
+order of the key/value pairs in the map representation.  Thus, a
+CBOR-based protocol MUST NOT specify that changing the key/value pair
+order in a map would
 change the semantics, apart from trivial aspects (cache usage, etc.).
 (A CBOR-based protocol can prescribe a specific order of
 serialization, such as for canonicalization.)

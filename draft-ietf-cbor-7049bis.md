@@ -332,6 +332,8 @@ In the basic (un-extended) generic data model, a data item is one of:
 Note that integer and floating-point values are distinct in this
 model, even if they have the same numeric value.
 
+## Extended generic data models
+
 This basic generic data model comes pre-extended by the registration
 of a number of simple values and tags right in this document, such as:
 
@@ -359,14 +361,26 @@ their programming environment, implementation of the data model
 extensions created by tags is truly optional and a matter of
 implementation quality.
 
-A specific data model usually subsets the extended generic data model
-and assigns application semantics to the data items within this subset
-and its components.  When documenting such specific data models,
-where it is desired to specify the types of data items, it is
-preferred to identify the types by their names in the generic data
-model ("negative integer", "array") instead of by referring to aspects
-of their CBOR representation ("major type 1", "major type 4").
+## Specific data models
 
+The specific data model for a CBOR-based protocol usually subsets the
+extended generic data model and assigns application semantics to the
+data items within this subset and its components.  When documenting
+such specific data models, where it is desired to specify the types of
+data items, it is preferred to identify the types by their names in
+the generic data model ("negative integer", "array") instead of by
+referring to aspects of their CBOR representation ("major type 1",
+"major type 4").
+
+Specific data models can also specify that values of different types
+are equivalent for the purposes of map keys and encoder freedom. For
+example, in the generic data model, a valid map MAY have both `0` and
+`0.0` as keys, and an encoder MUST NOT encode `0.0` as an integer
+(major type 0, {{majortypes}}).  However, if a specific data model
+declares that floating point and integer representations of integral
+values are equivalent, map keys `0` and `0.0` would be considered
+duplicates and so invalid, and an encoder could encode integral-valued
+floats as integers or vice versa, perhaps to save encoded bytes.
 
 # Specification of the CBOR Encoding
 
@@ -1173,14 +1187,6 @@ item only to the application, or take some other type of action.
 
 
 ## Numbers {#numbers}
-
-For the purposes of this specification, all number representations for
-the same numeric value are equivalent.  This means that an encoder can
-encode a floating-point value of 0.0 as the integer 0.  It, however,
-also means that an application that expects to find integer values
-only might find floating-point values if the encoder decides these are
-desirable, such as when the floating-point value is more compact than
-a 64-bit integer.
 
 An application or protocol that uses CBOR might restrict the
 representations of numbers.  For instance, a protocol that only deals

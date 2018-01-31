@@ -340,8 +340,7 @@ of a number of simple values and tags right in this document, such as:
 * `false`, `true`, `null`, and `undefined` (simple values identified by 20..23)
 * integer and floating point values with a larger range and precision
   than the above (tags 2 to 5)
-* application data types such as a point in time or an RFC 3339
-  date/time string (tags 1, 0)
+* application data types such as a point in time (tags 1, 0)
 
 Further elements of the extended generic data model can be (and have
 been) defined via the IANA registries created for CBOR.  Even if such
@@ -793,6 +792,9 @@ the rest of this section.
 
 ### Date and Time {#datetimesect}
 
+Protocols using tag values 0 and 1 extend the generic data model
+({{cbor-data-models}}) with data items representing points in time.
+
 Tag value 0 is for date/time strings that follow the standard format
 described in {{RFC3339}}, as refined by Section 3.3 of {{RFC4287}}.
 
@@ -809,13 +811,17 @@ number, indicate fractional seconds.
 
 ### Bignums {#bignums}
 
-Bignums are integers that do not fit into the basic integer
-representations provided by major types 0 and 1.  They are encoded as
-a byte string data item, which is interpreted as an unsigned integer n
-in network byte order.  For tag value 2, the value of the bignum is n.
-For tag value 3, the value of the bignum is -1 - n.  Decoders that
-understand these tags MUST be able to decode bignums that have leading
-zeroes.
+Protocols using tag values 2 and 3 extend the generic data model
+({{cbor-data-models}}) with "bignums" representing arbitrary
+integers. In the generic data model, bignum values are not equal to
+integers from the basic data model, but specific data models can
+define that equivalence.
+
+Bignums are encoded as a byte string data item, which is interpreted
+as an unsigned integer n in network byte order.  For tag value 2, the
+value of the bignum is n.  For tag value 3, the value of the bignum is
+-1 - n.  Decoders that understand these tags MUST be able to decode
+bignums that have leading zeroes.
 
 For example, the number 18446744073709551616 (2\*\*64) is represented
 as 0b110_00010 (major type 6, tag 2), followed by 0b010_01001 (major
@@ -831,6 +837,13 @@ C2                        -- Tag 2
 
 
 ### Decimal Fractions and Bigfloats {#fractions}
+
+Protocols using tag value 4 extend the generic data model with data
+items representing arbitrary-length decimal fractions m*(10**e).
+Protocols using tag value 5 extend the generic data model with data
+items representing arbitrary-length binary fractions m*(2**e). As with
+bignums, values of different types are not equal in the generic data
+model.
 
 Decimal fractions combine an integer mantissa with a base-10 scaling
 factor.  They are most useful if an application needs the exact
@@ -899,7 +912,8 @@ that the integer representation is used directly.
 ### Content Hints
 
 The tags in this section are for content hints that might be used by
-generic CBOR processors.
+generic CBOR processors. These content hints do not extend the generic
+data model.
 
 #### Encoded CBOR Data Item {#embedded-di}
 

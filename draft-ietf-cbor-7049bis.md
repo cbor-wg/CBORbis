@@ -370,8 +370,9 @@ of their CBOR representation ("major type 1", "major type 4").
 
 # Specification of the CBOR Encoding
 
-A CBOR-encoded data item is structured and encoded as described in
-this section.  The encoding is summarized in {{jumptable}}.
+A CBOR data item  ({{cbor-data-models}}) is encoded to or decoded from
+a byte string as described in this section.  The encoding is
+summarized in {{jumptable}}.
 
 The initial byte of each data item contains both information about the
 major type (the high-order 3 bits, described in {{majortypes}}) and

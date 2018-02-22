@@ -332,7 +332,7 @@ In the basic (un-extended) generic data model, a data item is one of:
 Note that integer and floating-point values are distinct in this
 model, even if they have the same numeric value.
 
-## Extended generic data models
+## Extended Generic Data Models
 
 This basic generic data model comes pre-extended by the registration
 of a number of simple values and tags right in this document, such as:
@@ -360,7 +360,7 @@ their programming environment, implementation of the data model
 extensions created by tags is truly optional and a matter of
 implementation quality.
 
-## Specific data models
+## Specific Data Models
 
 The specific data model for a CBOR-based protocol usually subsets the
 extended generic data model and assigns application semantics to the

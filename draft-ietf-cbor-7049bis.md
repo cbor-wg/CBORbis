@@ -956,10 +956,10 @@ this document, while the extended generic data model expands by the
 registration of new simple values or tags, but never shrinks.
 
 While there is a strong expectation that generic encoders and decoders
-can represent `false`, `true`, and `null` in the form appropriate for
-their programming environment, implementation of the data model
-extensions created by tags is truly optional and a matter of
-implementation quality.
+can represent `false`, `true`, and `null` (`undefined` is
+intentionally omitted) in the form appropriate for their programming
+environment, implementation of the data model extensions created by
+tags is truly optional and a matter of implementation quality.
 
 A specific data model usually subsets the extended generic data model
 and assigns application semantics to the data items within this subset

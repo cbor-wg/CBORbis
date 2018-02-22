@@ -1450,6 +1450,24 @@ it satisfies the following restrictions:
 * Indefinite-length items MUST not appear. They can be encoded as
   definite-length items instead.
 
+If a protocol allows for IEEE floats, then additional canonicalization
+rules might need to be added.  One example rule might be to have all
+floats start as a 64-bit float, then do a test conversion to a 32-bit
+float; if the result is the same numeric value, use the shorter value
+and repeat the process with a test conversion to a 16-bit float. (This
+rule selects 16-bit float for positive and negative Infinity as well.)
+Also, there are many representations for NaN. If NaN is an allowed
+value, it must always be represented as 0xf97e00.
+
+CBOR tags present additional considerations for canonicalization. The
+absence or presence of tags in a canonical format is determined by the
+optionality of the tags in the protocol. In a CBOR-based protocol that
+allows optional tagging anywhere, the canonical format must not allow
+them.  In a protocol that requires tags in certain places, the tag
+needs to appear in the canonical format. A CBOR-based protocol that
+uses canonicalization might instead say that all tags that appear in a
+message must be retained regardless of whether they are optional.
+
 Protocols that include floating, big integer, or other complex values
 need to define extra requirements on their canonical encodings. For
 example:

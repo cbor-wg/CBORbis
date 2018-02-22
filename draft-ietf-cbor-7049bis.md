@@ -1267,6 +1267,46 @@ negative integers) because the keys can then be encoded in a single
 byte.
 
 
+### Equivalence of Keys
+
+This notion of equivalence must be used to determine whether keys in
+maps are duplicates or distinct.
+
+* All numbers are compared by their numeric value.
+
+  * Integer data items with the same value are equal regardless of
+    how many bytes are used to encode them.
+
+  * Floating point data items with the same value are equal
+    regardless of how many bytes are used to encode them.
+
+  * An integer value encoded as a floating point data item is
+    equivalent to the same value encoded as an integer
+
+* Byte strings and text strings are compared by their binary content.
+
+  * A different length encoding has no effect on equivalence.
+
+  * A byte string is equal to a text string if they have the same
+    binary content.
+
+* Two arrays are equal if all their items are in the same order and
+  equal.
+
+* Two maps are equal if they have the same set of pairs regardless of
+  their order; pairs are equal if both the key and value are equal.
+
+* Tags have no effect in determining equality of a data item, if two
+  items are equal then they are equal irrespective of any tags that
+  either or both may have.
+
+* Simple values are equal if they simply have the same value.
+
+Nothing else is equal, a simple value 2 is not equivalent to an
+integer 2 and an array cannot be equivalent to a map with the same
+values and sequential integer keys.
+
+
 ## Undefined Values {#undefined-values}
 
 In some CBOR-based protocols, the simple value ({{fpnocont}}) of

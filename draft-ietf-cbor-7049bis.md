@@ -298,11 +298,94 @@ emphasize the desired interpretation of the bits in the byte; in this
 case, it is split into three bits and five bits.
 
 
+# CBOR Data Models
+
+CBOR is explicit about its generic data model, which defines the set
+of all data items that can be represented in CBOR.  Its basic generic
+data model is extensible by the registration of simple type values and
+tags.  Applications can then subset the resulting extended generic
+data model to build their specific data models.
+
+Within environments that can represent the data items in the generic
+data model, generic CBOR encoders and decoders can be implemented
+(which usually involves defining additional implementation data types
+for those data items that do not already have a natural representation
+in the environment).  The ability to provide generic encoders and
+decoders is an explicit design goal of CBOR; however many applications
+will provide their own application-specific encoders and/or decoders.
+
+In the basic (un-extended) generic data model, a data item is one of:
+
+* an integer in the range -2\*\*64..2\*\*64-1 inclusive
+* a simple value, identified by a number
+  between 0 and 255, but distinct from that number
+* a floating point value, distinct from an integer, out of the set
+  representable by IEEE 754 binary64 (including non-finites)
+* a sequence of zero or more bytes ("byte string")
+* a sequence of zero or more Unicode code points ("text string")
+* a sequence of zero or more data items ("array")
+* a mapping (mathematical function) from zero or more data items
+  ("keys") each to a data item ("values"), ("map")
+* a tagged data item, comprising a tag (an integer in the range
+  0..2\*\*64-1) and a value (a data item)
+
+Note that integer and floating-point values are distinct in this
+model, even if they have the same numeric value.
+
+## Extended generic data models
+
+This basic generic data model comes pre-extended by the registration
+of a number of simple values and tags right in this document, such as:
+
+* `false`, `true`, `null`, and `undefined` (simple values identified by 20..23)
+* integer and floating point values with a larger range and precision
+  than the above (tags 2 to 5)
+* application data types such as a point in time (tags 1, 0)
+
+Further elements of the extended generic data model can be (and have
+been) defined via the IANA registries created for CBOR.  Even if such
+an extension is unknown to a generic encoder or decoder, data items
+using that extension can be passed to or from the application by
+representing them at the interface to the application within the basic
+generic data model, i.e., as generic values of a simple type or
+generic tagged items.
+
+In other words, the basic generic data model is stable as defined in
+this document, while the extended generic data model expands by the
+registration of new simple values or tags, but never shrinks.
+
+While there is a strong expectation that generic encoders and decoders
+can represent `false`, `true`, and `null` in the form appropriate for
+their programming environment, implementation of the data model
+extensions created by tags is truly optional and a matter of
+implementation quality.
+
+## Specific data models
+
+The specific data model for a CBOR-based protocol usually subsets the
+extended generic data model and assigns application semantics to the
+data items within this subset and its components.  When documenting
+such specific data models, where it is desired to specify the types of
+data items, it is preferred to identify the types by their names in
+the generic data model ("negative integer", "array") instead of by
+referring to aspects of their CBOR representation ("major type 1",
+"major type 4").
+
+Specific data models can also specify that values of different types
+are equivalent for the purposes of map keys and encoder freedom. For
+example, in the generic data model, a valid map MAY have both `0` and
+`0.0` as keys, and an encoder MUST NOT encode `0.0` as an integer
+(major type 0, {{majortypes}}).  However, if a specific data model
+declares that floating point and integer representations of integral
+values are equivalent, map keys `0` and `0.0` would be considered
+duplicates and so invalid, and an encoder could encode integral-valued
+floats as integers or vice versa, perhaps to save encoded bytes.
 
 # Specification of the CBOR Encoding
 
-A CBOR-encoded data item is structured and encoded as described in
-this section.  The encoding is summarized in {{jumptable}}.
+A CBOR data item  ({{cbor-data-models}}) is encoded to or decoded from
+a byte string as described in this section.  The encoding is
+summarized in {{jumptable}}.
 
 The initial byte of each data item contains both information about the
 major type (the high-order 3 bits, described in {{majortypes}}) and
@@ -709,6 +792,9 @@ the rest of this section.
 
 ### Date and Time {#datetimesect}
 
+Protocols using tag values 0 and 1 extend the generic data model
+({{cbor-data-models}}) with data items representing points in time.
+
 Tag value 0 is for date/time strings that follow the standard format
 described in {{RFC3339}}, as refined by Section 3.3 of {{RFC4287}}.
 
@@ -725,13 +811,17 @@ number, indicate fractional seconds.
 
 ### Bignums {#bignums}
 
-Bignums are integers that do not fit into the basic integer
-representations provided by major types 0 and 1.  They are encoded as
-a byte string data item, which is interpreted as an unsigned integer n
-in network byte order.  For tag value 2, the value of the bignum is n.
-For tag value 3, the value of the bignum is -1 - n.  Decoders that
-understand these tags MUST be able to decode bignums that have leading
-zeroes.
+Protocols using tag values 2 and 3 extend the generic data model
+({{cbor-data-models}}) with "bignums" representing arbitrary
+integers. In the generic data model, bignum values are not equal to
+integers from the basic data model, but specific data models can
+define that equivalence.
+
+Bignums are encoded as a byte string data item, which is interpreted
+as an unsigned integer n in network byte order.  For tag value 2, the
+value of the bignum is n.  For tag value 3, the value of the bignum is
+-1 - n.  Decoders that understand these tags MUST be able to decode
+bignums that have leading zeroes.
 
 For example, the number 18446744073709551616 (2\*\*64) is represented
 as 0b110_00010 (major type 6, tag 2), followed by 0b010_01001 (major
@@ -747,6 +837,13 @@ C2                        -- Tag 2
 
 
 ### Decimal Fractions and Bigfloats {#fractions}
+
+Protocols using tag value 4 extend the generic data model with data
+items representing arbitrary-length decimal fractions m*(10**e).
+Protocols using tag value 5 extend the generic data model with data
+items representing arbitrary-length binary fractions m*(2**e). As with
+bignums, values of different types are not equal in the generic data
+model.
 
 Decimal fractions combine an integer mantissa with a base-10 scaling
 factor.  They are most useful if an application needs the exact
@@ -815,7 +912,8 @@ that the integer representation is used directly.
 ### Content Hints
 
 The tags in this section are for content hints that might be used by
-generic CBOR processors.
+generic CBOR processors. These content hints do not extend the generic
+data model.
 
 #### Encoded CBOR Data Item {#embedded-di}
 
@@ -956,10 +1054,10 @@ this document, while the extended generic data model expands by the
 registration of new simple values or tags, but never shrinks.
 
 While there is a strong expectation that generic encoders and decoders
-can represent `false`, `true`, and `null` in the form appropriate for
-their programming environment, implementation of the data model
-extensions created by tags is truly optional and a matter of
-implementation quality.
+can represent `false`, `true`, and `null` (`undefined` is
+intentionally omitted) in the form appropriate for their programming
+environment, implementation of the data model extensions created by
+tags is truly optional and a matter of implementation quality.
 
 A specific data model usually subsets the extended generic data model
 and assigns application semantics to the data items within this subset
@@ -968,7 +1066,6 @@ where it is desired to specify the types of data items, it is
 preferred to identify the types by their names in the generic data
 model ("negative integer", "array") instead of by referring to aspects
 of their CBOR representation ("major type 1", "major type 4").
-
 
 # Creating CBOR-Based Protocols
 
@@ -1173,14 +1270,6 @@ item only to the application, or take some other type of action.
 
 ## Numbers {#numbers}
 
-For the purposes of this specification, all number representations for
-the same numeric value are equivalent.  This means that an encoder can
-encode a floating-point value of 0.0 as the integer 0.  It, however,
-also means that an application that expects to find integer values
-only might find floating-point values if the encoder decides these are
-desirable, such as when the floating-point value is more compact than
-a 64-bit integer.
-
 An application or protocol that uses CBOR might restrict the
 representations of numbers.  For instance, a protocol that only deals
 with integers might say that floating-point numbers may not be used
@@ -1267,6 +1356,46 @@ negative integers) because the keys can then be encoded in a single
 byte.
 
 
+### Equivalence of Keys
+
+This notion of equivalence must be used to determine whether keys in
+maps are duplicates or distinct.
+
+* All numbers are compared by their numeric value.
+
+  * Integer data items with the same value are equal regardless of
+    how many bytes are used to encode them.
+
+  * Floating point data items with the same value are equal
+    regardless of how many bytes are used to encode them.
+
+  * An integer value encoded as a floating point data item is
+    equivalent to the same value encoded as an integer
+
+* Byte strings and text strings are compared by their binary content.
+
+  * A different length encoding has no effect on equivalence.
+
+  * A byte string is equal to a text string if they have the same
+    binary content.
+
+* Two arrays are equal if all their items are in the same order and
+  equal.
+
+* Two maps are equal if they have the same set of pairs regardless of
+  their order; pairs are equal if both the key and value are equal.
+
+* Tags have no effect in determining equality of a data item, if two
+  items are equal then they are equal irrespective of any tags that
+  either or both may have.
+
+* Simple values are equal if they simply have the same value.
+
+Nothing else is equal, a simple value 2 is not equivalent to an
+integer 2 and an array cannot be equivalent to a map with the same
+values and sequential integer keys.
+
+
 ## Undefined Values {#undefined-values}
 
 In some CBOR-based protocols, the simple value ({{fpnocont}}) of
@@ -1338,6 +1467,34 @@ them.  In a protocol that requires tags in certain places, the tag
 needs to appear in the canonical format. A CBOR-based protocol that
 uses canonicalization might instead say that all tags that appear in a
 message must be retained regardless of whether they are optional.
+
+Protocols that include floating, big integer, or other complex values
+need to define extra requirements on their canonical encodings. For
+example:
+
+* If a protocol includes a field that can express floating values
+  ({{fpnocont}}), the protocol's canonicalization needs to specify
+  whether the integer 1.0 is encoded as 0x01, 0xf93c00, 0xfa3f800000,
+  or 0xfb3ff0000000000000. Three sensible rules for this are:
+  1. Encode integral values that fit in 64 bits as values from major
+     types 0 and 1, and other values as the smallest of 16-, 32-, or
+     64-bit floating point that accurately represents the value,
+  1. Encode all values as the smallest of 16-, 32-, or 64-bit floating
+     point that accurately represents the value, even for integral
+     values, or
+  1. Encode all values as 64-bit floating point.
+
+  If NaN is an allowed value, the protocol needs to pick a single
+  representation, for example 0xf97e00.
+* If a protocol includes a field that can express integers larger than
+  2^64 using tag 2 ({{bignums}}), the protocol's canonicalization
+  needs to specify whether small integers are expressed using the tag
+  or major types 0 and 1.
+* A protocol might give encoders the choice of representing a URL as
+  either a text string or, using {{encodedtext}}, tag 32 containing a
+  text string. This protocol's canonicalization needs to either
+  require that the tag is present or require that it's absent, not
+  allow either one.
 
 ### Length-first map key ordering
 

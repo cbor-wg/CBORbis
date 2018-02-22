@@ -720,7 +720,7 @@ are encoded in the additional bytes of the appropriate size.  (See
 
 An encoder
 MUST NOT encode False as the two-byte sequence of 0xf814,
-MUST NOT encode True as the two-byte sequence of 0xf815, 
+MUST NOT encode True as the two-byte sequence of 0xf815,
 MUST NOT encode Null as the two-byte sequence of 0xf816, and
 MUST NOT encode Undefined value as the two-byte sequence of 0xf817.
 A decoder MUST treat these two-byte sequences as an error.
@@ -998,6 +998,74 @@ formats. An easy way for an encoder to help the decoder would be to
 tag the entire CBOR item with tag 55799, the serialization of which
 will never be found at the beginning of a JSON text.
 
+## CBOR Data Models
+
+CBOR is explicit about its generic data model, which defines the set
+of all data items that can be represented in CBOR.  Its basic generic
+data model is extensible by the registration of simple type values and
+tags.  Applications can then subset the resulting extended generic
+data model to build their specific data models.
+
+Within environments that can represent the data items in the generic
+data model, generic CBOR encoders and decoders can be implemented
+(which usually involves defining additional implementation data types
+for those data items that do not already have a natural representation
+in the environment).  The ability to provide generic encoders and
+decoders is an explicit design goal of CBOR; however many applications
+will provide their own application-specific encoders and/or decoders.
+
+In the basic (un-extended) generic data model, a data item is one of:
+
+* an integer in the range -2\*\*64..2\*\*64-1 inclusive
+* a simple value, identified by a number
+  between 0 and 255, but distinct from that number
+* a floating point value, distinct from an integer, out of the set
+  representable by IEEE 754 binary64 (including non-finites)
+* a sequence of zero or more bytes ("byte string")
+* a sequence of zero or more Unicode code points ("text string")
+* a sequence of zero or more data items ("array")
+* a mapping (mathematical function) from zero or more data items
+  ("keys") each to a data item ("values"), ("map")
+* a tagged data item, comprising a tag (an integer in the range
+  0..2\*\*64-1) and a value (a data item)
+
+Note that integer and floating-point values are distinct in this
+model, even if they have the same numeric value.
+
+This basic generic data model comes pre-extended by the registration
+of a number of simple values and tags right in this document, such as:
+
+* `false`, `true`, `null`, and `undefined` (simple values identified by 20..23)
+* integer and floating point values with a larger range and precision
+  than the above (tags 2 to 5)
+* application data types such as a point in time or an RFC 3339
+  date/time string (tags 1, 0)
+
+Further elements of the extended generic data model can be (and have
+been) defined via the IANA registries created for CBOR.  Even if such
+an extension is unknown to a generic encoder or decoder, data items
+using that extension can be passed to or from the application by
+representing them at the interface to the application within the basic
+generic data model, i.e., as generic values of a simple type or
+generic tagged items.
+
+In other words, the basic generic data model is stable as defined in
+this document, while the extended generic data model expands by the
+registration of new simple values or tags, but never shrinks.
+
+While there is a strong expectation that generic encoders and decoders
+can represent `false`, `true`, and `null` (`undefined` is
+intentionally omitted) in the form appropriate for their programming
+environment, implementation of the data model extensions created by
+tags is truly optional and a matter of implementation quality.
+
+A specific data model usually subsets the extended generic data model
+and assigns application semantics to the data items within this subset
+and its components.  When documenting such specific data models,
+where it is desired to specify the types of data items, it is
+preferred to identify the types by their names in the generic data
+model ("negative integer", "array") instead of by referring to aspects
+of their CBOR representation ("major type 1", "major type 4").
 
 # Creating CBOR-Based Protocols
 
@@ -1288,6 +1356,46 @@ negative integers) because the keys can then be encoded in a single
 byte.
 
 
+### Equivalence of Keys
+
+This notion of equivalence must be used to determine whether keys in
+maps are duplicates or distinct.
+
+* All numbers are compared by their numeric value.
+
+  * Integer data items with the same value are equal regardless of
+    how many bytes are used to encode them.
+
+  * Floating point data items with the same value are equal
+    regardless of how many bytes are used to encode them.
+
+  * An integer value encoded as a floating point data item is
+    equivalent to the same value encoded as an integer
+
+* Byte strings and text strings are compared by their binary content.
+
+  * A different length encoding has no effect on equivalence.
+
+  * A byte string is equal to a text string if they have the same
+    binary content.
+
+* Two arrays are equal if all their items are in the same order and
+  equal.
+
+* Two maps are equal if they have the same set of pairs regardless of
+  their order; pairs are equal if both the key and value are equal.
+
+* Tags have no effect in determining equality of a data item, if two
+  items are equal then they are equal irrespective of any tags that
+  either or both may have.
+
+* Simple values are equal if they simply have the same value.
+
+Nothing else is equal, a simple value 2 is not equivalent to an
+integer 2 and an array cannot be equivalent to a map with the same
+values and sequential integer keys.
+
+
 ## Undefined Values {#undefined-values}
 
 In some CBOR-based protocols, the simple value ({{fpnocont}}) of
@@ -1302,64 +1410,101 @@ Some protocols may want encoders to only emit CBOR in a particular
 canonical format; those protocols might also have the decoders check
 that their input is canonical. Those protocols are free to define what
 they mean by a canonical format and what encoders and decoders are
-expected to do. This section lists some suggestions for such
-protocols.
+expected to do. This section defines a set of restrictions that can
+serve as the base of such a canonical format.
 
-If a protocol considers "canonical" to mean that two encoder
-implementations starting with the same input data will produce the
-same CBOR output, the following four rules would suffice:
+A CBOR encoding satisfies the "core canonicalization requirements" if
+it satisfies the following restrictions:
 
-* Integers must be as small as possible.
+* Integers MUST be as short as possible. In particular:
 
-  * 0 to 23 and -1 to -24 must be expressed in the same byte as the
+  * 0 to 23 and -1 to -24 MUST be expressed in the same byte as the
     major type;
 
-  * 24 to 255 and -25 to -256 must be expressed only with an
+  * 24 to 255 and -25 to -256 MUST be expressed only with an
     additional uint8_t;
 
-  * 256 to 65535 and -257 to -65536 must be expressed only with an
+  * 256 to 65535 and -257 to -65536 MUST be expressed only with an
     additional uint16_t;
 
-  * 65536 to 4294967295 and -65537 to -4294967296 must be expressed
+  * 65536 to 4294967295 and -65537 to -4294967296 MUST be expressed
     only with an additional uint32_t.
 
-* The expression of lengths in major types 2 through 5 must be as
+* The expression of lengths in major types 2 through 5 MUST be as
   short as possible. The rules for these lengths follow the above rule
   for integers.
 
-* The keys in every map must be sorted lowest value to
-  highest. Sorting is performed on the bytes of the representation of
-  the key data items without paying attention to the 3/5 bit splitting
-  for major types.  (Note that this rule allows maps that have keys of
-  different types, even though that is probably a bad practice that
-  could lead to errors in some canonicalization implementations.) The
-  sorting rules are:
+* The keys in every map MUST be sorted in the bytewise lexicographic
+  order of their canonical encodings. For example, the following keys
+  are sorted correctly:
 
-  * If two keys have different lengths, the shorter one sorts earlier;
+  1. 10, encoded as 0x0a.
+  1. 100, encoded as 0x1864.
+  1. -1, encoded as 0x20.
+  1. "z", encoded as 0x617a.
+  1. "aa", encoded as 0x626161.
+  1. \[100], encoded as 0x811864.
+  1. \[-1], encoded as 0x8120.
+  1. false, encoded as 0xf4.
 
-  * If two keys have the same length, the one with the lower value in
-    (byte-wise) lexical order sorts earlier.
+* Indefinite-length items MUST not appear. They can be encoded as
+  definite-length items instead.
 
-* Indefinite-length items must be made into definite-length items.
+Protocols that include floating, big integer, or other complex values
+need to define extra requirements on their canonical encodings. For
+example:
 
-If a protocol allows for IEEE floats, then additional canonicalization
-rules might need to be added.  One example rule might be to have all
-floats start as a 64-bit float, then do a test conversion to a 32-bit
-float; if the result is the same numeric value, use the shorter value
-and repeat the process with a test conversion to a 16-bit float. (This
-rule selects 16-bit float for positive and negative Infinity as well.)
-Also, there are many representations for NaN. If NaN is an allowed
-value, it must always be represented as 0xf97e00.
+* If a protocol includes a field that can express floating values
+  ({{fpnocont}}), the protocol's canonicalization needs to specify
+  whether the integer 1.0 is encoded as 0x01, 0xf93c00, 0xfa3f800000,
+  or 0xfb3ff0000000000000. Three sensible rules for this are:
+  1. Encode integral values that fit in 64 bits as values from major
+     types 0 and 1, and other values as the smallest of 16-, 32-, or
+     64-bit floating point that accurately represents the value,
+  1. Encode all values as the smallest of 16-, 32-, or 64-bit floating
+     point that accurately represents the value, even for integral
+     values, or
+  1. Encode all values as 64-bit floating point.
 
-CBOR tags present additional considerations for canonicalization. The
-absence or presence of tags in a canonical format is determined by the
-optionality of the tags in the protocol. In a CBOR-based protocol that
-allows optional tagging anywhere, the canonical format must not allow
-them.  In a protocol that requires tags in certain places, the tag
-needs to appear in the canonical format. A CBOR-based protocol that
-uses canonicalization might instead say that all tags that appear in a
-message must be retained regardless of whether they are optional.
+  If NaN is an allowed value, the protocol needs to pick a single
+  representation, for example 0xf97e00.
+* If a protocol includes a field that can express integers larger than
+  2^64 using tag 2 ({{bignums}}), the protocol's canonicalization
+  needs to specify whether small integers are expressed using the tag
+  or major types 0 and 1.
+* A protocol might give encoders the choice of representing a URL as
+  either a text string or, using {{encodedtext}}, tag 32 containing a
+  text string. This protocol's canonicalization needs to either
+  require that the tag is present or require that it's absent, not
+  allow either one.
 
+### Length-first map key ordering
+
+The core canonicalization requirements sort map keys in a different
+order from the one suggested by {{?RFC7049}}. Protocols that need to
+be compatible with {{?RFC7049}}'s order can instead be specified in
+terms of this specification's "length-first core canonicalization
+requirements":
+
+A CBOR encoding satisfies the "length-first core canonicalization
+requirements" if it satisfies the core canonicalization requirements
+except that the keys in every map MUST be sorted such that:
+
+1. If two keys have different lengths, the shorter one sorts earlier;
+1. If two keys have the same length, the one with the lower value in
+   (byte-wise) lexical order sorts earlier.
+
+For example, under the length-first core canonicalization
+requirements, the following keys are sorted correctly:
+
+1. 10, encoded as 0x0a.
+1. -1, encoded as 0x20.
+1. false, encoded as 0xf4.
+1. 100, encoded as 0x1864.
+1. "z", encoded as 0x617a.
+1. \[-1], encoded as 0x8120.
+1. "aa", encoded as 0x626161.
+1. \[100], encoded as 0x811864.
 
 ## Strict Mode {#strict-mode}
 

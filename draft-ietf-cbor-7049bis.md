@@ -33,7 +33,7 @@ author:
   org: ICANN
   email: paul.hoffman@icann.org
 normative:
-  ECMA262-2017:
+  ECMA-252-2017:
     target: https://www.ecma-international.org/ecma-262/8.0/
     title: ECMAScript® 2017 Language Specification
     author:
@@ -976,7 +976,7 @@ for some of these formats.
   {{RFC2045}};
 
 * Tag ***TBD*** is for ECMAScript 2017 RegExp (Regular Expression) objects, 
-as defined in {{ECMA252-2017}} section 21.2.   This tag may be applied to a,
+as defined in {{ECMA-252-2017}} section 21.2.   This tag may be applied to a,
 text string, representing a RegEx with default options, or to a two-element
 array of text strings, where the first element is the pattern, and the second
 element is contains the options.

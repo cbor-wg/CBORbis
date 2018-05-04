@@ -34,11 +34,11 @@ author:
   email: paul.hoffman@icann.org
 normative:
   ECMA262:
-    target: http://www.ecma-international.org/publications/files/ecma-st/ECMA-262.pdf
-    title: ECMAScript Language Specification 5.1 Edition
+    target: https://www.ecma-international.org/ecma-262/8.0/
+    title: ECMAScript® 2017 Language Specification
     author:
     - org: European Computer Manufacturers Association
-    date: 2011-06
+    date: 2017-06
     seriesinfo:
       ECMA: Standard ECMA-262
   TIME_T:
@@ -83,6 +83,14 @@ informative:
       name: Sadayuki Furuhashi
       org: ''
     date: 2013
+  PCRE:
+    target: http://www.pcre.org/current/doc/html/pcre2.html
+    title: PCRE2 man page
+    author:
+      - ins: P Hazel
+        name: Philip Hazel
+        org: University Computing Service, Cambridge, England
+    date: 2017-04-01
   UBJSON:
     target: http://ubjson.org/
     title: Universal Binary JSON Specification
@@ -962,10 +970,13 @@ for some of these formats.
   as defined in {{RFC4648}};
 
 * Tag 35 is for regular expressions in Perl Compatible Regular
-  Expressions (PCRE) / JavaScript syntax {{ECMA262}}.
-
+  Expressions (PCRE) format. {{PCRE}}, non-normative.
+  
 * Tag 36 is for MIME messages (including all headers), as defined in
   {{RFC2045}};
+
+* Tag ***TBD*** is for ECMAScript 2017 RegExp (Regular Expression) objects, 
+as defined in 
 
 Note that tags 33 and 34 differ from 21 and 22 in that the data is
 transported in base-encoded form for the former and in raw byte string

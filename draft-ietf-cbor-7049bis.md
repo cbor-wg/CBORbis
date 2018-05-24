@@ -34,11 +34,11 @@ author:
   email: paul.hoffman@icann.org
 normative:
   ECMA262:
-    target: http://www.ecma-international.org/publications/files/ecma-st/ECMA-262.pdf
-    title: ECMAScript Language Specification 5.1 Edition
+    target: https://www.ecma-international.org/publications/standards/Ecma-262.htm
+    title: ECMAScript® 2017 Language Specification
     author:
     - org: European Computer Manufacturers Association
-    date: 2011-06
+    date: 2017-06
     seriesinfo:
       ECMA: Standard ECMA-262
   TIME_T:
@@ -1318,10 +1318,10 @@ application, directly using the numbers for the keys is useful.
 If multiple types of keys are to be used, consideration should be
 given to how these types would be represented in the specific
 programming environments that are to be used.  For example, in
-JavaScript Maps, a key of integer 1 cannot be distinguished from a key
-of floating 1.0. This means that, if integer keys are used, the
-protocol needs to avoid use of integer-valued floating-point keys in
-the same map.
+JavaScript Maps ({{ECMA262}}), a key of integer 1 cannot be
+distinguished from a key of floating 1.0. This means that, if integer
+keys are used, the protocol needs to avoid use of integer-valued
+floating-point keys in the same map.
 
 Decoders that deliver data items nested within a CBOR data item
 immediately on decoding them ("streaming decoders") often do not keep

@@ -112,20 +112,18 @@ informative:
 
 --- abstract
 
-The Concise Binary Object Representation (CBOR) is a data format whose design
-goals include the
-possibility of extremely small code size, fairly small message size, and
-extensibility without the
-need for version negotiation. These design goals make it different from earlier
-binary
-serializations such as ASN.1 and MessagePack.
+Concise Binary Object Representation (CBOR) is compact, 8-bit byte (octet) oriented data
+format for structured information whose design goals include the possibility of extremely
+small code size, fairly small message size, and extensibility without the need for version
+negotiation or a prenegotiated application-level schema.  CBOR uses UTF-8 for textual
+information, but also supports non-textual data such as binary representations for numbers,
+images, and arrays in a way supportive of the goals of compactness of code an messages.
 
 --- note_Contributing
 
 This document is being worked on in the CBOR Working Group.
 Please contribute on the mailing list there, or in the GitHub
-repository for this draft:
-https://github.com/cbor-wg/CBORbis
+repository for this draft: https://github.com/cbor-wg/CBORbis
 
 The charter for the CBOR Working Group says that the WG will update RFC
 7049 to fix verified errata. Security issues and clarifications may be
@@ -133,31 +131,11 @@ addressed, but changes to this document will ensure backward
 compatibility for popular deployed codebases. This document will be
 targeted at becoming an Internet Standard.
 
-
 --- middle
 
-# Introduction
+{::include ./background.md}
 
-There are hundreds of standardized formats for binary representation
-of structured data (also known as binary serialization formats).  Of
-those, some are for specific domains of information, while others are
-generalized for arbitrary data.  In the IETF, probably the best-known
-formats in the latter category are ASN.1's BER and DER {{ASN.1}}.
-
-The format defined here follows some specific design goals that are
-not well met by current formats.  The underlying data model is an
-extended version of the JSON data model {{RFC7159}}.  It is important
-to note that this is not a proposal that the grammar in RFC 7159 be
-extended in general, since doing so would cause a significant
-backwards incompatibility with already deployed JSON
-documents. Instead, this document simply defines its own data model
-that starts from JSON.
-
-{{comparison-app}} lists some existing binary formats and discusses
-how well they do or do not fit the design objectives of the Concise
-Binary Object Representation (CBOR).
-
-## Objectives
+# Objectives of CBOR
 
 The objectives of CBOR, roughly in decreasing order of importance,
 are:
@@ -2526,3 +2504,5 @@ significant differences.
 * Fixed a bug in the example in Section 2.4.2 ("29" -> "49")
 
 * Fixed a bug in the last paragraph of Section 3.6 ("0b000_11101" -> "0b000_11001")
+ 
+ * Draft background section covering IETF related efforts in the area of information interchange

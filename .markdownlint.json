@@ -1,0 +1,13 @@
+{
+    "blanks-around-fences": false,
+    "blanks-around-headers": false,
+    "blanks-around-lists": false,
+    "fenced-code-language": false,
+    "first-line-h1": false,
+    "line-length": false,
+    "no-bare-urls": false,
+    "no-duplicate-header": false,
+    "no-multiple-blanks": false,
+    "ul-indent": false,
+    "ul-style": false
+}

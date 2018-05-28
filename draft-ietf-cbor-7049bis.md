@@ -37,7 +37,7 @@ normative:
     target: http://www.ecma-international.org/publications/files/ecma-st/ECMA-262.pdf
     title: ECMAScript Language Specification 5.1 Edition
     author:
-    - org: European Computer Manufacturers Association
+      - org: European Computer Manufacturers Association
     date: 2011-06
     seriesinfo:
       ECMA: Standard ECMA-262
@@ -45,7 +45,7 @@ normative:
     target: http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap04.html#tag_04_15
     title: 'Vol. 1: Base Definitions, Issue 7'
     author:
-    - org: The Open Group Base Specifications
+      - org: The Open Group Base Specifications
     date: 2013
     seriesinfo:
       Section 4.15: "'Seconds Since the Epoch'"
@@ -65,7 +65,7 @@ informative:
       Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding
       Rules (DER)'
     author:
-    - org: International Telecommunication Union
+      - org: International Telecommunication Union
     date: 1994
     seriesinfo:
       ITU-T: Recommendation X.690
@@ -73,38 +73,38 @@ informative:
     target: http://bsonspec.org/
     title: BSON - Binary JSON
     author:
-    - org: Various
+      - org: Various
     date: 2013
   MessagePack:
     target: http://msgpack.org/
     title: MessagePack
     author:
-    - ins: S. Furuhashi
-      name: Sadayuki Furuhashi
-      org: ''
+      - ins: S. Furuhashi
+        name: Sadayuki Furuhashi
+        org: ''
     date: 2013
   UBJSON:
     target: http://ubjson.org/
     title: Universal Binary JSON Specification
     author:
-    - org: The Buzz Media
+      - org: The Buzz Media
     date: 2013
   YAML:
     target: http://www.yaml.org/spec/1.2/spec.html
     title: YAML Ain't Markup Language (YAML[TM]) Version 1.2
     author:
-    - ins: O. Ben-Kiki
-      name: Oren Ben-Kiki
-      org: ''
-    - ins: C. Evans
-      name: Clark Evans
-      org: ''
-    - ins: I. d. Net
-      name: Ingy dot Net
-      org: ''
-    date: '2009-10-01'
-    seriesinfo:
-      3rd: Edition
+      - ins: O. Ben-Kiki
+        name: Oren Ben-Kiki
+        org: ''
+      - ins: C. Evans
+        name: Clark Evans
+        org: ''
+      - ins: I. d. Net
+        name: Ingy dot Net
+        org: ''
+      date: '2009-10-01'
+      seriesinfo:
+        3rd: Edition
   RFC7159:
   RFC7228:
   RFC6838:
@@ -114,14 +114,13 @@ informative:
 
 # Abstract
 
-Concise Binary Object Representation (CBOR) is compact, 8-bit-byte (octet) oriented data format for structured information whose design goals include the possibility of extremely small code size, fairly small message size, and extensibility without the need for version negotiation or a prenegotiated application-level schema.  CBOR uses UTF-8 for textual information, but also supports non-textual data such as binary representations for numbers, images, and arrays in a way supportive of the goals of compactness of code an messages.
+Concise Binary Object Representation (CBOR) is compact, 8-bit byte (octet) oriented data format for structured information whose design goals include the possibility of extremely small code size, fairly small message size, and extensibility without the need for version negotiation or a prenegotiated application-level schema.  CBOR uses UTF-8 for textual information, but also supports non-textual data such as binary representations for numbers, images, and arrays in a way supportive of the goals of compactness of code an messages.
 
 --- note_Contributing
 
 This document is being worked on in the CBOR Working Group.
 Please contribute on the mailing list there, or in the GitHub
-repository for this draft:
-https://github.com/cbor-wg/CBORbis
+repository for this draft: https://github.com/cbor-wg/CBORbis
 
 The charter for the CBOR Working Group says that the WG will update RFC
 7049 to fix verified errata. Security issues and clarifications may be
@@ -135,17 +134,17 @@ targeted at becoming an Internet Standard.
 
 >>> _Those who cannot remember the past are condemned to repeat it,_
 >>>
->>> George Santayana. 
+>>> George Santayana.
 
-There is a meaningful (semantic) difference between data and information.  While they are often used interchangabily, for data to be informative, it is generally accepted that it must __must not__ be unexpected, and __should__ answer a question, or perhaps ask one.  Information generally has more structure than a simple sequence of numbers or characters.   
+There is a meaningful (semantic) difference between data and information.  While they are often used interchangabily, for data to be informative, it is generally accepted that it must __must not__ be unexpected, and __should__ answer a question, or perhaps ask one.  Information generally has more structure than a simple sequence of numbers or character.
 
 There are hundreds if not thousands of standardized formats for representation of structured information in more or less generic computer-readable formats.   The background of IETF related efforts in this area can help put CBOR better context.
 
 ## ASCII (1960-1969)
 
-In 1960, the American Standards Associate begin work on the  American Standard Code for Information Interchange (ASCII) standard.  By 1969, ASCII was young but maturing standard, having been through one major version change in 1967, and certainly not universially implemented.  ASCII was a 7-bit code, and many computers at the time did not store text as ASCII internally; 6-bit text codes were common.  The term "byte" did not at the time imply an 8-bit unit of information, just a small contigious set of bits, thus the terms "octet" and "octet stream" were adopted in the internet community to describe data in-flight between communicating systems, rather than information in a machine-dependent format in memory, that might for example use the 36-bit word length of a DECsystem-10, a commmon sightin the early days of the ARPANET.
+In 1960, the American Standards Associate begin work on the  American Standard Code for Information Interchange (ASCII) standard.  By 1969, ASCII was young but maturing standard, having been through its only major version change in 1967.   However it was certainly not universially implemented.  ASCII was a 7-bit code, and many computers at the time did not store text as ASCII internally; 6-bit text codes were common.  The term "byte" did not at the time imply an 8-bit unit of information, just a small contigious set of bits, thus the terms "octet" and "octet stream" were adopted in the internet community to describe data in-flight between communicating systems, rather than information in a machine-dependent format in memory, that might for example use the 36-bit word length of a DECsystem-10, a commmon sightin the early days of the ARPANET.
 
-ASCII's was intended to encode information, not just characters.  The original ASCII code charts reserved 32 of the 128 bit combinations possible in 7 bits as "control characters".  These controls did not have straightforward printed representations, for example one named BEL defined as a character "for use when there is a need to call for human attention." Some of these control characters were designated as "information seperators", specifically those called FS, GS, RS, US.
+ASCII's goals were to encode information, not just characters.  The original ASCII code charts reserved 32 of the 128 bit combinations possible in 7 bits as "control characters".  These controls did not have straightforward printed representations, for example one named BEL defined as a character "for use when there is a need to call for human attention." Some of these control characters were designated as "information seperators", specifically those called FS, GS, RS, US.
 
 Almost 50 years later, there has bee a lot of progress.  The internet standardised on octets as the unit of data.  Thus saying 8-bit bytes may now seem redundant, but the subtle distinction between octets as a unit of data, and byte as an unsigned 8-bit binary number, and characters may still be useful to express the diffeence between data and information.
 
@@ -179,7 +178,7 @@ In addition to the syntactic conventions for as sequence of name/value pairs, RF
 
   2. The case (upper or lower) of keywords is insignificant.  The keyword "FROM" may appear as "From", "from" or "FrOm". [Console devices of the day might still be only uppercase, and organizations had different conventions for memos.]
 
-RFC 561 _could_ have instead used the ASCII information seperator control characters, e.g. <RS> instead of the sequence <CR> <LF>, and <US> instead of <COLON> <SPACE>, but it didn't! A few contextual explanations may be helpful in 2018.   1) Raw messages looked like typewritten memos using these seperators. 2) the ASCII console devices of the day couldn't represent the information seperators visually. 3) RFC-20 was only a suggestion, computers of the day didn't all store text in ASCII and might not be able to compactly store all control characters.  4) The combination of both <CR> and <LF> was needed for some console devices of the day, specifically teletypes.  Choice of syntax rules may have seem unimportant because RFC 561 was explicitly intended as a short-term solution, acknowledging the more complicated apparoach in RFC-524 might be better.  But RFC-561's memo-like _framework_ was extensible has survived the test of time, forming the basis not only for the internet e-mail system used well into the next century, but also for HTTP and thus the world-wide web.
+RFC 561 _could_ have instead used the ASCII information seperator control characters, e.g. `<RS>` instead of the sequence `<CR> <LF>`, and `<US>` instead of `<COLON><SPACE>`, but it didn't! A few contextual explanations may be helpful in 2018.   1) Raw messages looked like typewritten memos using these seperators. 2) the ASCII console devices of the day couldn't represent the information seperators visually. 3) RFC-20 was only a suggestion, computers of the day didn't all store text in ASCII and might not be able to compactly store all control characters.  4) The combination of both <CR> and <LF> was needed for some console devices of the day, specifically teletypes.  Choice of syntax rules may have seem unimportant because RFC 561 was explicitly intended as a short-term solution, acknowledging the more complicated apparoach in RFC-524 might be better.  But RFC-561's memo-like _framework_ was extensible has survived the test of time, forming the basis not only for the internet e-mail system used well into the next century, but also for HTTP and thus the world-wide web.
 
 ## ASN.1, ITU X.400  messaging and X.509 certificates (1984-1988)
 
@@ -187,7 +186,7 @@ in 1984, the International Telegraph Union (ITU, ITU-T or CCITT), in conjunction
 
 As part of this, effort a joint ISO/IEC and ITU-T published X.409:1984, which described Abstract Syntax Notation One (ASN.1), which provides a set of rules for describing the structure of ojects that are independent of machine-specific encoding techniques in a precise,formal form designed to avoid ambiguities.   ASN.1 itself does not define concrete encodings, but instead layed the groundwork for a series of different encodings known by names like Distinguished Encoding Rules (DER), Basic Encoding Rules (BER), Cannonical Encoding Rules (CER), XML Encoding Rules (XER), Packed Encoding Rules (PER, UPER, CPER, CUPPER etc). Each of these seemingly unending set of encoding "rules" was distinct, and typically based a different set of goals.  Together with the fact that the core ASN.1 documents were  propriatary the ASN.1 standards were  hard-to-find for volunteer implementers, particularly when compared to IETF's RFC standards.
 
-Because the ITU was technically an agency of the United Nations and both it and ISO could have substantial impact on international treaties on telecommunications, X.400 received a lot of attention.  However, with most ISO standards dealing with application-level networking, X.400 failed to compete successfully with the Internet-based standards commercial applications in North America.  
+Because the ITU was technically an agency of the United Nations and both it and ISO could have substantial impact on international treaties on telecommunications, X.400 received a lot of attention.  However, with most ISO standards dealing with application-level networking, X.400 failed to compete successfully with the Internet-based standards commercial applications in North America.
 
 One exception that ASN.1 was used to define the format of public key certificates and related information storage containers, and these are generally applicable to implementations of secured SSL/TLS (HTTPS) and related protocols.  Some IETF RFC's jumped on the ASN.1 bandwagon, for example RFC 3641 - Generic String Encoding Rules (GSER) for ASN.1.
 
@@ -216,14 +215,14 @@ In 2002, another interchange standard called JavaScript Object Notation (JSON) s
 | `mapping`          | `object`                 | Zero or more `key: value` pairs.  JSON keys are restricted to `strings` and called `names`, while in YAML any `node` may be a `key`.   In both YAML and JSON, the values may themselves be made of nested complex `node`/`value`s, permitting heirarchical information structures.  Conceptually both mappings and objects are described as unordereed.  In practices however, JSON `object`s often behaved as ordered collection of name/value pairs, but this may be platform-dependent. |
 | `sequence`         | `array`                  | An ordered collection of `node`/`value`s.  In YAML, a `sequence` can compactly be made up on key/value pairs, making it an ordered map, while JSON formally has no such concept.   |
 
-By the end of 2002, YAML working drafts had incorporated a "flow style" notation nearly identical to JavaScript's object literals.   At some point the authors of YAML and JSON became aware of each others efforts, and arranged syntax changes with each other.   JSON started out as a subset of JavaScript, and tweaks were made so that it was also a subset of YAML.   The concepts and data model in the final draft of YAML 1.0 (in 2004) have remained reasonable stable since, and minor updates since have dealt with issues. 
+By the end of 2002, YAML working drafts had incorporated a "flow style" notation nearly identical to JavaScript's object literals.   At some point the authors of YAML and JSON became aware of each others efforts, and arranged syntax changes with each other.   JSON started out as a subset of JavaScript, and tweaks were made so that it was also a subset of YAML.   The concepts and data model in the final draft of YAML 1.0 (in 2004) have remained reasonable stable since, and minor updates since have dealt with issues.
 
 YAMLs syntax was written to be decidedly more human-friendly that JSON, with convienences like comments, optional quotaation marks  around plain text strings, and the ability to place as trailing comma in a JavaScript style object or array.  JSON on the other hand takes a minimalist approach to data serialzation, omitting even comments in its formal syntax, though some implementations permit C style comments (`/*` ... `*/`).   YAML supports both C style comments and shell style comments (`#` ...).
 
 ## CBOR's history
 
 RFC 7159 first introduced a stable approach to CBOR, including addressing some requirements
-not well met by current formats.  The underlying information model is quite similar to that of YAML, but RFC 7159 
+not well met by current formats.  The underlying information model is quite similar to that of YAML, but RFC 7159
 describes it as being based the JSON data model {{RFC7159}}.  It is important
 to note that this is not a proposal that the grammar of CBOR in RFC 7159 be extended in general, since
 doing so would cause a significant backwards incompatibility with already deployed JSON
@@ -262,12 +261,10 @@ are:
     * The format should use contemporary machine representations of
       data (for example, not requiring binary-to-decimal conversion).
 
-
 3. Data must be able to be decoded without a schema description.
 
     * Similar to JSON, encoded data should be self-describing so that
       a generic decoder can be written.
-
 
 4. The serialization must be reasonably compact, but data compactness
    is secondary to code compactness for the encoder and decoder.
@@ -277,7 +274,6 @@ are:
       Using either general compression schemes or extensive
       bit-fiddling violates the complexity goals.
 
-
 5. The format must be applicable to both constrained nodes and
    high-volume applications.
 
@@ -286,7 +282,6 @@ are:
       nodes and for potential usage in applications with a very high
       volume of data.
 
-
 6. The format must support all JSON data types for conversion to and
    from JSON.
 
@@ -294,7 +289,6 @@ are:
       data represented is within the capabilities of JSON.  It must be
       possible to define a unidirectional mapping towards JSON for all
       types of data.
-
 
 7. The format must be extensible, and the extended data must be
    decodable by earlier decoders.
@@ -307,9 +301,6 @@ are:
 
     * The format must be able to be extended in the future by later
       IETF standards.
-
-
-
 
 ## Terminology
 
@@ -371,7 +362,6 @@ hexadecimal numbers, numbers in binary notation are prefixed with
 readability, so 0b00100001 (0x21) might be written 0b001_00001 to
 emphasize the desired interpretation of the bits in the byte; in this
 case, it is split into three bits and five bits.
-
 
 # CBOR Data Models
 
@@ -567,7 +557,6 @@ Major type 7:
 : floating-point numbers and simple data types that need no content,
   as well as the "break" stop code. See {{fpnocont}}.
 
-
 These eight major types lead to a simple table showing which of the
 256 possible values for the initial byte of a data item are used
 ({{jumptable}}).
@@ -575,7 +564,6 @@ These eight major types lead to a simple table showing which of the
 In major types 6 and 7, many of the possible values are reserved for
 future specification. See {{ianacons}} for more information on these
 values.
-
 
 ## Indefinite Lengths for Some Major Types {#indefinite}
 
@@ -617,7 +605,6 @@ as there are type bytes starting an indefinite-length item.
 For example, assume an encoder wants to represent the abstract array
 \[1, \[2, 3], \[4, 5]].  The definite-length encoding would be
 0x8301820203820405:
-
 
 ~~~~
 83        -- Array of length 3
@@ -702,7 +689,6 @@ BF           -- Start indefinite-length map
    FF        -- "break"
 ~~~~
 
-
 ### Indefinite-Length Byte Strings and Text Strings
 
 Indefinite-length byte strings and text strings are actually a
@@ -747,7 +733,6 @@ indefinite lengths, except that all their chunks MUST be
 definite-length text strings.  Note that this implies that the bytes
 of a single UTF-8 character cannot be spread between chunks: a new
 chunk can only be started at a character boundary.
-
 
 ## Floating-Point Numbers and Values with No Content {#fpnocont}
 
@@ -883,7 +868,6 @@ integer (major types 0 and 1), or a floating-point number (major type
 be negative (time before 1970-01-01T00:00Z) and, if a floating-point
 number, indicate fractional seconds.
 
-
 ### Bignums {#bignums}
 
 Protocols using tag values 2 and 3 extend the generic data model
@@ -903,13 +887,11 @@ as 0b110_00010 (major type 6, tag 2), followed by 0b010_01001 (major
 type 2, length 9), followed by 0x010000000000000000 (one byte 0x01 and
 eight bytes 0x00). In hexadecimal:
 
-
 ~~~~
 C2                        -- Tag 2
    49                     -- Byte string of length 9
       010000000000000000  -- Bytes content
 ~~~~
-
 
 ### Decimal Fractions and Bigfloats {#fractions}
 
@@ -983,7 +965,6 @@ as a decimal fraction or bigfloat (such as when the exponent is small
 and non-negative), there is a quality-of-implementation expectation
 that the integer representation is used directly.
 
-
 ### Content Hints
 
 The tags in this section are for content hints that might be used by
@@ -996,7 +977,6 @@ Sometimes it is beneficial to carry an embedded CBOR data item that is
 not meant to be decoded immediately at the time the enclosing data
 item is being parsed.  Tag 24 (CBOR data item) can be used to tag the
 embedded byte string as a data item encoded in CBOR format.
-
 
 #### Expected Later Encoding for CBOR-to-JSON Converters {#convexpect}
 
@@ -1023,7 +1003,6 @@ signs ("=") are removed from the base64url-encoded string.  Later tags
 might be defined for other data encodings of RFC 4648 or for other
 ways to encode binary data in strings.
 
-
 #### Encoded Text {#encodedtext}
 
 Some text strings hold data that have formats widely used on the
@@ -1045,7 +1024,6 @@ for some of these formats.
 Note that tags 33 and 34 differ from 21 and 22 in that the data is
 transported in base-encoded form for the former and in raw byte string
 form for the latter.
-
 
 ### Self-Describe CBOR {#self-describe}
 
@@ -1192,7 +1170,6 @@ requires a decoder to allocate increasing amounts of memory while
 waiting for the end of the item. This might be fine for some
 applications but not others.
 
-
 ## Generic Encoders and Decoders {#generic}
 
 A generic CBOR decoder can decode all well-formed CBOR data and
@@ -1223,7 +1200,6 @@ values to humans.
 Generic encoders provide an application interface that allows the
 application to specify any well-formed value, including simple values
 and tags unknown to the encoder.
-
 
 ## Syntax Errors
 
@@ -1258,8 +1234,6 @@ Examples of incomplete data items include:
 * A decoder has seen the beginning of an indefinite-length item but
   encounters the end of the data before it sees the "break" stop code.
 
-
-
 ### Malformed Indefinite-Length Items
 
 Examples of malformed indefinite-length data items include:
@@ -1275,7 +1249,6 @@ Another error is finding a "break" stop code at a point in the data
 where there is no immediately enclosing (unclosed) indefinite-length
 item.
 
-
 ### Unknown Additional Information Values
 
 At the time of writing, some additional information values are
@@ -1284,7 +1257,6 @@ unassigned and reserved for future versions of this document (see
 information values is not yet defined, a decoder that sees an
 additional information value that it does not understand cannot
 continue parsing.
-
 
 ## Other Decoding Errors {#semantic-errors}
 
@@ -1322,7 +1294,6 @@ Invalid UTF-8 string:
   bytes in a UTF-8 string (major type 3) is actually valid UTF-8 and
   react appropriately.
 
-
 ## Handling Unknown Simple Values and Tags {#unknown-tags}
 
 A decoder that comes across a simple value ({{fpnocont}}) that it does
@@ -1341,7 +1312,6 @@ the error and present the unknown tag value together with the
 contained data item to the application (as is expected of generic
 decoders), might ignore the tag and simply present the contained data
 item only to the application, or take some other type of action.
-
 
 ## Numbers {#numbers}
 
@@ -1377,7 +1347,6 @@ compact application should accept values that use a longer-than-needed
 encoding (such as encoding "0" as 0b000_11001 followed by two bytes of
 0x00) as long as the application can decode an integer of the given
 size.
-
 
 ## Specifying Keys for Maps {#map-keys}
 
@@ -1430,7 +1399,6 @@ with up to 48 frequently used keys should consider also using small
 negative integers) because the keys can then be encoded in a single
 byte.
 
-
 ### Equivalence of Keys
 
 This notion of equivalence must be used to determine whether keys in
@@ -1470,14 +1438,12 @@ Nothing else is equal, a simple value 2 is not equivalent to an
 integer 2 and an array cannot be equivalent to a map with the same
 values and sequential integer keys.
 
-
 ## Undefined Values {#undefined-values}
 
 In some CBOR-based protocols, the simple value ({{fpnocont}}) of
 Undefined might be used by an encoder as a substitute for a data item
 with an encoding problem, in order to allow the rest of the enclosing
 data items to be encoded without harm.
-
 
 ## Canonical CBOR {#c14n}
 
@@ -1662,7 +1628,6 @@ encoder also may want to provide a strict mode where it reliably
 limits its output to unambiguously decodable CBOR, independent of
 whether or not its application is providing API-conformant data.
 
-
 # Converting Data between CBOR and JSON
 
 This section gives non-normative advice about converting between CBOR
@@ -1672,7 +1637,6 @@ advice here they want.
 It is worth noting that a JSON text is a sequence of characters, not
 an encoded sequence of bytes, while a CBOR data item consists of
 bytes, not characters.
-
 
 ## Converting from CBOR to JSON
 
@@ -1733,7 +1697,6 @@ as a JSON null.
 
 * Indefinite-length items are made definite before conversion.
 
-
 ## Converting from JSON to CBOR
 
 All JSON values, once decoded, directly map into one or more CBOR
@@ -1770,7 +1733,6 @@ decimal representations (1.1, 1e9) in JSON.  This may be hard to get
 right, and any ensuing vulnerabilities may be exploited by an
 attacker.
 
-
 # Future Evolution of CBOR
 
 Successful protocols evolve over time.  New ideas appear,
@@ -1793,7 +1755,6 @@ for decades of use and evolution.  This section provides some guidance
 for the evolution of CBOR.  It is necessarily more subjective than
 other parts of this document.  It is also necessarily incomplete, lest
 it turn into a textbook on protocol development.
-
 
 ## Extension Points
 
@@ -1831,7 +1792,6 @@ CBOR has three major extension points:
   so allocating codepoints to this space is a major step.  There are
   also very few codepoints left.
 
-
 ## Curating the Additional Information Space {#curating}
 
 The human mind is sometimes drawn to filling in little perceived gaps
@@ -1851,7 +1811,6 @@ the protocol.  Additional information value 30 is then the only
 additional information value available for general allocation, and
 there should be a very good reason for allocating it before assigning
 it through an update of this protocol.
-
 
 # Diagnostic Notation {#diagnostic-notation}
 
@@ -1899,7 +1858,6 @@ Unassigned simple values are given as "simple()" with the appropriate
 integer in the parentheses. For example, "simple(42)" indicates major
 type 7, value 42.
 
-
 ## Encoding Indicators {#encoding-indicators}
 
 Sometimes it is useful to indicate in the diagnostic notation which of
@@ -1931,7 +1889,6 @@ not used.)
 As a special case, byte and text strings of indefinite length can be
 notated in the form (_ h'0123', h'4567') and (_ "foo", "bar").
 
-
 # IANA Considerations {#ianacons}
 
 IANA has created two registries for new CBOR values. The registries
@@ -1939,7 +1896,6 @@ are separate, that is, not under an umbrella registry, and follow the
 rules in {{RFC5226}}. IANA has also assigned a new MIME media type and
 an associated Constrained Application Protocol (CoAP) Content-Format
 entry.
-
 
 ## Simple Values Registry
 
@@ -1954,7 +1910,6 @@ contiguous blocks (if any).
 
 New entries in the range 32 to 255 are assigned by Specification
 Required.
-
 
 ## Tags Registry {#ianatags}
 
@@ -1971,7 +1926,6 @@ requests is:
 
 * Semantics (short form)
 
-
 In addition, First Come First Served requests should include:
 
 * Point of contact
@@ -1979,8 +1933,6 @@ In addition, First Come First Served requests should include:
 * Description of semantics (URL) -- This description is
   optional; the URL can point to something like an Internet-Draft or a
   web page.
-
-
 
 ## Media Type ("MIME Type")
 
@@ -2029,7 +1981,6 @@ Change controller:
   The IESG <iesg@ietf.org>
 ~~~~
 
-
 ## CoAP Content-Format
 
 Media Type: application/cbor
@@ -2039,7 +1990,6 @@ Encoding: -
 Id: 60
 
 Reference: \[RFCthis]
-
 
 ## The +cbor Structured Syntax Suffix Registration
 
@@ -2086,7 +2036,6 @@ Author/Change Controller:
   The IESG has change control over this registration.
 ~~~~
 
-
 # Security Considerations {#securitycons}
 
 A network-facing application can exhibit vulnerabilities in its
@@ -2116,7 +2065,6 @@ interpretations are reliably reduced to a single one.  To facilitate
 this, encoder and decoder implementations used in such contexts should
 provide at least one strict mode of operation ({{strict-mode}}).
 
-
 # Acknowledgements
 
 CBOR was inspired by MessagePack.  MessagePack was developed and
@@ -2141,7 +2089,6 @@ This document also incorporates suggestions made by many people,
 notably Dan Frost, James Manger, Joe Hildebrand, Keith Moore, Matthew
 Lepinski, Nico Williams, Phillip Hallam-Baker, Ray Polk, Tim Bray,
 Tony Finch, Tony Hansen, and Yaron Sheffer.
-
 
 --- back
 
@@ -2249,7 +2196,6 @@ showing a tagged byte string (such as 2(h'010000000000000000')).
 | {_ "Fun": true, "Amt": -2}                                                                    |                                    0xbf6346756ef563416d7421ff |
 {: #table_examples title='Examples of Encoded CBOR Data Items'}
 
-
 # Jump Table {#jump-table}
 
 For brevity, this jump table does not show initial bytes that are
@@ -2313,7 +2259,6 @@ unsigned integers are in network byte order.)
 |       0xfb | Double-Precision Float (eight-byte IEEE 754)                           |
 |       0xff | "break" stop code                                                      |
 {: #jumptable title='Jump Table for Initial Byte'}
-
 
 # Pseudocode {#pseudocode}
 
@@ -2381,6 +2326,7 @@ well_formed_indefinite(mt, breakable) {
   return 0;                     // no break out
 }
 ~~~~
+
 {: #pseudo title='Pseudocode for Well-Formedness Check'}
 
 Note that the remaining complexity of a complete CBOR decoder is about
@@ -2411,8 +2357,8 @@ void encode_sint(int64_t n) {
   } else
        ...
 ~~~~
-{: #branchless title='Pseudocode for Encoding a Signed Integer'}
 
+{: #branchless title='Pseudocode for Encoding a Signed Integer'}
 
 # Half-Precision {#half-precision}
 
@@ -2440,6 +2386,7 @@ double decode_half(unsigned char *halfp) {
   return half & 0x8000 ? -val : val;
 }
 ~~~~
+
 {: #decode-half-c title='C Code for a Half-Precision Decoder'}
 
 ~~~~
@@ -2455,8 +2402,8 @@ def decode_half(half):
         return ldexp(decode_single(valu), 112)
     return decode_single(valu | 0x7f800000)
 ~~~~
-{: #decode-half-py title='Python Code for a Half-Precision Decoder'}
 
+{: #decode-half-py title='Python Code for a Half-Precision Decoder'}
 
 # Comparison of Other Binary Formats to CBOR's Design Objectives {#comparison-app}
 
@@ -2494,7 +2441,6 @@ brief recap of the objectives from {{objectives}} is:
 
 7. extensibility
 
-
 ## ASN.1 DER, BER, and PER
 
 {{ASN.1}} has many serializations. In the IETF, DER and BER are the
@@ -2508,7 +2454,6 @@ but one that is commonly stated is that PER makes use of the schema
 even for parsing the surface structure of the data stream, requiring
 significant tool support.  There are different versions of the ASN.1
 schema language in use, which has also hampered adoption.
-
 
 ## MessagePack {#messagepack}
 
@@ -2529,7 +2474,6 @@ leave MessagePack's "raw" data ambiguous between its usages for binary
 and text data. The extension mechanism for MessagePack remains
 unclear.
 
-
 ## BSON {#bson}
 
 {{BSON}} is a data format that was developed for the storage of
@@ -2541,7 +2485,6 @@ While BSON can be used for the representation of JSON-like objects on
 the wire, its specification is dominated by the requirements of the
 database application and has become somewhat baroque. The status of
 how BSON extensions will be implemented remains unclear.
-
 
 ## UBJSON {#ubjson}
 
@@ -2557,14 +2500,12 @@ reserved "unknown-length" value to support streaming of arrays and
 maps (JSON objects).  Within these containers, UBJSON also has a
 "Noop" type for padding.
 
-
 ## MSDTP: RFC 713
 
 Message Services Data Transmission (MSDTP) is a very early example of
 a compact message format; it is described in {{RFC0713}}, written
 in 1976. It is included here for its historical value, not because it
 was ever widely used.
-
 
 ## Conciseness on the Wire
 

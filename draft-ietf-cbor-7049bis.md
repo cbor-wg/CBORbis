@@ -102,9 +102,9 @@ informative:
       - ins: I. d. Net
         name: Ingy dot Net
         org: ''
-      date: '2009-10-01'
-      seriesinfo:
-        3rd: Edition
+    date: '2009-10-01'
+    seriesinfo:
+      3rd: Edition
   RFC7159:
   RFC7228:
   RFC6838:

@@ -134,6 +134,8 @@ compatibility for popular deployed codebases. This document will be
 targeted at becoming an Internet Standard.
 
 
++{::include ./background.md}
+
 --- middle
 
 # Introduction
@@ -2526,3 +2528,6 @@ significant differences.
 * Fixed a bug in the example in Section 2.4.2 ("29" -> "49")
 
 * Fixed a bug in the last paragraph of Section 3.6 ("0b000_11101" -> "0b000_11001")
+
+* Including background on data vs. information and information standards,
+currently as a seperate source file

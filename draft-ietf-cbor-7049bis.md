@@ -123,7 +123,7 @@ images, and arrays in a way supportive of the goals of compactness of code an me
 
 This document is being worked on in the CBOR Working Group.
 Please contribute on the mailing list there, or in the GitHub
-repository for this draft: 
+repository for this draft:
 https://github.com/cbor-wg/CBORbis
 
 The charter for the CBOR Working Group says that the WG will update RFC

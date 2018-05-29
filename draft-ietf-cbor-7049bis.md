@@ -65,7 +65,7 @@ informative:
       Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding
       Rules (DER)'
     author:
-    - org: International Telecommunication Union
+      - org: International Telecommunication Union
     date: 1994
     seriesinfo:
       ITU-T: Recommendation X.690
@@ -73,7 +73,7 @@ informative:
     target: http://bsonspec.org/
     title: BSON - Binary JSON
     author:
-    - org: Various
+      - org: Various
     date: 2013
   MessagePack:
     target: http://msgpack.org/
@@ -112,19 +112,18 @@ informative:
 
 --- abstract
 
-The Concise Binary Object Representation (CBOR) is a data format whose design
-goals include the
-possibility of extremely small code size, fairly small message size, and
-extensibility without the
-need for version negotiation. These design goals make it different from earlier
-binary
-serializations such as ASN.1 and MessagePack.
+Concise Binary Object Representation (CBOR) is compact, 8-bit byte (octet) oriented data
+format for structured information whose design goals include the possibility of extremely
+small code size, fairly small message size, and extensibility without the need for version
+negotiation or a prenegotiated application-level schema.  CBOR uses UTF-8 for textual
+information, but also supports non-textual data such as binary representations for numbers,
+images, and arrays in a way supportive of the goals of compactness of code an messages.
 
 --- note_Contributing
 
 This document is being worked on in the CBOR Working Group.
 Please contribute on the mailing list there, or in the GitHub
-repository for this draft:
+repository for this draft: 
 https://github.com/cbor-wg/CBORbis
 
 The charter for the CBOR Working Group says that the WG will update RFC
@@ -138,28 +137,9 @@ targeted at becoming an Internet Standard.
 
 --- middle
 
-# Introduction
+{::include ./background.md}
 
-There are hundreds of standardized formats for binary representation
-of structured data (also known as binary serialization formats).  Of
-those, some are for specific domains of information, while others are
-generalized for arbitrary data.  In the IETF, probably the best-known
-formats in the latter category are ASN.1's BER and DER {{ASN.1}}.
-
-The format defined here follows some specific design goals that are
-not well met by current formats.  The underlying data model is an
-extended version of the JSON data model {{RFC7159}}.  It is important
-to note that this is not a proposal that the grammar in RFC 7159 be
-extended in general, since doing so would cause a significant
-backwards incompatibility with already deployed JSON
-documents. Instead, this document simply defines its own data model
-that starts from JSON.
-
-{{comparison-app}} lists some existing binary formats and discusses
-how well they do or do not fit the design objectives of the Concise
-Binary Object Representation (CBOR).
-
-## Objectives
+# Objectives of CBOR
 
 The objectives of CBOR, roughly in decreasing order of importance,
 are:
@@ -189,12 +169,10 @@ are:
     * The format should use contemporary machine representations of
       data (for example, not requiring binary-to-decimal conversion).
 
-
 3. Data must be able to be decoded without a schema description.
 
     * Similar to JSON, encoded data should be self-describing so that
       a generic decoder can be written.
-
 
 4. The serialization must be reasonably compact, but data compactness
    is secondary to code compactness for the encoder and decoder.
@@ -204,7 +182,6 @@ are:
       Using either general compression schemes or extensive
       bit-fiddling violates the complexity goals.
 
-
 5. The format must be applicable to both constrained nodes and
    high-volume applications.
 
@@ -213,7 +190,6 @@ are:
       nodes and for potential usage in applications with a very high
       volume of data.
 
-
 6. The format must support all JSON data types for conversion to and
    from JSON.
 
@@ -221,7 +197,6 @@ are:
       data represented is within the capabilities of JSON.  It must be
       possible to define a unidirectional mapping towards JSON for all
       types of data.
-
 
 7. The format must be extensible, and the extended data must be
    decodable by earlier decoders.
@@ -234,9 +209,6 @@ are:
 
     * The format must be able to be extended in the future by later
       IETF standards.
-
-
-
 
 ## Terminology
 
@@ -298,7 +270,6 @@ hexadecimal numbers, numbers in binary notation are prefixed with
 readability, so 0b00100001 (0x21) might be written 0b001_00001 to
 emphasize the desired interpretation of the bits in the byte; in this
 case, it is split into three bits and five bits.
-
 
 # CBOR Data Models
 
@@ -494,7 +465,6 @@ Major type 7:
 : floating-point numbers and simple data types that need no content,
   as well as the "break" stop code. See {{fpnocont}}.
 
-
 These eight major types lead to a simple table showing which of the
 256 possible values for the initial byte of a data item are used
 ({{jumptable}}).
@@ -502,7 +472,6 @@ These eight major types lead to a simple table showing which of the
 In major types 6 and 7, many of the possible values are reserved for
 future specification. See {{ianacons}} for more information on these
 values.
-
 
 ## Indefinite Lengths for Some Major Types {#indefinite}
 
@@ -544,7 +513,6 @@ as there are type bytes starting an indefinite-length item.
 For example, assume an encoder wants to represent the abstract array
 \[1, \[2, 3], \[4, 5]].  The definite-length encoding would be
 0x8301820203820405:
-
 
 ~~~~
 83        -- Array of length 3
@@ -629,7 +597,6 @@ BF           -- Start indefinite-length map
    FF        -- "break"
 ~~~~
 
-
 ### Indefinite-Length Byte Strings and Text Strings
 
 Indefinite-length byte strings and text strings are actually a
@@ -674,7 +641,6 @@ indefinite lengths, except that all their chunks MUST be
 definite-length text strings.  Note that this implies that the bytes
 of a single UTF-8 character cannot be spread between chunks: a new
 chunk can only be started at a character boundary.
-
 
 ## Floating-Point Numbers and Values with No Content {#fpnocont}
 
@@ -810,7 +776,6 @@ integer (major types 0 and 1), or a floating-point number (major type
 be negative (time before 1970-01-01T00:00Z) and, if a floating-point
 number, indicate fractional seconds.
 
-
 ### Bignums {#bignums}
 
 Protocols using tag values 2 and 3 extend the generic data model
@@ -830,13 +795,11 @@ as 0b110_00010 (major type 6, tag 2), followed by 0b010_01001 (major
 type 2, length 9), followed by 0x010000000000000000 (one byte 0x01 and
 eight bytes 0x00). In hexadecimal:
 
-
 ~~~~
 C2                        -- Tag 2
    49                     -- Byte string of length 9
       010000000000000000  -- Bytes content
 ~~~~
-
 
 ### Decimal Fractions and Bigfloats {#fractions}
 
@@ -910,7 +873,6 @@ as a decimal fraction or bigfloat (such as when the exponent is small
 and non-negative), there is a quality-of-implementation expectation
 that the integer representation is used directly.
 
-
 ### Content Hints
 
 The tags in this section are for content hints that might be used by
@@ -923,7 +885,6 @@ Sometimes it is beneficial to carry an embedded CBOR data item that is
 not meant to be decoded immediately at the time the enclosing data
 item is being parsed.  Tag 24 (CBOR data item) can be used to tag the
 embedded byte string as a data item encoded in CBOR format.
-
 
 #### Expected Later Encoding for CBOR-to-JSON Converters {#convexpect}
 
@@ -950,7 +911,6 @@ signs ("=") are removed from the base64url-encoded string.  Later tags
 might be defined for other data encodings of RFC 4648 or for other
 ways to encode binary data in strings.
 
-
 #### Encoded Text {#encodedtext}
 
 Some text strings hold data that have formats widely used on the
@@ -972,7 +932,6 @@ for some of these formats.
 Note that tags 33 and 34 differ from 21 and 22 in that the data is
 transported in base-encoded form for the former and in raw byte string
 form for the latter.
-
 
 ### Self-Describe CBOR {#self-describe}
 
@@ -1119,7 +1078,6 @@ requires a decoder to allocate increasing amounts of memory while
 waiting for the end of the item. This might be fine for some
 applications but not others.
 
-
 ## Generic Encoders and Decoders {#generic}
 
 A generic CBOR decoder can decode all well-formed CBOR data and
@@ -1150,7 +1108,6 @@ values to humans.
 Generic encoders provide an application interface that allows the
 application to specify any well-formed value, including simple values
 and tags unknown to the encoder.
-
 
 ## Syntax Errors
 
@@ -1185,8 +1142,6 @@ Examples of incomplete data items include:
 * A decoder has seen the beginning of an indefinite-length item but
   encounters the end of the data before it sees the "break" stop code.
 
-
-
 ### Malformed Indefinite-Length Items
 
 Examples of malformed indefinite-length data items include:
@@ -1202,7 +1157,6 @@ Another error is finding a "break" stop code at a point in the data
 where there is no immediately enclosing (unclosed) indefinite-length
 item.
 
-
 ### Unknown Additional Information Values
 
 At the time of writing, some additional information values are
@@ -1211,7 +1165,6 @@ unassigned and reserved for future versions of this document (see
 information values is not yet defined, a decoder that sees an
 additional information value that it does not understand cannot
 continue parsing.
-
 
 ## Other Decoding Errors {#semantic-errors}
 
@@ -1249,7 +1202,6 @@ Invalid UTF-8 string:
   bytes in a UTF-8 string (major type 3) is actually valid UTF-8 and
   react appropriately.
 
-
 ## Handling Unknown Simple Values and Tags {#unknown-tags}
 
 A decoder that comes across a simple value ({{fpnocont}}) that it does
@@ -1268,7 +1220,6 @@ the error and present the unknown tag value together with the
 contained data item to the application (as is expected of generic
 decoders), might ignore the tag and simply present the contained data
 item only to the application, or take some other type of action.
-
 
 ## Numbers {#numbers}
 
@@ -1304,7 +1255,6 @@ compact application should accept values that use a longer-than-needed
 encoding (such as encoding "0" as 0b000_11001 followed by two bytes of
 0x00) as long as the application can decode an integer of the given
 size.
-
 
 ## Specifying Keys for Maps {#map-keys}
 
@@ -1357,7 +1307,6 @@ with up to 48 frequently used keys should consider also using small
 negative integers) because the keys can then be encoded in a single
 byte.
 
-
 ### Equivalence of Keys
 
 This notion of equivalence must be used to determine whether keys in
@@ -1397,14 +1346,12 @@ Nothing else is equal, a simple value 2 is not equivalent to an
 integer 2 and an array cannot be equivalent to a map with the same
 values and sequential integer keys.
 
-
 ## Undefined Values {#undefined-values}
 
 In some CBOR-based protocols, the simple value ({{fpnocont}}) of
 Undefined might be used by an encoder as a substitute for a data item
 with an encoding problem, in order to allow the rest of the enclosing
 data items to be encoded without harm.
-
 
 ## Canonical CBOR {#c14n}
 
@@ -1589,7 +1536,6 @@ encoder also may want to provide a strict mode where it reliably
 limits its output to unambiguously decodable CBOR, independent of
 whether or not its application is providing API-conformant data.
 
-
 # Converting Data between CBOR and JSON
 
 This section gives non-normative advice about converting between CBOR
@@ -1599,7 +1545,6 @@ advice here they want.
 It is worth noting that a JSON text is a sequence of characters, not
 an encoded sequence of bytes, while a CBOR data item consists of
 bytes, not characters.
-
 
 ## Converting from CBOR to JSON
 
@@ -1660,7 +1605,6 @@ as a JSON null.
 
 * Indefinite-length items are made definite before conversion.
 
-
 ## Converting from JSON to CBOR
 
 All JSON values, once decoded, directly map into one or more CBOR
@@ -1697,7 +1641,6 @@ decimal representations (1.1, 1e9) in JSON.  This may be hard to get
 right, and any ensuing vulnerabilities may be exploited by an
 attacker.
 
-
 # Future Evolution of CBOR
 
 Successful protocols evolve over time.  New ideas appear,
@@ -1720,7 +1663,6 @@ for decades of use and evolution.  This section provides some guidance
 for the evolution of CBOR.  It is necessarily more subjective than
 other parts of this document.  It is also necessarily incomplete, lest
 it turn into a textbook on protocol development.
-
 
 ## Extension Points
 
@@ -1758,7 +1700,6 @@ CBOR has three major extension points:
   so allocating codepoints to this space is a major step.  There are
   also very few codepoints left.
 
-
 ## Curating the Additional Information Space {#curating}
 
 The human mind is sometimes drawn to filling in little perceived gaps
@@ -1778,7 +1719,6 @@ the protocol.  Additional information value 30 is then the only
 additional information value available for general allocation, and
 there should be a very good reason for allocating it before assigning
 it through an update of this protocol.
-
 
 # Diagnostic Notation {#diagnostic-notation}
 
@@ -1826,7 +1766,6 @@ Unassigned simple values are given as "simple()" with the appropriate
 integer in the parentheses. For example, "simple(42)" indicates major
 type 7, value 42.
 
-
 ## Encoding Indicators {#encoding-indicators}
 
 Sometimes it is useful to indicate in the diagnostic notation which of
@@ -1858,7 +1797,6 @@ not used.)
 As a special case, byte and text strings of indefinite length can be
 notated in the form (_ h'0123', h'4567') and (_ "foo", "bar").
 
-
 # IANA Considerations {#ianacons}
 
 IANA has created two registries for new CBOR values. The registries
@@ -1866,7 +1804,6 @@ are separate, that is, not under an umbrella registry, and follow the
 rules in {{RFC5226}}. IANA has also assigned a new MIME media type and
 an associated Constrained Application Protocol (CoAP) Content-Format
 entry.
-
 
 ## Simple Values Registry
 
@@ -1881,7 +1818,6 @@ contiguous blocks (if any).
 
 New entries in the range 32 to 255 are assigned by Specification
 Required.
-
 
 ## Tags Registry {#ianatags}
 
@@ -1898,7 +1834,6 @@ requests is:
 
 * Semantics (short form)
 
-
 In addition, First Come First Served requests should include:
 
 * Point of contact
@@ -1906,8 +1841,6 @@ In addition, First Come First Served requests should include:
 * Description of semantics (URL) -- This description is
   optional; the URL can point to something like an Internet-Draft or a
   web page.
-
-
 
 ## Media Type ("MIME Type")
 
@@ -1956,7 +1889,6 @@ Change controller:
   The IESG <iesg@ietf.org>
 ~~~~
 
-
 ## CoAP Content-Format
 
 Media Type: application/cbor
@@ -1966,7 +1898,6 @@ Encoding: -
 Id: 60
 
 Reference: \[RFCthis]
-
 
 ## The +cbor Structured Syntax Suffix Registration
 
@@ -2013,7 +1944,6 @@ Author/Change Controller:
   The IESG has change control over this registration.
 ~~~~
 
-
 # Security Considerations {#securitycons}
 
 A network-facing application can exhibit vulnerabilities in its
@@ -2043,7 +1973,6 @@ interpretations are reliably reduced to a single one.  To facilitate
 this, encoder and decoder implementations used in such contexts should
 provide at least one strict mode of operation ({{strict-mode}}).
 
-
 # Acknowledgements
 
 CBOR was inspired by MessagePack.  MessagePack was developed and
@@ -2068,7 +1997,6 @@ This document also incorporates suggestions made by many people,
 notably Dan Frost, James Manger, Joe Hildebrand, Keith Moore, Matthew
 Lepinski, Nico Williams, Phillip Hallam-Baker, Ray Polk, Tim Bray,
 Tony Finch, Tony Hansen, and Yaron Sheffer.
-
 
 --- back
 
@@ -2176,7 +2104,6 @@ showing a tagged byte string (such as 2(h'010000000000000000')).
 | {_ "Fun": true, "Amt": -2}                                                                    |                                    0xbf6346756ef563416d7421ff |
 {: #table_examples title='Examples of Encoded CBOR Data Items'}
 
-
 # Jump Table {#jump-table}
 
 For brevity, this jump table does not show initial bytes that are
@@ -2240,7 +2167,6 @@ unsigned integers are in network byte order.)
 |       0xfb | Double-Precision Float (eight-byte IEEE 754)                           |
 |       0xff | "break" stop code                                                      |
 {: #jumptable title='Jump Table for Initial Byte'}
-
 
 # Pseudocode {#pseudocode}
 
@@ -2308,6 +2234,7 @@ well_formed_indefinite(mt, breakable) {
   return 0;                     // no break out
 }
 ~~~~
+
 {: #pseudo title='Pseudocode for Well-Formedness Check'}
 
 Note that the remaining complexity of a complete CBOR decoder is about
@@ -2338,8 +2265,8 @@ void encode_sint(int64_t n) {
   } else
        ...
 ~~~~
-{: #branchless title='Pseudocode for Encoding a Signed Integer'}
 
+{: #branchless title='Pseudocode for Encoding a Signed Integer'}
 
 # Half-Precision {#half-precision}
 
@@ -2367,6 +2294,7 @@ double decode_half(unsigned char *halfp) {
   return half & 0x8000 ? -val : val;
 }
 ~~~~
+
 {: #decode-half-c title='C Code for a Half-Precision Decoder'}
 
 ~~~~
@@ -2382,8 +2310,8 @@ def decode_half(half):
         return ldexp(decode_single(valu), 112)
     return decode_single(valu | 0x7f800000)
 ~~~~
-{: #decode-half-py title='Python Code for a Half-Precision Decoder'}
 
+{: #decode-half-py title='Python Code for a Half-Precision Decoder'}
 
 # Comparison of Other Binary Formats to CBOR's Design Objectives {#comparison-app}
 
@@ -2421,7 +2349,6 @@ brief recap of the objectives from {{objectives}} is:
 
 7. extensibility
 
-
 ## ASN.1 DER, BER, and PER
 
 {{ASN.1}} has many serializations. In the IETF, DER and BER are the
@@ -2435,7 +2362,6 @@ but one that is commonly stated is that PER makes use of the schema
 even for parsing the surface structure of the data stream, requiring
 significant tool support.  There are different versions of the ASN.1
 schema language in use, which has also hampered adoption.
-
 
 ## MessagePack {#messagepack}
 
@@ -2456,7 +2382,6 @@ leave MessagePack's "raw" data ambiguous between its usages for binary
 and text data. The extension mechanism for MessagePack remains
 unclear.
 
-
 ## BSON {#bson}
 
 {{BSON}} is a data format that was developed for the storage of
@@ -2468,7 +2393,6 @@ While BSON can be used for the representation of JSON-like objects on
 the wire, its specification is dominated by the requirements of the
 database application and has become somewhat baroque. The status of
 how BSON extensions will be implemented remains unclear.
-
 
 ## UBJSON {#ubjson}
 
@@ -2484,14 +2408,12 @@ reserved "unknown-length" value to support streaming of arrays and
 maps (JSON objects).  Within these containers, UBJSON also has a
 "Noop" type for padding.
 
-
 ## MSDTP: RFC 713
 
 Message Services Data Transmission (MSDTP) is a very early example of
 a compact message format; it is described in {{RFC0713}}, written
 in 1976. It is included here for its historical value, not because it
 was ever widely used.
-
 
 ## Conciseness on the Wire
 

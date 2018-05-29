@@ -37,7 +37,7 @@ normative:
     target: http://www.ecma-international.org/publications/files/ecma-st/ECMA-262.pdf
     title: ECMAScript Language Specification 5.1 Edition
     author:
-      - org: European Computer Manufacturers Association
+    - org: European Computer Manufacturers Association
     date: 2011-06
     seriesinfo:
       ECMA: Standard ECMA-262
@@ -45,7 +45,7 @@ normative:
     target: http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap04.html#tag_04_15
     title: 'Vol. 1: Base Definitions, Issue 7'
     author:
-      - org: The Open Group Base Specifications
+    - org: The Open Group Base Specifications
     date: 2013
     seriesinfo:
       Section 4.15: "'Seconds Since the Epoch'"
@@ -79,29 +79,29 @@ informative:
     target: http://msgpack.org/
     title: MessagePack
     author:
-      - ins: S. Furuhashi
-        name: Sadayuki Furuhashi
-        org: ''
+    - ins: S. Furuhashi
+      name: Sadayuki Furuhashi
+      org: ''
     date: 2013
   UBJSON:
     target: http://ubjson.org/
     title: Universal Binary JSON Specification
     author:
-      - org: The Buzz Media
+    - org: The Buzz Media
     date: 2013
   YAML:
     target: http://www.yaml.org/spec/1.2/spec.html
     title: YAML Ain't Markup Language (YAML[TM]) Version 1.2
     author:
-      - ins: O. Ben-Kiki
-        name: Oren Ben-Kiki
-        org: ''
-      - ins: C. Evans
-        name: Clark Evans
-        org: ''
-      - ins: I. d. Net
-        name: Ingy dot Net
-        org: ''
+    - ins: O. Ben-Kiki
+      name: Oren Ben-Kiki
+      org: ''
+    - ins: C. Evans
+      name: Clark Evans
+      org: ''
+    - ins: I. d. Net
+      name: Ingy dot Net
+      org: ''
     date: '2009-10-01'
     seriesinfo:
       3rd: Edition
@@ -123,7 +123,8 @@ images, and arrays in a way supportive of the goals of compactness of code an me
 
 This document is being worked on in the CBOR Working Group.
 Please contribute on the mailing list there, or in the GitHub
-repository for this draft: https://github.com/cbor-wg/CBORbis
+repository for this draft: 
+https://github.com/cbor-wg/CBORbis
 
 The charter for the CBOR Working Group says that the WG will update RFC
 7049 to fix verified errata. Security issues and clarifications may be

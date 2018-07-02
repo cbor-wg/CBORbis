@@ -768,8 +768,8 @@ the rest of this section.
 
 |       Tag | Data Item    | Semantics                                                     |
 |-----------+--------------+---------------------------------------------------------------|
-|         0 | UTF-8 string | Standard date/time string; see {{datetimesect}}               |
-|         1 | multiple     | Epoch-based date/time; see {{datetimesect}}                   |
+|         0 | UTF-8 string | Standard date/time string; see {{stringdatetimesect}}               |
+|         1 | multiple     | Epoch-based date/time; see {{epochdatetimesect}}                   |
 |         2 | byte string  | Positive bignum; see {{bignums}}                              |
 |         3 | byte string  | Negative bignum; see {{bignums}}                              |
 |         4 | array        | Decimal fraction; see {{fractions}}                           |
@@ -790,24 +790,26 @@ the rest of this section.
 |    55800+ | (Unassigned) | (Unassigned)                                                  |
 {: #tagvalues title='Values for Tags'}
 
-### Date and Time {#datetimesect}
-
-Protocols using tag values 0 and 1 extend the generic data model
-({{cbor-data-models}}) with data items representing points in time.
+### String Date and Time {#stringdatetimesect}
 
 Tag value 0 is for date/time strings that follow the standard format
 described in {{RFC3339}}, as refined by Section 3.3 of {{RFC4287}}.
 
-Tag value 1 is for numerical representation of seconds relative to
-1970-01-01T00:00Z in UTC time.  (For the non-negative values that the
-Portable Operating System Interface (POSIX) defines, the number of
-seconds is counted in the same way as for POSIX "seconds since the
-epoch" {{TIME_T}}.)  The tagged item can be a positive or negative
-integer (major types 0 and 1), or a floating-point number (major type
-7 with additional information 25, 26, or 27). Note that the number can
-be negative (time before 1970-01-01T00:00Z) and, if a floating-point
-number, indicate fractional seconds.
+### Epoch Date and Time {#epochdatetimesect}
 
+Tag value 1 is for numerical representation of time in seconds relative to 1970-01-01T00:00Z UTC. Support for tag value 1 is optional, but if it is supported the following “must” and “should” requirements apply. 
+
+The tagged item must be a positive integer (major type 0), negative integer (major type 1) or the simple value undef (major type 7, value 23) to indicate the time is not known. 
+
+Positive values (major type 0 and positive floating-point numbers) must be computed according to POSIX [TIME_T]. POSIX time is also known as UNIX Epoch time. Note that leap seconds are taken into account by POSIX time and this results in a 1 second discontinuity about once a year. 32-bit integer values must be supported. These will cease to work in the year 2106, so 64-bit integers should also be supported.
+
+Negative values (major type 1 and negative floating-point numbers) are computed by “best practice” as determined by the implementor since there is no standard for count-of-seconds time encoding before 1970-01-01T00:00Z UTC time.
+
+When encoding, positive integer time values must be supported. The time value must always be encoded as short as possible. 
+
+When decoding, positive integer time values must be supported. All integer representations of a particular value must be supported and must be considered equal (e.g., 0x03, 0x0003 and 0x00000003 must all be decoded and are all the same time).
+
+Floating point time was allowed with this tag in RFC 7049. It is deprecated and no longer allowed for this version of CBOR.
 
 ### Bignums {#bignums}
 
@@ -2218,8 +2220,8 @@ unsigned integers are in network byte order.)
 |       0xba | map (four-byte uint32_t for n, and then n pairs of data items follow)  |
 |       0xbb | map (eight-byte uint64_t for n, and then n pairs of data items follow) |
 |       0xbf | map, pairs of data items follow, terminated by "break"                 |
-|       0xc0 | Text-based date/time (data item follows; see {{datetimesect}})         |
-|       0xc1 | Epoch-based date/time (data item follows; see {{datetimesect}})        |
+|       0xc0 | Text-based date/time (data item follows; see {{stringdatetimesect}})         |
+|       0xc1 | Epoch-based date/time (data item follows; see {{epochdatetimesect}})        |
 |       0xc2 | Positive bignum (data item "byte string" follows)                      |
 |       0xc3 | Negative bignum (data item "byte string" follows)                      |
 |       0xc4 | Decimal Fraction (data item "array" follows; see {{fractions}})        |

@@ -799,17 +799,19 @@ described in {{RFC3339}}, as refined by Section 3.3 of {{RFC4287}}.
 
 Tag value 1 is for numerical representation of time in seconds relative to 1970-01-01T00:00Z UTC. Support for tag value 1 is optional, but if it is supported the following “must” and “should” requirements apply. 
 
-The tagged item must be a positive integer (major type 0), negative integer (major type 1) or the simple value undef (major type 7, value 23) to indicate the time is not known. 
+The tagged item must be an unsigned integer (major type 0), negative integer (major type 1), or floating-point number (major type 7 with additional information 25, 26, or 27). 
 
-Positive values (major type 0 and positive floating-point numbers) must be computed according to POSIX [TIME_T]. POSIX time is also known as UNIX Epoch time. Note that leap seconds are taken into account by POSIX time and this results in a 1 second discontinuity about once a year. 32-bit integer values must be supported. These will cease to work in the year 2106, so 64-bit integers should also be supported.
+Unsigned values (major type 0 and positive floating-point numbers), values after 1970-01-01T00:00Z UTC, must be computed according to POSIX [TIME_T]. POSIX time is also known as UNIX Epoch time. Note that leap seconds are taken into account by POSIX time and this results in a 1 second discontinuity about once a year. 32-bit unsigned integer values must be supported. These will cease to work in the year 2106, so 64-bit unsigned integer values should also be supported.
 
 Negative values (major type 1 and negative floating-point numbers) are computed by “best practice” as determined by the implementor since there is no standard for count-of-seconds time encoding before 1970-01-01T00:00Z UTC time.
 
-When encoding, positive integer time values must be supported. The time value must always be encoded as short as possible. 
+If a CBOR protocol requires fractional seconds, floating point support can be added. Double-precision floating-point should always be supported. There is little point to supporting single-precious floating as it gives no advantage over 32-bit integers in range or precision, though to be “liberal in what you receive” single-precision floating point can be supported. 
 
-When decoding, positive integer time values must be supported. All integer representations of a particular value must be supported and must be considered equal (e.g., 0x03, 0x0003 and 0x00000003 must all be decoded and are all the same time).
+Floating-point representation should only be used if fractional second resolution is needed as it gives no advantage over 64-bit integers in range or compactness. The decision to use the floating-point representation should be made on a per-protocol basis not on a per message basis. For example, a protocol design might decide to never use floating point or to always use floating point representation.
 
-Floating point time was allowed with this tag in RFC 7049. It is deprecated and no longer allowed for this version of CBOR.
+When encoding tag 1, unsigned integer values must be supported. The time value should always be encoded as short as possible. 
+
+When decoding tag 1, positive integer time values must be supported. All integer representations of a particular value must be supported and considered equal (e.g., 0x03, 0x0003 and 0x00000003 are all the same). 
 
 ### Bignums {#bignums}
 

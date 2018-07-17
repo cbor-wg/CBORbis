@@ -105,7 +105,7 @@ informative:
     date: '2009-10-01'
     seriesinfo:
       3rd: Edition
-  RFC7159:
+  RFC8259:
   RFC7228:
   RFC6838:
   RFC0713:
@@ -146,8 +146,8 @@ formats in the latter category are ASN.1's BER and DER {{ASN.1}}.
 
 The format defined here follows some specific design goals that are
 not well met by current formats.  The underlying data model is an
-extended version of the JSON data model {{RFC7159}}.  It is important
-to note that this is not a proposal that the grammar in RFC 7159 be
+extended version of the JSON data model {{RFC8259}}.  It is important
+to note that this is not a proposal that the grammar in RFC 8259 be
 extended in general, since doing so would cause a significant
 backwards incompatibility with already deployed JSON
 documents. Instead, this document simply defines its own data model
@@ -1614,7 +1614,7 @@ as a JSON null.
   padding and becomes a JSON string.
 
 * A UTF-8 string (major type 3) becomes a JSON string.  Note that JSON
-  requires escaping certain characters (RFC 7159, Section 7):
+  requires escaping certain characters (RFC 8259, Section 7):
   quotation mark (U+0022), reverse solidus (U+005C), and the "C0
   control characters" (U+0000 through U+001F).  All other characters
   are copied unchanged into the JSON UTF-8 string.
@@ -1793,7 +1793,7 @@ representing CBOR data items in configuration files may also want to
 consider YAML {{YAML}}.)
 
 The diagnostic notation is loosely based on JSON as it is defined in
-RFC 7159, extending it where needed.
+RFC 8259, extending it where needed.
 
 The notation borrows the JSON syntax for numbers (integer and floating
 point), True (>true\<), False (>false\<), Null (>null\<), UTF-8
@@ -2517,7 +2517,7 @@ The following is a list of known changes from RFC 7049. This list
 is non-authoritative. It is meant to help reviewers see the
 significant differences.
 
-* Updated reference for \[RFC4267\] to {{RFC7159}} in many places
+* Updated reference for \[RFC4267\] to {{RFC8259}} in many places
 
 * Updated reference for \[CNN-TERMS\] to {{RFC7228}}
 

@@ -1067,6 +1067,49 @@ preferred to identify the types by their names in the generic data
 model ("negative integer", "array") instead of by referring to aspects
 of their CBOR representation ("major type 1", "major type 4").
 
+## Preferred Serialization
+In order to support use in a variety of environments, some with very limited
+CPUs and RAM, CBOR allows variation in the way some types are serialized.
+This section describes the preferred serializations that all CBOR
+implementations should use except those in very limited environments.
+
+A preferred encoder will always interoperate with a preferred decoder.
+What is described here is in line with Postel's principle, "Be conservative in
+what you send, be liberal in what you accept" as the decoding requirements
+are broader than the encoding requirements.
+
+CBOR protocols, particularly those in constrained environments are free
+to not implement preferred serialization. If they do so they should carefully
+document what serialization they support to be sure it fully interoperates.
+See Interoperability section below.
+
+### Preferred Serialization Encoding
+
+The integer value for major types 0, 1 and 6 must be encoded as short as possible.
+Similarly, the lengths for major types 2, 3, 4 and 5 must be encoded as short
+as possible.  That is, integers and lengths less than absolute value 24 must
+be encoded in the initial byte, those less than absolute value 256 in the byte
+following the initial byte, those less than absolute value 65536 in the two bytes
+following the initial byte and so on.
+
+Indefinite lengths must not be used for any type at all.
+
+Floating-point numbers must be encoded as either in 32 bits (single-precision) or
+64 bits (double-precision), but not 16 bits.
+
+### Preferred Serialization Decoding
+
+Preferred serialization decoding supports all serialization variants.
+
+The preferred decoder must support all lengths of integer value encoding for major
+types 0, 1 and 6. Similarly decoding all lengths of length for major types
+2, 3, 4 and 5 must be supported.
+
+Indefinite lengths must be supported for all types.
+
+Decoding of all lengths of floating-point types including 16-bit half-precision
+must be supported.
+
 # Creating CBOR-Based Protocols
 
 Data formats such as CBOR are often used in environments where there
@@ -1094,6 +1137,51 @@ This section discusses some considerations in creating CBOR-based
 protocols.  It is advisory only and explicitly excludes any language
 from RFC 2119 other than words that could be interpreted as "MAY" in
 the sense of RFC 2119.
+
+# Interoperability
+A CBOR-based protocol interoperates only if there is interoperability
+both with the data types used and the serialization used.
+
+## Data Type Interoperability
+
+Data type interoperability simply comes about from the protocol
+specification indicating which types it uses and doesn't use. The
+implementation must select CBOR libraries that support all the
+needed types.
+
+## Serialization Interoperability
+Because CBOR supports serialization variants that are not always
+interoperable, the CBOR protocol designer must take this into account
+and document what serializations are used.
+
+The easiest and best solution is to use the preferred serialization as
+described above. This will work in the
+vast major of use cases, the ones that do not run in environments
+with very small CPUs or very little RAM.
+
+If preferred serialization is not used, the CBOR protocol specification
+should include a section on Serialization Interoperability that describes
+the rules for the particular protocol. It should list the encoding serializations
+that are allowed and what the decoder should support.
+
+### Constrained Device with Unconstrained Server
+A common scenario where preferred serialization cannot be used
+is one where very constrained devices interoperate with an
+unconstrained server. The four following rules are one way to
+handle this.
+
+1. The device is allowed to use any serialization convenient when encoding.
+2. The server implements preferred serialization decoding. It accepts all serialization types.
+3. When sending server must use only preferred serializations encoding.
+4. The device is only required to accept preferred serialization encoding.
+
+For constrained devices it will also often be required to limit the length
+of the integers for types 0, 1 and 6 and the lengths of types 2, 3, 4 and 5.
+For example, a protocol may disallow 64-bit integers and lengths because
+they are difficult to handle on an 8-bit CPUs.
+
+Similarly, if the protocol uses floating point, the sizes of floating-point
+numbers used can be constrained.
 
 ## CBOR in Streaming Applications
 

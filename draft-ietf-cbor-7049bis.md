@@ -1138,18 +1138,18 @@ protocols.  It is advisory only and explicitly excludes any language
 from RFC 2119 other than words that could be interpreted as "MAY" in
 the sense of RFC 2119.
 
-# Interoperability
+## Interoperability
 A CBOR-based protocol interoperates only if there is interoperability
 both with the data types used and the serialization used.
 
-## Data Type Interoperability
+### Data Type Interoperability
 
 Data type interoperability simply comes about from the protocol
 specification indicating which types it uses and doesn't use. The
 implementation must select CBOR libraries that support all the
 needed types.
 
-## Serialization Interoperability
+### Serialization Interoperability
 Because CBOR supports serialization variants that are not always
 interoperable, the CBOR protocol designer must take this into account
 and document what serializations are used.

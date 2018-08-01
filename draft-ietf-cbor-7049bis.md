@@ -795,7 +795,10 @@ tag and interpret the tagged data item itself.
 
 A tag always applies to the item that is directly followed by it.
 Thus, if tag A is followed by tag B, which is followed by data item C,
-tag A applies to the result of applying tag B on data item C.
+tag A applies to the result of applying tag B on data item C.  That
+is, a tagged item is a data item consisting of a tag and a value.  The
+content of the tagged item is the data item (the value) that is being
+tagged.
 
 IANA maintains a registry of tag values as described in {{ianatags}}.
 {{tagvalues}} provides a list of initial values, with definitions in

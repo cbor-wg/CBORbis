@@ -1067,6 +1067,48 @@ preferred to identify the types by their names in the generic data
 model ("negative integer", "array") instead of by referring to aspects
 of their CBOR representation ("major type 1", "major type 4").
 
+## Shortest Float Encoding
+
+CBOR supports three lengths of floating point numbers. The simplest way
+to minimize the size of CBOR messages carrying floating-point numbers 
+is to encode them all as half-precision. While this can cut encoded
+size by half or by four, this reduces precision by a lot and is
+not suitable for many use cases. 
+
+Shortest float encoding is a way to minimize encoded size without
+losing precision. It uses a shorter encodings when possible without 
+losing precision. For example when encoding 0.0 or NaN.
+
+Many use cases will benefit from shortest float encoding and
+implementations should use it. It is however not required, because it
+is complicated to implement for those unfamiliar of details of IEEE 754
+float-point encoding.
+
+The shortest float encoding requirements follow:
+
+* The values 0, positive and negative infinity, and NaN must always be
+  encoded as a half-precision.
+
+* Normal values may be encoded using less precision if and only if:
+
+   * The exponent is small enough that it can be exactly encoded in
+     the lesser precision
+
+   * The significand bits that are dropped when converting to the lesser
+     precision are all zero
+
+* Subnormal values are left as is and not encoded in a smaller way
+
+Shortest float encoding does not support NaN payloads (also known
+as NaN  boxing).
+
+The decoder used with CBOR protocols that use shortest float encoding
+must support all three floating point lengths. Generally the decoder
+should promote half- and single-precision values to double-precision
+when they are received as it is implied that all half- and
+single-precision values transmitted are actually double precision. 
+
+
 # Creating CBOR-Based Protocols
 
 Data formats such as CBOR are often used in environments where there

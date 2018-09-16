@@ -34,13 +34,13 @@ author:
   email: paul.hoffman@icann.org
 normative:
   ECMA262:
-    target: http://www.ecma-international.org/publications/files/ecma-st/ECMA-262.pdf
-    title: ECMAScript Language Specification 5.1 Edition
+    target: https://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
+    title: ECMAScript 2018 Language Specification
     author:
-    - org: European Computer Manufacturers Association
-    date: 2011-06
+    - org: Ecma International
+    date: 2018-06
     seriesinfo:
-      ECMA: Standard ECMA-262
+      ECMA: Standard ECMA-262, 9th Edition
   TIME_T:
     target: http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap04.html#tag_04_15
     title: 'Vol. 1: Base Definitions, Issue 7'

@@ -340,7 +340,8 @@ of a number of simple values and tags right in this document, such as:
 * `false`, `true`, `null`, and `undefined` (simple values identified by 20..23)
 * integer and floating point values with a larger range and precision
   than the above (tags 2 to 5)
-* application data types such as a point in time (tags 1, 0)
+* application data types such as a point in time or an RFC 3339
+  date/time string (tags 1, 0)
 
 Further elements of the extended generic data model can be (and have
 been) defined via the IANA registries created for CBOR.  Even if such

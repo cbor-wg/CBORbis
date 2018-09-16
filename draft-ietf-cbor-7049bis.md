@@ -1277,8 +1277,10 @@ The CBOR data model for maps does not allow ascribing semantics to the
 order of the key/value pairs in the map representation.  Thus, a
 CBOR-based protocol MUST NOT specify that changing the key/value pair
 order in a map would change the semantics, except to specify that some,
-e.g. non-canonical, orders are ill-formed. Timing, cache usage, and
-other side channels are not considered part of the semantics.
+e.g. non-canonical, orders are disallowed. Timing, cache usage, and
+other side channels are not considered part of the semantics.[^_20_cabo]
+
+[^_20_cabo]: I don't understand this last sentence.  Can we leave it out?
 
 Applications for constrained devices that have maps with 24 or fewer
 frequently used keys should consider using small integers (and those

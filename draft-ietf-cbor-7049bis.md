@@ -58,7 +58,7 @@ normative:
   RFC4648:
   RFC3986:
   RFC2045:
-  RFC5226:
+  RFC8126: iana
 informative:
   ASN.1:
     title: 'Information Technology -- ASN.1 encoding rules: Specification of Basic
@@ -1794,7 +1794,7 @@ notated in the form (_ h'0123', h'4567') and (_ "foo", "bar").
 
 IANA has created two registries for new CBOR values. The registries
 are separate, that is, not under an umbrella registry, and follow the
-rules in {{RFC5226}}. IANA has also assigned a new MIME media type and
+rules in {{-iana}}. IANA has also assigned a new MIME media type and
 an associated Constrained Application Protocol (CoAP) Content-Format
 entry.
 

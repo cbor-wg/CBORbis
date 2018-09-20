@@ -113,7 +113,7 @@ informative:
       target: http://www.pcre.org/
       title: PCRE - Perl Compatible Regular Expressions
       author:
-        - name: Philip Hazel
+        - name: Andrew Ho
       date: 2018
 
 --- abstract

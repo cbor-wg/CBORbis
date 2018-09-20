@@ -34,13 +34,13 @@ author:
   email: paul.hoffman@icann.org
 normative:
   ECMA262:
-    target: https://www.ecma-international.org/publications/standards/Ecma-262.htm
-    title: ECMAScript® 2017 Language Specification
+    target: https://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
+    title: ECMAScript 2018 Language Specification
     author:
-    - org: European Computer Manufacturers Association
-    date: 2017-06
+    - org: Ecma International
+    date: 2018-06
     seriesinfo:
-      ECMA: Standard ECMA-262
+      ECMA: Standard ECMA-262, 9th Edition
   TIME_T:
     target: http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap04.html#tag_04_15
     title: 'Vol. 1: Base Definitions, Issue 7'
@@ -58,7 +58,7 @@ normative:
   RFC4648:
   RFC3986:
   RFC2045:
-  RFC5226:
+  RFC8126: iana
 informative:
   ASN.1:
     title: 'Information Technology -- ASN.1 encoding rules: Specification of Basic
@@ -105,10 +105,16 @@ informative:
     date: '2009-10-01'
     seriesinfo:
       3rd: Edition
-  RFC7159:
+  RFC8259: json
   RFC7228:
   RFC6838:
   RFC0713:
+  PCRE:
+      target: http://www.pcre.org/
+      title: PCRE - Perl Compatible Regular Expressions
+      author:
+        - name: Philip Hazel
+      date: 2018
 
 --- abstract
 
@@ -146,8 +152,8 @@ formats in the latter category are ASN.1's BER and DER {{ASN.1}}.
 
 The format defined here follows some specific design goals that are
 not well met by current formats.  The underlying data model is an
-extended version of the JSON data model {{RFC7159}}.  It is important
-to note that this is not a proposal that the grammar in RFC 7159 be
+extended version of the JSON data model {{-json}}.  It is important
+to note that this is not a proposal that the grammar in RFC 8259 be
 extended in general, since doing so would cause a significant
 backwards incompatibility with already deployed JSON
 documents. Instead, this document simply defines its own data model
@@ -340,7 +346,8 @@ of a number of simple values and tags right in this document, such as:
 * `false`, `true`, `null`, and `undefined` (simple values identified by 20..23)
 * integer and floating point values with a larger range and precision
   than the above (tags 2 to 5)
-* application data types such as a point in time (tags 1, 0)
+* application data types such as a point in time or an RFC 3339
+  date/time string (tags 1, 0)
 
 Further elements of the extended generic data model can be (and have
 been) defined via the IANA registries created for CBOR.  Even if such
@@ -355,10 +362,10 @@ this document, while the extended generic data model expands by the
 registration of new simple values or tags, but never shrinks.
 
 While there is a strong expectation that generic encoders and decoders
-can represent `false`, `true`, and `null` in the form appropriate for
-their programming environment, implementation of the data model
-extensions created by tags is truly optional and a matter of
-implementation quality.
+can represent `false`, `true`, and `null` (`undefined` is intentionally
+omitted) in the form appropriate for their programming environment,
+implementation of the data model extensions created by tags is truly
+optional and a matter of implementation quality.
 
 ## Specific Data Models
 
@@ -961,8 +968,13 @@ for some of these formats.
 * Tags 33 and 34 are for base64url- and base64-encoded text strings,
   as defined in {{RFC4648}};
 
-* Tag 35 is for regular expressions in Perl Compatible Regular
-  Expressions (PCRE) / JavaScript syntax {{ECMA262}}.
+* Tag 35 is for regular expressions that are roughly in Perl
+  Compatible Regular Expressions (PCRE/PCRE2) form {{PCRE}} or a
+  version of the JavaScript regular expression syntax {{ECMA262}}.
+  (Note that more specific identification may be necessary if the
+  actual version of the specification underlying the regular
+  expression, or more than just the text of the regular expression
+  itself, need to be conveyed.)
 
 * Tag 36 is for MIME messages (including all headers), as defined in
   {{RFC2045}};
@@ -997,75 +1009,6 @@ JSON. Such a decoder would need to mechanically distinguish the two
 formats. An easy way for an encoder to help the decoder would be to
 tag the entire CBOR item with tag 55799, the serialization of which
 will never be found at the beginning of a JSON text.
-
-## CBOR Data Models
-
-CBOR is explicit about its generic data model, which defines the set
-of all data items that can be represented in CBOR.  Its basic generic
-data model is extensible by the registration of simple type values and
-tags.  Applications can then subset the resulting extended generic
-data model to build their specific data models.
-
-Within environments that can represent the data items in the generic
-data model, generic CBOR encoders and decoders can be implemented
-(which usually involves defining additional implementation data types
-for those data items that do not already have a natural representation
-in the environment).  The ability to provide generic encoders and
-decoders is an explicit design goal of CBOR; however many applications
-will provide their own application-specific encoders and/or decoders.
-
-In the basic (un-extended) generic data model, a data item is one of:
-
-* an integer in the range -2\*\*64..2\*\*64-1 inclusive
-* a simple value, identified by a number
-  between 0 and 255, but distinct from that number
-* a floating point value, distinct from an integer, out of the set
-  representable by IEEE 754 binary64 (including non-finites)
-* a sequence of zero or more bytes ("byte string")
-* a sequence of zero or more Unicode code points ("text string")
-* a sequence of zero or more data items ("array")
-* a mapping (mathematical function) from zero or more data items
-  ("keys") each to a data item ("values"), ("map")
-* a tagged data item, comprising a tag (an integer in the range
-  0..2\*\*64-1) and a value (a data item)
-
-Note that integer and floating-point values are distinct in this
-model, even if they have the same numeric value.
-
-This basic generic data model comes pre-extended by the registration
-of a number of simple values and tags right in this document, such as:
-
-* `false`, `true`, `null`, and `undefined` (simple values identified by 20..23)
-* integer and floating point values with a larger range and precision
-  than the above (tags 2 to 5)
-* application data types such as a point in time or an RFC 3339
-  date/time string (tags 1, 0)
-
-Further elements of the extended generic data model can be (and have
-been) defined via the IANA registries created for CBOR.  Even if such
-an extension is unknown to a generic encoder or decoder, data items
-using that extension can be passed to or from the application by
-representing them at the interface to the application within the basic
-generic data model, i.e., as generic values of a simple type or
-generic tagged items.
-
-In other words, the basic generic data model is stable as defined in
-this document, while the extended generic data model expands by the
-registration of new simple values or tags, but never shrinks.
-
-While there is a strong expectation that generic encoders and decoders
-can represent `false`, `true`, and `null` (`undefined` is
-intentionally omitted) in the form appropriate for their programming
-environment, implementation of the data model extensions created by
-tags is truly optional and a matter of implementation quality.
-
-A specific data model usually subsets the extended generic data model
-and assigns application semantics to the data items within this subset
-and its components.  When documenting such specific data models,
-where it is desired to specify the types of data items, it is
-preferred to identify the types by their names in the generic data
-model ("negative integer", "array") instead of by referring to aspects
-of their CBOR representation ("major type 1", "major type 4").
 
 # Creating CBOR-Based Protocols
 
@@ -1341,12 +1284,13 @@ has to stop with an error. Duplicate keys are also prohibited by CBOR
 decoders that are using strict mode ({{strict-mode}}).
 
 The CBOR data model for maps does not allow ascribing semantics to the
-order of the key/value pairs in the map representation.
-Thus, it would be a very bad practice to define a CBOR-based protocol
-in such a way that changing the key/value pair order in a map would
-change the semantics, apart from trivial aspects (cache usage, etc.).
-(A CBOR-based protocol can prescribe a specific order of
-serialization, such as for canonicalization.)
+order of the key/value pairs in the map representation.  Thus, a
+CBOR-based protocol MUST NOT specify that changing the key/value pair
+order in a map would change the semantics, except to specify that some,
+e.g. non-canonical, orders are disallowed. Timing, cache usage, and
+other side channels are not considered part of the semantics.[^_20_cabo]
+
+[^_20_cabo]: I don't understand this last sentence.  Can we leave it out?
 
 Applications for constrained devices that have maps with 24 or fewer
 frequently used keys should consider using small integers (and those
@@ -1446,7 +1390,7 @@ it satisfies the following restrictions:
   1. \[-1], encoded as 0x8120.
   1. false, encoded as 0xf4.
 
-* Indefinite-length items MUST not appear. They can be encoded as
+* Indefinite-length items MUST NOT appear. They can be encoded as
   definite-length items instead.
 
 If a protocol allows for IEEE floats, then additional canonicalization
@@ -1613,7 +1557,7 @@ as a JSON null.
   padding and becomes a JSON string.
 
 * A UTF-8 string (major type 3) becomes a JSON string.  Note that JSON
-  requires escaping certain characters (RFC 7159, Section 7):
+  requires escaping certain characters ({{-json}}, Section 7):
   quotation mark (U+0022), reverse solidus (U+005C), and the "C0
   control characters" (U+0000 through U+001F).  All other characters
   are copied unchanged into the JSON UTF-8 string.
@@ -1792,7 +1736,7 @@ representing CBOR data items in configuration files may also want to
 consider YAML {{YAML}}.)
 
 The diagnostic notation is loosely based on JSON as it is defined in
-RFC 7159, extending it where needed.
+RFC 8259, extending it where needed.
 
 The notation borrows the JSON syntax for numbers (integer and floating
 point), True (>true\<), False (>false\<), Null (>null\<), UTF-8
@@ -1860,7 +1804,7 @@ notated in the form (_ h'0123', h'4567') and (_ "foo", "bar").
 
 IANA has created two registries for new CBOR values. The registries
 are separate, that is, not under an umbrella registry, and follow the
-rules in {{RFC5226}}. IANA has also assigned a new MIME media type and
+rules in {{-iana}}. IANA has also assigned a new MIME media type and
 an associated Constrained Application Protocol (CoAP) Content-Format
 entry.
 
@@ -2516,7 +2460,7 @@ The following is a list of known changes from RFC 7049. This list
 is non-authoritative. It is meant to help reviewers see the
 significant differences.
 
-* Updated reference for \[RFC4267\] to {{RFC7159}} in many places
+* Updated reference for \[RFC4267\] to {{-json}} in many places
 
 * Updated reference for \[CNN-TERMS\] to {{RFC7228}}
 

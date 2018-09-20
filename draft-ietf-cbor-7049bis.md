@@ -394,24 +394,38 @@ A CBOR data item  ({{cbor-data-models}}) is encoded to or decoded from
 a byte string as described in this section.  The encoding is
 summarized in {{jumptable}}.
 
-The initial byte of each data item contains both information about the
-major type (the high-order 3 bits, described in {{majortypes}}) and
-additional information (the low-order 5 bits).  When the value of the
-additional information is less than 24, it is directly used as a small
-unsigned integer.  When it is 24 to 27, the additional bytes for a
-variable-length integer immediately follow; the values 24 to 27 of the
-additional information specify that its length is a 1-, 2-, 4-, or
-8-byte unsigned integer, respectively.  Additional information value
+The initial byte of each encoded data item contains both information
+about the major type (the high-order 3 bits, described in
+{{majortypes}}) and additional information (the low-order 5 bits).
+Additional information value
 31 is used for indefinite-length items, described in {{indefinite}}.
 Additional information values 28 to 30 are reserved for future
 expansion.
 
-In all additional information values, the resulting integer is
-interpreted depending on the major type.  It may represent the actual
-data: for example, in integer types, the resulting integer is used for
-the value itself.  It may instead supply length information: for
-example, in byte strings it gives the length of the byte string data
-that follows.
+Additional information values from 0 to 27 describes how to construct an
+"argument", possibly consuming additional bytes.  For major type 7 and
+additional information 25 to 27 (floating
+point numbers), there is a special case; in all other cases
+the additional information value, possibly combined with following
+bytes, the argument constructed is an unsigned integer.
+
+When the value of the
+additional information is less than 24, it is directly used as the
+argument's value.  When it is 24 to 27, the argument's value is held
+in the following 1, 2, 4, or 8, respectively, bytes, in network byte order.
+
+The meaning of this argument depends on the major type.
+For example, in major type 0, the argument is the value of the data
+item itself (and in major type 1 the value of the data item is
+computed from the argument); in major type 2 and 3 it gives the length
+of the string data in bytes that follows; and in major types 4 and 5 it is used to
+determine the number of data items enclosed.
+
+If the encoded sequence of bytes ends before the end of a data item
+would be reached, that encoding is not well-formed. If the encoded
+sequence of bytes still has bytes remaining
+after the outermost encoded item is parsed, that encoding is not a
+single well-formed CBOR item.
 
 A CBOR decoder implementation can be based on a jump table with all
 256 defined values for the initial byte ({{jumptable}}).  A decoder in
@@ -425,26 +439,22 @@ The following lists the major types and the additional information and
 other bytes associated with the type.
 
 Major type 0:
-: an unsigned integer. The 5-bit additional information is either the
-  integer itself (for additional information values 0 through 23) or
-  the length of additional data.  Additional information 24 means the
-  value is represented in an additional uint8_t, 25 means a uint16_t,
-  26 means a uint32_t, and 27 means a uint64_t.  For example, the
+: an integer in the range 0..2**64-1 inclusive.  The value of the
+  encoded item is the argument itself.  For example, the
   integer 10 is denoted as the one byte 0b000_01010 (major type 0,
   additional information 10).  The integer 500 would be 0b000_11001
   (major type 0, additional information 25) followed by the two bytes
   0x01f4, which is 500 in decimal.
 
 Major type 1:
-: a negative integer. The encoding follows the rules for unsigned
-  integers (major type 0), except that the value is then -1 minus the
-  encoded unsigned integer.  For example, the integer -500 would be
-  0b001_11001 (major type 1, additional information 25) followed by
-  the two bytes 0x01f3, which is 499 in decimal.
+: a negative integer in the range -2**64..-1 inclusive.  The value of
+  the item is -1 minus the argument.  For example, the integer
+  -500 would be 0b001_11001 (major type 1, additional information 25)
+  followed by the two bytes 0x01f3, which is 499 in decimal.
 
 Major type 2:
-: a byte string. The string's length in bytes is represented following
-  the rules for positive integers (major type 0).  For example, a byte
+: a byte string.  The number of bytes in the string is equal to the
+  argument.  For example, a byte
   string whose length is 5 would have an initial byte of 0b010_00101
   (major type 2, additional information 5 for the length), followed by
   5 bytes of binary content. A byte string whose length is 500 would
@@ -454,10 +464,11 @@ Major type 2:
   content.
 
 Major type 3:
-: a text string, specifically a string of Unicode characters that is
-  encoded as UTF-8 {{RFC3629}}.  The format of this type is identical
-  to that of byte strings (major type 2), that is, as with major type
-  2, the length gives the number of bytes.  This type is provided for
+
+: a text string ({{cbor-data-models}}), encoded as UTF-8
+  ({{RFC3629}}). The number of bytes in the string is equal to the
+  argument.  A string containing an invalid UTF-8 sequence is
+  well-formed but invalid. This type is provided for
   systems that need to interpret or display human-readable text, and
   allows the differentiation between unstructured bytes and text that
   has a specified repertoire and encoding.  In contrast to formats
@@ -469,9 +480,8 @@ Major type 3:
 
 Major type 4:
 : an array of data items.  Arrays are also called lists, sequences, or
-  tuples.  The array's length follows the rules for byte strings
-  (major type 2), except that the length denotes the number of data
-  items, not the length in bytes that the array takes up.  Items in an
+  tuples.  The argument is the number of data items in the
+  array.  Items in an
   array do not need to all be of the same type.  For example, an array
   that contains 10 items of any type would have an initial byte of
   0b100_01010 (major type of 4, additional information of 10 for the
@@ -481,9 +491,8 @@ Major type 5:
 : a map of pairs of data items. Maps are also called tables,
   dictionaries, hashes, or objects (in JSON).  A map is comprised of
   pairs of data items, each pair consisting of a key that is
-  immediately followed by a value.  The map's length follows the rules
-  for byte strings (major type 2), except that the length denotes the
-  number of pairs, not the length in bytes that the map takes up.  For
+  immediately followed by a value.  The argument is the number
+  of *pairs* of data items in the map.  For
   example, a map that contains 9 pairs would have an initial byte of
   0b101_01001 (major type of 5, additional information of 9 for the
   number of pairs) followed by the 18 remaining items. The first item
@@ -493,11 +502,12 @@ Major type 5:
   decoding; see also {{map-keys}}.
 
 Major type 6:
-: optional semantic tagging of other major types. See {{tags}}.
+: a tagged data item whose tag is the argument and whose value
+  is the single following encoded item.  See {{tags}}.
 
 Major type 7:
-: floating-point numbers and simple data types that need no content,
-  as well as the "break" stop code. See {{fpnocont}}.
+: floating-point numbers and simple values, as well as the "break"
+  stop code.  See {{fpnocont}}.
 
 
 These eight major types lead to a simple table showing which of the
@@ -738,10 +748,11 @@ Similar prohibitions apply to the unassigned simple values as well.
 In CBOR, a data item can optionally be preceded by a tag to give it
 additional semantics while retaining its structure. The tag is major
 type 6, and represents an integer number as indicated by the tag's
-integer value; the (sole) data item is carried as content data.  If a
-tag requires structured data, this structure is encoded into the
-nested data item.  The definition of a tag usually restricts what
-kinds of nested data item or items can be carried by a tag.
+argument ({{specification-of-the-cbor-encoding}}); the (sole)
+data item is carried as content data.  If a tag requires structured
+data, this structure is encoded into the nested data item.  The
+definition of a tag usually restricts what kinds of nested data item
+or items are valid.
 
 The initial bytes of the tag follow the rules for positive integers
 (major type 0). The tag is followed by a single data item of any type.

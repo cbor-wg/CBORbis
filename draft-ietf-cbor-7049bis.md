@@ -109,6 +109,12 @@ informative:
   RFC7228:
   RFC6838:
   RFC0713:
+  PCRE:
+      target: http://www.pcre.org/
+      title: PCRE - Perl Compatible Regular Expressions
+      author:
+        - name: Philip Hazel
+      date: 2018
 
 --- abstract
 
@@ -962,8 +968,13 @@ for some of these formats.
 * Tags 33 and 34 are for base64url- and base64-encoded text strings,
   as defined in {{RFC4648}};
 
-* Tag 35 is for regular expressions in Perl Compatible Regular
-  Expressions (PCRE) / JavaScript syntax {{ECMA262}}.
+* Tag 35 is for regular expressions that are roughly in Perl
+  Compatible Regular Expressions (PCRE/PCRE2) form {{PCRE}} or a
+  version of the JavaScript regular expression syntax {{ECMA262}}.
+  (Note that more specific identification may be necessary if the
+  actual version of the specification underlying the regular
+  expression, or more than just the text of the regular expression
+  itself, need to be conveyed.)
 
 * Tag 36 is for MIME messages (including all headers), as defined in
   {{RFC2045}};

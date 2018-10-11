@@ -301,7 +301,9 @@ hexadecimal numbers, numbers in binary notation are prefixed with
 "0b".  Underscores can be added to such a number solely for
 readability, so 0b00100001 (0x21) might be written 0b001_00001 to
 emphasize the desired interpretation of the bits in the byte; in this
-case, it is split into three bits and five bits.
+case, it is split into three bits and five bits.  Encoded CBOR data
+items are sometimes given in the "0x" or "0b" notation; these values
+are then interpreted as byte strings in network byte order.
 
 
 # CBOR Data Models
@@ -338,6 +340,13 @@ In the basic (un-extended) generic data model, a data item is one of:
 Note that integer and floating-point values are distinct in this
 model, even if they have the same numeric value.
 
+Also note that serialization variants, such as number of bytes of the
+encoded floating value, or the choice of one of the ways in which an
+integer, the length of a text or byte string, the number of elements
+in an array or pairs in a map, or a tag value, (collectively "the
+argument", see {{encoding}}) can be encoded, are not visible at the
+generic data model level.
+
 ## Extended Generic Data Models
 
 This basic generic data model comes pre-extended by the registration
@@ -367,7 +376,7 @@ omitted) in the form appropriate for their programming environment,
 implementation of the data model extensions created by tags is truly
 optional and a matter of implementation quality.
 
-## Specific Data Models
+## Specific Data Models {#specific-data-models}
 
 The specific data model for a CBOR-based protocol usually subsets the
 extended generic data model and assigns application semantics to the
@@ -378,17 +387,18 @@ the generic data model ("negative integer", "array") instead of by
 referring to aspects of their CBOR representation ("major type 1",
 "major type 4").
 
-Specific data models can also specify that values of different types
+Specific data models can also specify what values (including values of different types)
 are equivalent for the purposes of map keys and encoder freedom. For
 example, in the generic data model, a valid map MAY have both `0` and
 `0.0` as keys, and an encoder MUST NOT encode `0.0` as an integer
 (major type 0, {{majortypes}}).  However, if a specific data model
 declares that floating point and integer representations of integral
-values are equivalent, map keys `0` and `0.0` would be considered
+values are equivalent, using both map keys `0` and `0.0` in a single
+map would be considered
 duplicates and so invalid, and an encoder could encode integral-valued
 floats as integers or vice versa, perhaps to save encoded bytes.
 
-# Specification of the CBOR Encoding
+# Specification of the CBOR Encoding {#encoding}
 
 A CBOR data item  ({{cbor-data-models}}) is encoded to or decoded from
 a byte string as described in this section.  The encoding is
@@ -748,7 +758,7 @@ Similar prohibitions apply to the unassigned simple values as well.
 In CBOR, a data item can optionally be preceded by a tag to give it
 additional semantics while retaining its structure. The tag is major
 type 6, and represents an integer number as indicated by the tag's
-argument ({{specification-of-the-cbor-encoding}}); the (sole)
+argument ({{encoding}}); the (sole)
 data item is carried as content data.  If a tag requires structured
 data, this structure is encoded into the nested data item.  The
 definition of a tag usually restricts what kinds of nested data item
@@ -1257,6 +1267,15 @@ encoding (such as encoding "0" as 0b000_11001 followed by two bytes of
 0x00) as long as the application can decode an integer of the given
 size.
 
+The preferred encoding for a floating point value is the shortest
+floating point encoding that preserves its value, e.g., 0xf94580 for
+the number 5.5, and 0xfa45ad9c00 for the number 5555.5, unless the
+CBOR-based protocol specifically excludes the use of the shorter
+floating point encodings.  For NaN values, a shorter encoding is
+preferred if zero-padding the significand at the right reconstitutes the
+original NaN value (for many applications, the single NaN encoding 0xf97e00
+will suffice).
+
 
 ## Specifying Keys for Maps {#map-keys}
 
@@ -1312,43 +1331,43 @@ byte.
 
 ### Equivalence of Keys
 
-This notion of equivalence must be used to determine whether keys in
-maps are duplicates or distinct.
+The specific data model applying to a CBOR data item is used to
+determine whether keys occurring in maps are duplicates or distinct.
 
-* All numbers are compared by their numeric value.
+At the generic data model level, numerically equivalent integer and
+floating point values are distinct from each other, as they are from
+the various big numbers (Tags 2 to 5).  Similarly, text strings are
+distinct from byte strings, even if composed of the same bytes.  A
+tagged value is distinct from an untagged value or from a value tagged
+with a different tag.
 
-  * Integer data items with the same value are equal regardless of
-    how many bytes are used to encode them.
+Within each of these groups, numeric values are distinct unless they
+are numerically equal (specifically, -0.0 is equal to 0.0); for the
+purpose of map key equivalence, NaN (not a number)
+values are equivalent if they have the same significand after
+zero-extending both significands at the right to 64 bits.
 
-  * Floating point data items with the same value are equal
-    regardless of how many bytes are used to encode them.
+(Byte and text) strings are compared
+byte by byte, arrays element by element, and are equal if they have
+the same number of bytes/elements and the same values at the same
+positions.
+Two maps are equal if they have the same set of pairs regardless of
+their order; pairs are equal if both the key and value are equal.
 
-  * An integer value encoded as a floating point data item is
-    equivalent to the same value encoded as an integer
+Tagged values are equal if both the tag and the value are equal.
+Simple values are equal if they simply have the same value.
+Nothing else is equal in the generic data model, a simple value 2 is
+not equivalent to an integer 2 and an array is never equivalent to a map.
 
-* Byte strings and text strings are compared by their binary content.
-
-  * A different length encoding has no effect on equivalence.
-
-  * A byte string is equal to a text string if they have the same
-    binary content.
-
-* Two arrays are equal if all their items are in the same order and
-  equal.
-
-* Two maps are equal if they have the same set of pairs regardless of
-  their order; pairs are equal if both the key and value are equal.
-
-* Tags have no effect in determining equality of a data item, if two
-  items are equal then they are equal irrespective of any tags that
-  either or both may have.
-
-* Simple values are equal if they simply have the same value.
-
-Nothing else is equal, a simple value 2 is not equivalent to an
-integer 2 and an array cannot be equivalent to a map with the same
-values and sequential integer keys.
-
+As discussed in {{specific-data-models}}, specific data models can
+make values equivalent for the purpose of comparing map keys that are
+distinct in the generic data model.  Note that this implies that a
+generic decoder may deliver a decoded map to an application that needs
+to be checked for duplicate map keys by that application
+(alternatively, the decoder may provide a programming interface to
+perform this service for the application).  Specific data models
+cannot distinguish values for map keys that are equal for this purpose
+at the generic data model level.
 
 ## Undefined Values {#undefined-values}
 
@@ -1357,6 +1376,31 @@ Undefined might be used by an encoder as a substitute for a data item
 with an encoding problem, in order to allow the rest of the enclosing
 data items to be encoded without harm.
 
+## Preferred Serialization
+
+For some values at the data model level, CBOR provides multiple
+serializations.
+For many applications, it is desirable that an encoder always chooses
+a preferred serialization; however, the present specification does not
+put the burden of enforcing this on either encoder or decoder.
+
+Some constrained decoders may be limited in their ability to decode
+non-preferred serializations, e.g., if only integers below
+1_000_000_000 are expected in an application, the decoder may be
+unable to decode 64-bit arguments in integers.  An encoder that always
+uses preferred serialization is therefore more universally
+interoperable (and also less wasteful) than one that always uses
+64-bit integers.  Similarly, a decoder that does not rely on only ever
+receiving preferred serializations is more universally interoperable;
+it might very well optimize for the case of receiving preferred
+serializations, though.
+
+The preferred serialization always uses the shortest form of
+representing the argument ({{encoding}})); it also uses the shortest
+floating point encoding that preserves the value being encoded (see
+{{numbers}}).
+Definite length encoding is preferred whenever the length is known at
+the time the serialization of the item starts.
 
 ## Canonical CBOR {#c14n}
 
@@ -1370,7 +1414,8 @@ serve as the base of such a canonical format.
 A CBOR encoding satisfies the "core canonicalization requirements" if
 it satisfies the following restrictions:
 
-* Integers MUST be as short as possible. In particular:
+* Arguments (see {{encoding}}) for integers, lengths in major types 2
+  through 5, and tags MUST be as short as possible. In particular:
 
   * 0 to 23 and -1 to -24 MUST be expressed in the same byte as the
     major type;
@@ -1383,10 +1428,6 @@ it satisfies the following restrictions:
 
   * 65536 to 4294967295 and -65537 to -4294967296 MUST be expressed
     only with an additional uint32_t.
-
-* The expression of lengths in major types 2 through 5 MUST be as
-  short as possible. The rules for these lengths follow the above rule
-  for integers.
 
 * The keys in every map MUST be sorted in the bytewise lexicographic
   order of their canonical encodings. For example, the following keys

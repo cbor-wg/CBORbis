@@ -9,4 +9,4 @@
 .targets.mk
 venv/
 issues.json
-draft-ietf-cbor-7049bis.md
+draft-ietf-cbor-7049bis.xml

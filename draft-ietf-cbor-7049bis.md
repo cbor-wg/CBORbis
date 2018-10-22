@@ -806,8 +806,8 @@ the rest of this section.
 
 |       Tag | Data Item    | Semantics                                                     |
 |-----------+--------------+---------------------------------------------------------------|
-|         0 | UTF-8 string | Standard date/time string; see {{datetimesect}}               |
-|         1 | multiple     | Epoch-based date/time; see {{datetimesect}}                   |
+|         0 | UTF-8 string | Standard date/time string; see {{stringdatetimesect}}         |
+|         1 | multiple     | Epoch-based date/time; see {{epochdatetimesect}}              |
 |         2 | byte string  | Positive bignum; see {{bignums}}                              |
 |         3 | byte string  | Negative bignum; see {{bignums}}                              |
 |         4 | array        | Decimal fraction; see {{fractions}}                           |
@@ -833,18 +833,42 @@ the rest of this section.
 Protocols using tag values 0 and 1 extend the generic data model
 ({{cbor-data-models}}) with data items representing points in time.
 
+### Standard Date/Time String {#stringdatetimesect}
+
 Tag value 0 is for date/time strings that follow the standard format
 described in {{RFC3339}}, as refined by Section 3.3 of {{RFC4287}}.
 
-Tag value 1 is for numerical representation of seconds relative to
-1970-01-01T00:00Z in UTC time.  (For the non-negative values that the
-Portable Operating System Interface (POSIX) defines, the number of
-seconds is counted in the same way as for POSIX "seconds since the
-epoch" {{TIME_T}}.)  The tagged item can be a positive or negative
-integer (major types 0 and 1), or a floating-point number (major type
-7 with additional information 25, 26, or 27). Note that the number can
-be negative (time before 1970-01-01T00:00Z) and, if a floating-point
-number, indicate fractional seconds.
+### Epoch-based Date/Time {#epochdatetimesect}
+
+Tag value 1 is for numerical representation of civil time expressed in
+seconds relative to 1970-01-01T00:00Z (in UTC time).
+
+The tagged item MUST be an unsigned or negative integer (major types 0
+and 1), or a floating-point number (major type 7 with additional
+information 25, 26, or 27).
+
+Non-negative values (major type 0 and non-negative floating-point
+numbers) stand for time values on or after 1970-01-01T00:00Z UTC and
+are interpreted according to POSIX {{TIME_T}}.
+(POSIX time is also known as UNIX Epoch time.  Note that leap seconds
+are handled specially by POSIX time and this results in a 1 second
+discontinuity several times per decade.)
+Note that applications that require the expression of times beyond
+early 2106 cannot leave out support of 64-bit integers for the tagged
+value.
+
+Negative values (major type 1 and negative floating-point numbers) are
+interpreted as determined by the application requirements as there is
+no universal standard for UTC count-of-seconds time before
+1970-01-01T00:00Z (this is particularly true for points in time that
+precede discontinuities in national calendars).
+
+To indicate fractional seconds, floating point values can be used
+within Tag 1 instead of integer values.  Note that this generally
+requires binary64 support, as binary16 and binary32 provide non-zero
+fractions of seconds only for a short period of time around
+early 1970.  An application that requires Tag 1 support may restrict
+the tagged value to be an integer (or a floating-point value) only.
 
 
 ### Bignums {#bignums}
@@ -2068,9 +2092,11 @@ The encoding of the additional information in CBOR was inspired by the
 encoding of length information designed by Klaus Hartke for CoAP.
 
 This document also incorporates suggestions made by many people,
-notably Dan Frost, James Manger, Joe Hildebrand, Keith Moore, Matthew
+notably Dan Frost, James Manger, Joe Hildebrand, Keith Moore, Laurence
+Lundblade, Matthew
 Lepinski, Nico Williams, Phillip Hallam-Baker, Ray Polk, Tim Bray,
 Tony Finch, Tony Hansen, and Yaron Sheffer.
+
 
 
 --- back
@@ -2188,7 +2214,7 @@ initial bytes that can be used for optional features.  (All
 unsigned integers are in network byte order.)
 
 |       Byte | Structure/Semantics                                                    |
-|------------+------------------------------------------------------------------------|
+|------------|------------------------------------------------------------------------|
 | 0x00..0x17 | Integer 0x00..0x17 (0..23)                                             |
 |       0x18 | Unsigned integer (one-byte uint8_t follows)                            |
 |       0x19 | Unsigned integer (two-byte uint16_t follows)                           |
@@ -2223,8 +2249,8 @@ unsigned integers are in network byte order.)
 |       0xba | map (four-byte uint32_t for n, and then n pairs of data items follow)  |
 |       0xbb | map (eight-byte uint64_t for n, and then n pairs of data items follow) |
 |       0xbf | map, pairs of data items follow, terminated by "break"                 |
-|       0xc0 | Text-based date/time (data item follows; see {{datetimesect}})         |
-|       0xc1 | Epoch-based date/time (data item follows; see {{datetimesect}})        |
+|       0xc0 | Text-based date/time (data item follows; see {{stringdatetimesect}})   |
+|       0xc1 | Epoch-based date/time (data item follows; see {{epochdatetimesect}})   |
 |       0xc2 | Positive bignum (data item "byte string" follows)                      |
 |       0xc3 | Negative bignum (data item "byte string" follows)                      |
 |       0xc4 | Decimal Fraction (data item "array" follows; see {{fractions}})        |
@@ -2531,3 +2557,6 @@ significant differences.
 * Fixed a bug in the example in Section 2.4.2 ("29" -> "49")
 
 * Fixed a bug in the last paragraph of Section 3.6 ("0b000_11101" -> "0b000_11001")
+
+<!--  LocalWords:  UTC
+ -->

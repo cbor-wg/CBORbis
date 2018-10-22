@@ -93,12 +93,6 @@ informative:
       name: Sadayuki Furuhashi
       org: ''
     date: 2013
-  UBJSON:
-    target: http://ubjson.org/
-    title: Universal Binary JSON Specification
-    author:
-    - org: The Buzz Media
-    date: 2013
   YAML:
     target: http://www.yaml.org/spec/1.2/spec.html
     title: YAML Ain't Markup Language (YAML[TM]) Version 1.2
@@ -2518,21 +2512,6 @@ database application and has become somewhat baroque. The status of
 how BSON extensions will be implemented remains unclear.
 
 
-## UBJSON {#ubjson}
-
-{{UBJSON}} has a design goal to make JSON faster and somewhat smaller,
-using a binary format that is limited to exactly the data model JSON
-uses.  Thus, there is expressly no intention to support, for example,
-binary data; however, there is a "high-precision number", expressed as
-a character string in JSON syntax.  UBJSON is not optimized for code
-compactness, and its type byte coding is optimized for human
-recognition and not for compact representation of native types such as
-small integers.  Although UBJSON is mostly counted, it provides a
-reserved "unknown-length" value to support streaming of arrays and
-maps (JSON objects).  Within these containers, UBJSON also has a
-"Noop" type for padding.
-
-
 ## MSDTP: RFC 713
 
 Message Services Data Transmission (MSDTP) is a very early example of
@@ -2557,7 +2536,6 @@ shown.
 | ASN.1 BER   | 30 0b 02 01 01 30 06 02 01 02 02 01 03                                                                | 30 80 02 01 01 30 06 02 01 02 02 01 03 00 00 |
 | MessagePack | 92 01 92 02 03                                                                                        |                                              |
 | BSON        | 22 00 00 00 10 30 00 01 00 00 00 04 31 00 13 00 00 00 10 30 00 02 00 00 00 10 31 00 03 00 00 00 00 00 |                                              |
-| UBJSON      | 61 02 42 01 61 02 42 02 42 03                                                                         | 61 ff 42 01 61 02 42 02 42 03 45             |
 | CBOR        | 82 01 82 02 03                                                                                        | 9f 01 82 02 03 ff                            |
 {: #concise title='Examples for Different Levels of Conciseness' cols='l 40l 40l'}
 

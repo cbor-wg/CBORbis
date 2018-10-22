@@ -313,7 +313,7 @@ readability, so 0b00100001 (0x21) might be written 0b001_00001 to
 emphasize the desired interpretation of the bits in the byte; in this
 case, it is split into three bits and five bits.  Encoded CBOR data
 items are sometimes given in the "0x" or "0b" notation; these values
-are then interpreted as byte strings in network byte order.
+are then interpreted as bit strings or byte strings in network byte order.
 
 
 # CBOR Data Models

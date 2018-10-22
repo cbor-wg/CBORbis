@@ -51,6 +51,16 @@ normative:
       Section 4.15: "'Seconds Since the Epoch'"
       IEEE Std: '1003.1'
       '2013': Edition
+  IEEE.754.2008:
+    -: fp
+    title: IEEE Standard for Floating-Point Arithmetic
+    author:
+      -
+        org:
+          Institute of Electrical and Electronics Engineers
+    date: 2008-08
+    seriesinfo:
+      IEEE Standard: 754-2008
   RFC2119:
   RFC3629:
   RFC3339:
@@ -328,7 +338,7 @@ In the basic (un-extended) generic data model, a data item is one of:
 * a simple value, identified by a number
   between 0 and 255, but distinct from that number
 * a floating point value, distinct from an integer, out of the set
-  representable by IEEE 754 binary64 (including non-finites)
+  representable by IEEE 754 binary64 (including non-finites) {{-fp}}
 * a sequence of zero or more bytes ("byte string")
 * a sequence of zero or more Unicode code points ("text string")
 * a sequence of zero or more data items ("array")
@@ -741,7 +751,7 @@ the values assigned and available for simple types.
 {: #fpnoconttbl2 title='Simple Values'}
 
 The 5-bit values of 25, 26, and 27 are for 16-bit, 32-bit, and 64-bit
-IEEE 754 binary floating-point values.  These floating-point values
+IEEE 754 binary floating-point values {{-fp}}.  These floating-point values
 are encoded in the additional bytes of the appropriate size.  (See
 {{half-precision}} for some information about 16-bit floating point.)
 
@@ -2337,7 +2347,7 @@ void encode_sint(int64_t n) {
 # Half-Precision {#half-precision}
 
 As half-precision floating-point numbers were only added to IEEE 754
-in 2008, today's programming platforms often still only have limited
+in 2008 {{-fp}}, today's programming platforms often still only have limited
 support for them.  It is very easy to include at least decoding
 support for them even without such support.  An example of a small
 decoder for half-precision floating-point numbers in the C language is

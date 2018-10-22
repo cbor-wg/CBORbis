@@ -394,7 +394,7 @@ The specific data model for a CBOR-based protocol usually subsets the
 extended generic data model and assigns application semantics to the
 data items within this subset and its components.  When documenting
 such specific data models, where it is desired to specify the types of
-data items, it is preferred to identify the types by their names in
+data items, it is preferred to identify the types by the names they have in
 the generic data model ("negative integer", "array") instead of by
 referring to aspects of their CBOR representation ("major type 1",
 "major type 4").
@@ -1308,9 +1308,9 @@ floating point encoding that preserves its value, e.g., 0xf94580 for
 the number 5.5, and 0xfa45ad9c00 for the number 5555.5, unless the
 CBOR-based protocol specifically excludes the use of the shorter
 floating point encodings.  For NaN values, a shorter encoding is
-preferred if zero-padding the significand at the right reconstitutes the
-original NaN value (for many applications, the single NaN encoding 0xf97e00
-will suffice).
+preferred if zero-padding the shorter significand towards the right
+reconstitutes the original NaN value (for many applications, the
+single NaN encoding 0xf97e00 will suffice).
 
 
 ## Specifying Keys for Maps {#map-keys}
@@ -1418,18 +1418,35 @@ For some values at the data model level, CBOR provides multiple
 serializations.
 For many applications, it is desirable that an encoder always chooses
 a preferred serialization; however, the present specification does not
-put the burden of enforcing this on either encoder or decoder.
+put the burden of enforcing this preference on either encoder or decoder.
 
 Some constrained decoders may be limited in their ability to decode
-non-preferred serializations, e.g., if only integers below
-1_000_000_000 are expected in an application, the decoder may be
-unable to decode 64-bit arguments in integers.  An encoder that always
-uses preferred serialization is therefore more universally
-interoperable (and also less wasteful) than one that always uses
-64-bit integers.  Similarly, a decoder that does not rely on only ever
-receiving preferred serializations is more universally interoperable;
-it might very well optimize for the case of receiving preferred
-serializations, though.
+non-preferred serializations:  For example, if only integers below
+1_000_000_000 are expected in an application, the decoder may leave
+out the code that would be needed to decode 64-bit arguments in
+integers.  An encoder that always
+uses preferred serialization ("preferred encoder") interoperates with this decoder for the
+numbers that can occur in this application.
+More generally speaking, it therefore can be said that a preferred encoder
+is more universally
+interoperable (and also less wasteful) than one that, say, always uses
+64-bit integers.
+
+Similarly, a constrained encoder may be limited in the variety of
+representation variants it supports in such a way that it does not
+emit preferred serializations ("variant encoder"): Say, it could
+be designed to
+always use the 32-bit variant for an integer that it encodes even if a
+short representation is available (again,
+assuming that there is no application need for integers that can only
+be represented with the 64-bit variant).
+A decoder that does not rely on only ever
+receiving preferred serializations ("variation-tolerant decoder") can there be said to be more
+universally interoperable (it might very well optimize for the case of
+receiving preferred serializations, though).
+Full implementations of CBOR decoders are by definition
+variation-tolerant; the distinction is only relevant if a constrained
+implementation of a CBOR decoder meets a variant encoder.
 
 The preferred serialization always uses the shortest form of
 representing the argument ({{encoding}})); it also uses the shortest
@@ -2095,8 +2112,8 @@ encoding of length information designed by Klaus Hartke for CoAP.
 
 This document also incorporates suggestions made by many people,
 notably Dan Frost, James Manger, Joe Hildebrand, Keith Moore, Laurence
-Lundblade, Matthew
-Lepinski, Nico Williams, Phillip Hallam-Baker, Ray Polk, Tim Bray,
+Lundblade, Matthew Lepinski, Michael Richardson,
+Nico Williams, Phillip Hallam-Baker, Ray Polk, Tim Bray,
 Tony Finch, Tony Hansen, and Yaron Sheffer.
 
 

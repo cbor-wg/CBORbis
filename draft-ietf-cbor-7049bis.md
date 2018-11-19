@@ -857,7 +857,8 @@ Negative values (major type 1 and negative floating-point numbers) are
 interpreted as determined by the application requirements as there is
 no universal standard for UTC count-of-seconds time before
 1970-01-01T00:00Z (this is particularly true for points in time that
-precede discontinuities in national calendars).
+precede discontinuities in national calendars).  The same applies to
+non-finite values.
 
 To indicate fractional seconds, floating point values can be used
 within Tag 1 instead of integer values.  Note that this generally

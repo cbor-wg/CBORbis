@@ -820,7 +820,7 @@ the rest of this section.
 |        35 | UTF-8 string | Regular expression; see {{encodedtext}}                       |
 |        36 | UTF-8 string | MIME message; see {{encodedtext}}                             |
 | 37..55798 | (Unassigned) | (Unassigned)                                                  |
-|     55799 | multiple     | Self-describe CBOR; see {{self-describe}}                     |
+|     55799 | multiple     | Self-described CBOR; see {{self-describe}}                    |
 |    55800+ | (Unassigned) | (Unassigned)                                                  |
 {: #tagvalues title='Values for Tags'}
 
@@ -1036,7 +1036,7 @@ transported in base-encoded form for the former and in raw byte string
 form for the latter.
 
 
-### Self-Describe CBOR {#self-describe}
+### Self-Described CBOR {#self-describe}
 
 In many applications, it will be clear from the context that CBOR is
 being employed for encoding a data item.  For instance, a specific

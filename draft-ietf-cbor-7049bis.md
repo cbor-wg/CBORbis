@@ -17,7 +17,7 @@ pi:
 title: Concise Binary Object Representation (CBOR)
 abbrev: CBOR
 area: Internet
-kw: parser, encoder, binary format, data interchange format, JSON
+kw: parser, decoder, encoder, binary format, data interchange format, JSON
 # date: 2013-10
 author:
 - ins: C. Bormann
@@ -440,7 +440,7 @@ determine the number of data items enclosed.
 If the encoded sequence of bytes ends before the end of a data item
 would be reached, that encoding is not well-formed. If the encoded
 sequence of bytes still has bytes remaining
-after the outermost encoded item is parsed, that encoding is not a
+after the outermost encoded item is decoded, that encoding is not a
 single well-formed CBOR item.
 
 A CBOR decoder implementation can be based on a jump table with all
@@ -681,7 +681,7 @@ of its chunks.
 
 For indefinite-length byte strings, every data item (chunk) between
 the indefinite-length indicator and the "break" MUST be a
-definite-length byte string item; if the parser sees any item type
+definite-length byte string item; if the decoder sees any item type
 other than a byte string before it sees the "break", it is an error.
 
 For example, assume the sequence:
@@ -978,7 +978,7 @@ data model.
 
 Sometimes it is beneficial to carry an embedded CBOR data item that is
 not meant to be decoded immediately at the time the enclosing data
-item is being parsed.  Tag 24 (CBOR data item) can be used to tag the
+item is being decoded.  Tag 24 (CBOR data item) can be used to tag the
 embedded byte string as a data item encoded in CBOR format.
 
 
@@ -1056,7 +1056,7 @@ use as a distinguishing mark for frequently used file types.  In
 particular, it is not a valid start of a Unicode text in any Unicode
 encoding if followed by a valid CBOR data item.
 
-For instance, a decoder might be able to parse both CBOR and
+For instance, a decoder might be able to decode both CBOR and
 JSON. Such a decoder would need to mechanically distinguish the two
 formats. An easy way for an encoder to help the decoder would be to
 tag the entire CBOR item with tag 55799, the serialization of which
@@ -1158,8 +1158,8 @@ indicates there has been a problem, or take some other action.
 The representation of a CBOR data item has a specific length,
 determined by its initial bytes and by the structure of any data items
 enclosed in the data items.  If less data is available, this can be
-treated as a syntax error.  A decoder may also implement incremental
-parsing, that is, decode the data item as far as it is available and
+treated as a syntax error.  A decoder may also decode incrementally,
+that is, decode the data item as far as it is available and
 present the data found so far (such as in an event-based interface),
 with the option of continuing the decoding once further data is
 available.
@@ -1203,7 +1203,7 @@ unassigned and reserved for future versions of this document (see
 {{curating}}).  Since the overall syntax for these additional
 information values is not yet defined, a decoder that sees an
 additional information value that it does not understand cannot
-continue parsing.
+continue decoding.
 
 
 ## Other Decoding Errors {#semantic-errors}
@@ -1795,7 +1795,7 @@ CBOR has three major extension points:
   address the extensibility of this codepoint space.
 
 * the "additional information" space.  An implementation receiving an
-  unknown additional information value has no way to continue parsing,
+  unknown additional information value has no way to continue decoding,
   so allocating codepoints to this space is a major step.  There are
   also very few codepoints left.
 
@@ -2354,7 +2354,7 @@ well_formed_indefinite(mt, breakable) {
 {: #pseudo title='Pseudocode for Well-Formedness Check'}
 
 Note that the remaining complexity of a complete CBOR decoder is about
-presenting data that has been parsed to the application in an
+presenting data that has been decoded to the application in an
 appropriate form.
 
 Major types 0 and 1 are designed in such a way that they can be

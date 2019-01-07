@@ -547,7 +547,7 @@ referred to as "streaming" within a data item.)
 Indefinite-length arrays and maps are dealt with differently than
 indefinite-length byte strings and text strings.
 
-### The "break" stop code {#break}
+### The "break" Stop Code {#break}
 
 The "break" stop code is encoded with major type 7 and additional
 information value 31 (0b111_11111). It is not itself a data item: it

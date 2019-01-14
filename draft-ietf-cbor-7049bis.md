@@ -1280,12 +1280,19 @@ floating-point keys the values of which happen to be integer numbers in the same
 Decoders that deliver data items nested within a CBOR data item
 immediately on decoding them ("streaming decoders") often do not keep
 the state that is necessary to ascertain uniqueness of a key in a map.
-In this case, the surrounding application is responsible for satisfying
-the requirement that an non-well-formed map with duplicate keys is rejected.
 Similarly, an encoder that can start encoding data items before the
 enclosing data item is completely available ("streaming encoder") may
 want to reduce its overhead significantly by relying on its data
 source to maintain uniqueness.
+
+A CBOR-based protocol MUST define what
+to do when a receiving application does see multiple identical keys in
+a map.  The resulting rule in the protocol MUST respect the CBOR
+data model: it cannot prescribe a specific handling of the entries
+with the identical keys, except that it might have a rule that having
+identical keys in a map indicates a malformed map and that the decoder
+has to stop with an error. Duplicate keys are also prohibited by CBOR
+decoders that are using strict mode ({{strict-mode}}).
 
 The CBOR data model for maps does not allow ascribing semantics to the
 order of the key/value pairs in the map representation.  Thus, a
@@ -1553,6 +1560,8 @@ the effort to reliably detect invalid data items
 ({{semantic-errors}}). For example, a strict decoder needs to have an
 API that reports an error (and does not return data) for a CBOR data
 item that contains any of the following:
+
+* a map (major type 5) that has more than one entry with the same key
 
 * a tag that is used on a data item of the incorrect type
 

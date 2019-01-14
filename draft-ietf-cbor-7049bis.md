@@ -1450,7 +1450,7 @@ floating point encoding that preserves the value being encoded (see
 Definite length encoding is preferred whenever the length is known at
 the time the serialization of the item starts.
 
-## Canonical CBOR {#c14n}
+## Canonical Encoded CBOR {#c14n}
 
 Some protocols may want encoders to only emit CBOR in a particular
 canonical format; those protocols might also have the decoders check
@@ -1567,7 +1567,7 @@ requirements, the following keys are sorted correctly:
 1. "aa", encoded as 0x626161.
 1. \[100], encoded as 0x811864.
 
-## Strict Mode {#strict-mode}
+## Strict Decoding Mode {#strict-mode}
 
 Some areas of application of CBOR do not require canonicalization
 ({{c14n}}) but may require that different decoders reach the same

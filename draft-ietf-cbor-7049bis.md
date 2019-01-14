@@ -871,16 +871,29 @@ the tagged value to be an integer (or a floating-point value) only.
 ### Bignums {#bignums}
 
 Protocols using tag values 2 and 3 extend the generic data model
-({{cbor-data-models}}) with "bignums" representing arbitrary
+({{cbor-data-models}}) with "bignums" representing arbitrarily sized
 integers. In the generic data model, bignum values are not equal to
 integers from the basic data model, but specific data models can
-define that equivalence.
+define that equivalence, and preferred encoding never makes use of
+bignums that also can be expressed as basic integers (see below).
 
 Bignums are encoded as a byte string data item, which is interpreted
 as an unsigned integer n in network byte order.  For tag value 2, the
 value of the bignum is n.  For tag value 3, the value of the bignum is
--1 - n.  Decoders that understand these tags MUST be able to decode
-bignums that have leading zeroes.
+-1 - n.  The preferred encoding of the byte string is to leave out any
+leading zeroes (note that this means the preferred encoding for n = 0
+is the empty byte string, but see below).
+Decoders that understand these tags MUST be able to decode
+bignums that do have leading zeroes.
+The preferred encoding of an integer that can be represented using
+major type 0 or 1 is to encode it this way instead of as a bignum
+(which means that the empty string never occurs in a bignum when using
+preferred encoding).
+Note that this means the non-preferred choice of a bignum
+representation instead of a basic integer for encoding a number is not
+intended to have application semantics (just as the choice of a longer
+basic integer representation than needed, such as 0x1800 for 0x00 does
+not).
 
 For example, the number 18446744073709551616 (2\*\*64) is represented
 as 0b110_00010 (major type 6, tag 2), followed by 0b010_01001 (major

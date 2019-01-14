@@ -1001,11 +1001,10 @@ contained in the data item, except for those contained in a nested
 data item tagged with an expected conversion.
 
 These three tag types suggest conversions to three of the base data
-encodings defined in {{RFC4648}}.  For base64url encoding, padding is
+encodings defined in {{RFC4648}}.  For base64url encoding (tag 21)
+and base64 endcoding (tag 22), padding is
 not used (see Section 3.2 of RFC 4648); that is, all trailing equals
-signs ("=") are removed from the base64url-encoded string.  Later tags
-might be defined for other data encodings of RFC 4648 or for other
-ways to encode binary data in strings.
+signs ("=") are removed from the enconded string.
 
 
 #### Encoded Text {#encodedtext}

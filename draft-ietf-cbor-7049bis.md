@@ -746,11 +746,6 @@ the values assigned and available for simple types.
 | 32..255 | (Unassigned)    |
 {: #fpnoconttbl2 title='Simple Values'}
 
-The 5-bit values of 25, 26, and 27 are for 16-bit, 32-bit, and 64-bit
-IEEE 754 binary floating-point values {{-fp}}.  These floating-point values
-are encoded in the additional bytes of the appropriate size.  (See
-{{half-precision}} for some information about 16-bit floating point.)
-
 An encoder
 MUST NOT encode False as the two-byte sequence of 0xf814,
 MUST NOT encode True as the two-byte sequence of 0xf815,
@@ -758,6 +753,11 @@ MUST NOT encode Null as the two-byte sequence of 0xf816, and
 MUST NOT encode Undefined value as the two-byte sequence of 0xf817.
 A decoder MUST treat these two-byte sequences as an error.
 Similar prohibitions apply to the unassigned simple values as well.
+
+The 5-bit values of 25, 26, and 27 are for 16-bit, 32-bit, and 64-bit
+IEEE 754 binary floating-point values {{-fp}}.  These floating-point values
+are encoded in the additional bytes of the appropriate size.  (See
+{{half-precision}} for some information about 16-bit floating point.)
 
 ## Optional Tagging of Items {#tags}
 

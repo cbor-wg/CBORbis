@@ -1450,7 +1450,7 @@ floating point encoding that preserves the value being encoded (see
 Definite length encoding is preferred whenever the length is known at
 the time the serialization of the item starts.
 
-## Canonical Encoded CBOR {#c14n}
+## Canonically Encoded CBOR {#c14n}
 
 Some protocols may want encoders to only emit CBOR in a particular
 canonical format; those protocols might also have the decoders check

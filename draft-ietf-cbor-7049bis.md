@@ -409,7 +409,7 @@ floats as integers or vice versa, perhaps to save encoded bytes.
 
 A CBOR data item  ({{cbor-data-models}}) is encoded to or decoded from
 a byte string as described in this section.  The encoding is
-summarized in {{jumptable}}.  An encoder MUST produce only valid
+summarized in {{jumptable}}.  An encoder MUST produce only well-formed
 items.  A decoder MUST stop and return an error with no data when it
 encounters a non-well-formed item.
 
@@ -1091,7 +1091,8 @@ pair whose key is 0xab01".
 
 CBOR-based protocols MUST specify how their decoders handle
 invalid and other unexpected data.  CBOR-based protocols
-MAY specify that they treat arbitrary valid data as unexpected.  An
+MAY specify that they treat arbitrary valid data as unexpected.
+Encoders for CBOR-based protocols MUST produce only valid items. An
 encoder can be capable of encoding as many or as few types of values
 as is required by the protocol in which it is used; a decoder can be
 capable of understanding as many or as few types of values as is

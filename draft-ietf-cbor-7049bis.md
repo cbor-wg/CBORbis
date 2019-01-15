@@ -553,16 +553,19 @@ The "break" stop code is encoded with major type 7 and additional
 information value 31 (0b111_11111). It is not itself a data item: it
 is just a syntactic feature to close an indefinite-length item.
 
-If the "break" stop code appears anywhere other than directly inside
-an indefinite-length string, array, or map—for example directly inside
-a definite-length array or map—the enclosing item is not well-formed.
+If the "break" stop code appears anywhere where a data item is expected, other than directly inside
+an indefinite-length string, array, or map — for example directly inside
+a definite-length array or map — the enclosing item is not well-formed.
 
 ### Indefinite-Length Arrays and Maps
 
 Indefinite-length arrays and maps are represented using their major
 type with the additional information value of 31, followed by an
 arbitrary-length sequence of items for an array or key/value pairs for
-a map, followed by the "break" stop code ({{break}}).
+a map, followed by the "break" stop code ({{break}}).  In other words, indefinite-length
+arrays and maps look identical to other arrays and maps except for
+beginning with the additional information value of 31 and ending with the
+"break" stop code.
 
 If the break stop code appears after a key in a map, in place of that
 key's value, the map is not well-formed.
@@ -663,14 +666,14 @@ BF           -- Start indefinite-length map
 
 ### Indefinite-Length Byte Strings and Text Strings
 
-Indefinite-length strings consist of a byte containing the major type
+Indefinite-length strings a represented by a byte containing the major type
 and additional information value of 31, followed by a series of byte
 or text strings ("chunks") that have definite lengths, followed by the
 "break" stop code ({{break}}).  The data item represented by the
 indefinite-length string is the concatenation of the chunks.
 
 If any item between the indefinite-length string indicator
-(0b010_11111 or 0b011_11111) and the "break" is not a definite-length
+(0b010_11111 or 0b011_11111) and the "break" stop code is not a definite-length
 string item of the same major type, the string is not well-formed.
 
 If any definite-length text string inside an indefinite-length text

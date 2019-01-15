@@ -2073,10 +2073,10 @@ which very large sizes are given can also attempt to exploit integer
 overflow vulnerabilities.)
 
 Protocols that are used in a security
-context should be defined in such a way that multiple
+context should be defined in such a way that potential multiple
 interpretations are reliably reduced to a single one. 
-For example, an on-path attacker could make use of duplicate keys in
-maps and precision issues in numbers to make one decoder base its
+For example, an attacker could make use of duplicate keys in
+maps or precision issues in numbers to make one decoder base its
 decisions on a different interpretation than the one that will be used
 by a second decoder.
 To facilitate

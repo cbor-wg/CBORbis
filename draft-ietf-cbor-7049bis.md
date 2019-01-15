@@ -547,27 +547,30 @@ referred to as "streaming" within a data item.)
 Indefinite-length arrays and maps are dealt with differently than
 indefinite-length byte strings and text strings.
 
+### The "break" Stop Code {#break}
+
+The "break" stop code is encoded with major type 7 and additional
+information value 31 (0b111_11111). It is not itself a data item: it
+is just a syntactic feature to close an indefinite-length item.
+
+If the "break" stop code appears anywhere where a data item is expected, other than directly inside
+an indefinite-length string, array, or map — for example directly inside
+a definite-length array or map — the enclosing item is not well-formed.
+
 ### Indefinite-Length Arrays and Maps
 
-Indefinite-length arrays and maps are simply opened without indicating
-the number of data items that will be included in the array or map,
-using the additional information value of 31. The initial major type
-and additional information byte is followed by the elements of the
-array or map, just as they would be in other arrays or maps. The end
-of the array or map is indicated by encoding a "break" stop code in a
-place where the next data item would normally have been included.  The
-"break" is encoded with major type 7 and additional information value
-31 (0b111_11111) but is not itself a data item: it is just a syntactic
-feature to close the array or map.  That is, the "break" stop code
-comes after the last item in the array or map, and it cannot occur
-anywhere else in place of a data item. In this way, indefinite-length
+Indefinite-length arrays and maps are represented using their major
+type with the additional information value of 31, followed by an
+arbitrary-length sequence of items for an array or key/value pairs for
+a map, followed by the "break" stop code ({{break}}).  In other words, indefinite-length
 arrays and maps look identical to other arrays and maps except for
-beginning with the additional information value 31 and ending with the
+beginning with the additional information value of 31 and ending with the
 "break" stop code.
 
-Arrays and maps with indefinite lengths allow any number of items (for
-arrays) and key/value pairs (for maps) to be given before the "break"
-stop code.  There is no restriction against nesting indefinite-length
+If the break stop code appears after a key in a map, in place of that
+key's value, the map is not well-formed.
+
+There is no restriction against nesting indefinite-length
 array or map items.  A "break" only terminates a single item, so
 nested indefinite-length items need exactly as many "break" stop codes
 as there are type bytes starting an indefinite-length item.
@@ -663,26 +666,21 @@ BF           -- Start indefinite-length map
 
 ### Indefinite-Length Byte Strings and Text Strings
 
-Indefinite-length byte strings and text strings are actually a
-concatenation of zero or more definite-length byte or text strings
-("chunks") that are together treated as one contiguous
-string. Indefinite-length strings are opened with the major type and
-additional information value of 31, but what follows are a series of
-byte or text strings that have definite lengths (the chunks). The end
-of the series of chunks is indicated by encoding the "break" stop code
-(0b111_11111) in a place where the next chunk in the series would
-occur. The contents of the chunks are concatenated together, and the
-overall length of the indefinite-length string will be the sum of the
-lengths of all of the chunks.  In summary, an indefinite-length string
-is encoded similarly to how an indefinite-length array of its chunks
-would be encoded, except that the major type of the indefinite-length
-string is that of a (text or byte) string and matches the major types
-of its chunks.
+Indefinite-length strings a represented by a byte containing the major type
+and additional information value of 31, followed by a series of byte
+or text strings ("chunks") that have definite lengths, followed by the
+"break" stop code ({{break}}).  The data item represented by the
+indefinite-length string is the concatenation of the chunks.
 
-For indefinite-length byte strings, every data item (chunk) between
-the indefinite-length indicator and the "break" MUST be a
-definite-length byte string item; if the decoder sees any item type
-other than a byte string before it sees the "break", it is an error.
+If any item between the indefinite-length string indicator
+(0b010_11111 or 0b011_11111) and the "break" stop code is not a definite-length
+string item of the same major type, the string is not well-formed.
+
+If any definite-length text string inside an indefinite-length text
+string is invalid, the indefinite-length text string is invalid.  Note
+that this implies that the bytes of a single UTF-8 character cannot be
+spread between chunks: a new chunk can only be started at a character
+boundary.
 
 For example, assume the sequence:
 
@@ -700,12 +698,6 @@ For example, assume the sequence:
 After decoding, this results in a single byte string with seven bytes:
 0xaabbccddeeff99.
 
-Text strings with indefinite lengths act the same as byte strings with
-indefinite lengths, except that all their chunks MUST be
-definite-length text strings.  Note that this implies that the bytes
-of a single UTF-8 character cannot be spread between chunks: a new
-chunk can only be started at a character boundary.
-
 
 ## Floating-Point Numbers and Values with No Content {#fpnocont}
 
@@ -716,15 +708,15 @@ meaning, as defined in {{fpnoconttbl}}.  Like the major types for
 integers, items of this major type do not carry content data; all the
 information is in the initial bytes.
 
-| 5-Bit Value | Semantics                                        |
-|-------------+--------------------------------------------------|
-|       0..23 | Simple value (value 0..23)                       |
-|          24 | Simple value (value 32..255 in following byte)   |
-|          25 | IEEE 754 Half-Precision Float (16 bits follow)   |
-|          26 | IEEE 754 Single-Precision Float (32 bits follow) |
-|          27 | IEEE 754 Double-Precision Float (64 bits follow) |
-|       28-30 | (Unassigned)                                     |
-|          31 | "break" stop code for indefinite-length items    |
+| 5-Bit Value | Semantics                                                 |
+|-------------+-----------------------------------------------------------|
+|       0..23 | Simple value (value 0..23)                                |
+|          24 | Simple value (value 32..255 in following byte)            |
+|          25 | IEEE 754 Half-Precision Float (16 bits follow)            |
+|          26 | IEEE 754 Single-Precision Float (32 bits follow)          |
+|          27 | IEEE 754 Double-Precision Float (64 bits follow)          |
+|       28-30 | (Unassigned)                                              |
+|          31 | "break" stop code for indefinite-length items ({{break}}) |
 {: #fpnoconttbl title='Values for Additional Information in Major Type 7'}
 
 As with all other major types, the 5-bit value 24 signifies a

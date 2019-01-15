@@ -1004,7 +1004,9 @@ These three tag types suggest conversions to three of the base data
 encodings defined in {{RFC4648}}.  For base64url encoding (tag 21),
 padding is not used (see Section 3.2 of RFC 4648); that is, all
 trailing equals signs ("=") are removed from the encoded string.
-For both base64url and base64, padding bits are set to zero, and encoding
+For base64 encoding (tag 22), padding is used as defined in RFC 4648.
+For both base64url and base64, padding bits are set to zero (see
+Section 3.5 of RFC 4648), and encoding
 is performed without the inclusion of any line breaks, whitespace, or
 other additional characters.  Note that, for all three tags, the
 encoding of the empty byte string is the empty text string.

@@ -2083,7 +2083,7 @@ overflow vulnerabilities.)
 
 Protocols that are used in a security
 context should be defined in such a way that potential multiple
-interpretations are reliably reduced to a single one. 
+interpretations are reliably reduced to a single one.
 For example, an attacker could make use of duplicate keys in
 maps or precision issues in numbers to make one decoder base its
 decisions on a different interpretation than the one that will be used

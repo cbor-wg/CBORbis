@@ -666,7 +666,7 @@ BF           -- Start indefinite-length map
 
 ### Indefinite-Length Byte Strings and Text Strings
 
-Indefinite-length strings a represented by a byte containing the major type
+Indefinite-length strings are represented by a byte containing the major type
 and additional information value of 31, followed by a series of byte
 or text strings ("chunks") that have definite lengths, followed by the
 "break" stop code ({{break}}).  The data item represented by the
@@ -2554,7 +2554,7 @@ The following is a list of known changes from RFC 7049. This list
 is non-authoritative. It is meant to help reviewers see the
 significant differences.
 
-* Updated reference for \[RFC4267\] to {{-json}} in many places
+* Updated reference for \[RFC4627\] to {{-json}} in many places
 
 * Updated reference for \[CNN-TERMS\] to {{RFC7228}}
 

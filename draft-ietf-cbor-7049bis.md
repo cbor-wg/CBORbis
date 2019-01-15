@@ -2077,15 +2077,14 @@ appropriate resource management to mitigate these attacks.  (Items for
 which very large sizes are given can also attempt to exploit integer
 overflow vulnerabilities.)
 
-Applications where a CBOR data item is examined by a gatekeeper
-function and later used by a different application may exhibit
-vulnerabilities when multiple interpretations of the data item are
-possible. For example, an attacker could make use of duplicate keys in
-maps and precision issues in numbers to make the gatekeeper base its
+Protocols that are used in a security
+context should be defined in such a way that potential multiple
+interpretations are reliably reduced to a single one. 
+For example, an attacker could make use of duplicate keys in
+maps or precision issues in numbers to make one decoder base its
 decisions on a different interpretation than the one that will be used
-by the second application.  Protocols that are used in a security
-context should be defined in such a way that these multiple
-interpretations are reliably reduced to a single one.  To facilitate
+by a second decoder.
+To facilitate
 this, encoder and decoder implementations used in such contexts should
 provide at least one strict mode of operation ({{strict-mode}}).
 

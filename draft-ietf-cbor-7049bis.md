@@ -720,7 +720,7 @@ information is in the initial bytes.
 |          25 | IEEE 754 Half-Precision Float (16 bits follow)            |
 |          26 | IEEE 754 Single-Precision Float (32 bits follow)          |
 |          27 | IEEE 754 Double-Precision Float (64 bits follow)          |
-|       28-30 | Not well-formed                                           |
+|       28-30 | Unassigned, currently not well-formed                     |
 |          31 | "break" stop code for indefinite-length items ({{break}}) |
 {: #fpnoconttbl title='Values for Additional Information in Major Type 7'}
 

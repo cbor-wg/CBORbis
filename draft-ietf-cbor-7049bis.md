@@ -1357,7 +1357,7 @@ The CBOR data model for maps does not allow ascribing semantics to the
 order of the key/value pairs in the map representation.  Thus, a
 CBOR-based protocol MUST NOT specify that changing the key/value pair
 order in a map would change the semantics, except to specify that some,
-e.g. non-canonical, orders are disallowed. Timing, cache usage, and
+e.g. non-deterministic, orders are disallowed. Timing, cache usage, and
 other side channels are not considered part of the semantics.[^_20_cabo]
 
 [^_20_cabo]: I don't understand this last sentence.  Can we leave it out?
@@ -1459,16 +1459,16 @@ floating point encoding that preserves the value being encoded (see
 Definite length encoding is preferred whenever the length is known at
 the time the serialization of the item starts.
 
-## Canonically Encoded CBOR {#c14n}
+## Deterministically Encoded CBOR {#det_enc}
 
 Some protocols may want encoders to only emit CBOR in a particular
-canonical format; those protocols might also have the decoders check
-that their input is canonical. Those protocols are free to define what
-they mean by a canonical format and what encoders and decoders are
+deterministic format; those protocols might also have the decoders check
+that their input is deterministic. Those protocols are free to define what
+they mean by a "deterministic format" and what encoders and decoders are
 expected to do. This section defines a set of restrictions that can
-serve as the base of such a canonical format.
+serve as the base of such a deterministic format.
 
-A CBOR encoding satisfies the "core canonicalization requirements" if
+A CBOR encoding satisfies the "core deterministic encoding requirements" if
 it satisfies the following restrictions:
 
 * Arguments (see {{encoding}}) for integers, lengths in major types 2
@@ -1487,7 +1487,7 @@ it satisfies the following restrictions:
     only with an additional uint32_t.
 
 * The keys in every map MUST be sorted in the bytewise lexicographic
-  order of their canonical encodings. For example, the following keys
+  order of their deterministic encodings. For example, the following keys
   are sorted correctly:
 
   1. 10, encoded as 0x0a.
@@ -1502,7 +1502,7 @@ it satisfies the following restrictions:
 * Indefinite-length items MUST NOT appear. They can be encoded as
   definite-length items instead.
 
-If a protocol allows for IEEE floats, then additional canonicalization
+If a protocol allows for IEEE floats, then additional deterministic encoding
 rules might need to be added.  One example rule might be to have all
 floats start as a 64-bit float, then do a test conversion to a 32-bit
 float; if the result is the same numeric value, use the shorter value
@@ -1511,21 +1511,21 @@ rule selects 16-bit float for positive and negative Infinity as well.)
 Also, there are many representations for NaN. If NaN is an allowed
 value, it must always be represented as 0xf97e00.
 
-CBOR tags present additional considerations for canonicalization. The
-absence or presence of tags in a canonical format is determined by the
+CBOR tags present additional considerations for deterministic encoding. The
+absence or presence of tags in a deterministic format is determined by the
 optionality of the tags in the protocol. In a CBOR-based protocol that
-allows optional tagging anywhere, the canonical format must not allow
+allows optional tagging anywhere, the deterministic format must not allow
 them.  In a protocol that requires tags in certain places, the tag
-needs to appear in the canonical format. A CBOR-based protocol that
-uses canonicalization might instead say that all tags that appear in a
+needs to appear in the deterministic format. A CBOR-based protocol that
+uses deterministic encoding might instead say that all tags that appear in a
 message must be retained regardless of whether they are optional.
 
 Protocols that include floating, big integer, or other complex values
-need to define extra requirements on their canonical encodings. For
+need to define extra requirements on their deterministic encodings. For
 example:
 
 * If a protocol includes a field that can express floating values
-  ({{fpnocont}}), the protocol's canonicalization needs to specify
+  ({{fpnocont}}), the protocol's deterministic encoding needs to specify
   whether the integer 1.0 is encoded as 0x01, 0xf93c00, 0xfa3f800000,
   or 0xfb3ff0000000000000. Three sensible rules for this are:
   1. Encode integral values that fit in 64 bits as values from major
@@ -1539,32 +1539,32 @@ example:
   If NaN is an allowed value, the protocol needs to pick a single
   representation, for example 0xf97e00.
 * If a protocol includes a field that can express integers larger than
-  2^64 using tag 2 ({{bignums}}), the protocol's canonicalization
+  2^64 using tag 2 ({{bignums}}), the protocol's deterministic encoding
   needs to specify whether small integers are expressed using the tag
   or major types 0 and 1.
 * A protocol might give encoders the choice of representing a URL as
   either a text string or, using {{encodedtext}}, tag 32 containing a
-  text string. This protocol's canonicalization needs to either
+  text string. This protocol's deterministic encoding needs to either
   require that the tag is present or require that it's absent, not
   allow either one.
 
 ### Length-first map key ordering
 
-The core canonicalization requirements sort map keys in a different
+The core deterministic encoding requirements sort map keys in a different
 order from the one suggested by {{?RFC7049}}. Protocols that need to
 be compatible with {{?RFC7049}}'s order can instead be specified in
-terms of this specification's "length-first core canonicalization
+terms of this specification's "length-first core deterministic encoding
 requirements":
 
-A CBOR encoding satisfies the "length-first core canonicalization
-requirements" if it satisfies the core canonicalization requirements
+A CBOR encoding satisfies the "length-first core deterministic encoding
+requirements" if it satisfies the core deterministic encoding requirements
 except that the keys in every map MUST be sorted such that:
 
 1. If two keys have different lengths, the shorter one sorts earlier;
 1. If two keys have the same length, the one with the lower value in
    (byte-wise) lexical order sorts earlier.
 
-For example, under the length-first core canonicalization
+For example, under the length-first core deterministic encoding
 requirements, the following keys are sorted correctly:
 
 1. 10, encoded as 0x0a.
@@ -1578,8 +1578,8 @@ requirements, the following keys are sorted correctly:
 
 ## Strict Decoding Mode {#strict-mode}
 
-Some areas of application of CBOR do not require canonicalization
-({{c14n}}) but may require that different decoders reach the same
+Some areas of application of CBOR do not require deterministic encoding
+({{det_enc}}) but may require that different decoders reach the same
 (semantically equivalent) results, even in the presence of potentially
 malicious data.  This can be required if one application (such as a
 firewall or other protecting entity) makes a decision based on the

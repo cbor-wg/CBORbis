@@ -738,13 +738,12 @@ the values assigned and available for simple types.
 | 32..255 | (Unassigned)    |
 {: #fpnoconttbl2 title='Simple Values'}
 
-An encoder
-MUST NOT encode False as the two-byte sequence of 0xf814,
-MUST NOT encode True as the two-byte sequence of 0xf815,
-MUST NOT encode Null as the two-byte sequence of 0xf816, and
-MUST NOT encode Undefined value as the two-byte sequence of 0xf817.
-A decoder MUST treat these two-byte sequences as an error.
-Similar prohibitions apply to the unassigned simple values as well.
+An encoder MUST NOT issue two-byte sequences that start with 0xf8
+(major type = 7, additional information = 24) and continue with a byte
+less than 0x20 (32 decimal).  Such sequences are not well-formed.
+(This implies that an encoder cannot encode false, true, null, or
+undefined in two-byte sequences, only the one-byte variants of these
+are well-formed.)
 
 The 5-bit values of 25, 26, and 27 are for 16-bit, 32-bit, and 64-bit
 IEEE 754 binary floating-point values {{-fp}}.  These floating-point values
@@ -2337,6 +2336,7 @@ well_formed (breakable = false) {
     case 4: for (i = 0; i < val; i++) well_formed(); break;
     case 5: for (i = 0; i < val*2; i++) well_formed(); break;
     case 6: well_formed(); break;     // 1 embedded data item
+    case 7: if (ai == 24 && val < 32) fail(); // bad simple
   }
   return mt;                    // finite data item
 }

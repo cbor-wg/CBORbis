@@ -1357,7 +1357,9 @@ The CBOR data model for maps does not allow ascribing semantics to the
 order of the key/value pairs in the map representation.  Thus, a
 CBOR-based protocol MUST NOT specify that changing the key/value pair
 order in a map would change the semantics, except to specify that some,
-e.g. non-deterministic, orders are disallowed. Timing, cache usage, and
+orders are disallowed, for example where they would not meet the
+requirements of a deterministic
+encoding ({{det-enc}}. Timing, cache usage, and
 other side channels are not considered part of the semantics.[^_20_cabo]
 
 [^_20_cabo]: I don't understand this last sentence.  Can we leave it out?
@@ -1459,11 +1461,12 @@ floating point encoding that preserves the value being encoded (see
 Definite length encoding is preferred whenever the length is known at
 the time the serialization of the item starts.
 
-## Deterministically Encoded CBOR {#det_enc}
+## Deterministically Encoded CBOR {#det-enc}
 
 Some protocols may want encoders to only emit CBOR in a particular
 deterministic format; those protocols might also have the decoders check
-that their input is deterministic. Those protocols are free to define what
+that their input is in that deterministic format. Those protocols are
+free to define what
 they mean by a "deterministic format" and what encoders and decoders are
 expected to do. This section defines a set of restrictions that can
 serve as the base of such a deterministic format.
@@ -1551,7 +1554,8 @@ example:
 ### Length-first map key ordering
 
 The core deterministic encoding requirements sort map keys in a different
-order from the one suggested by {{?RFC7049}}. Protocols that need to
+order from the one suggested by Section 3.9 of {{?RFC7049}} (called
+"Canonical CBOR" there). Protocols that need to
 be compatible with {{?RFC7049}}'s order can instead be specified in
 terms of this specification's "length-first core deterministic encoding
 requirements":
@@ -1576,10 +1580,18 @@ requirements, the following keys are sorted correctly:
 1. "aa", encoded as 0x626161.
 1. \[100], encoded as 0x811864.
 
+(While {{RFC7049}} used the term "Canonical CBOR" for its form of
+requirements on deterministic encoding, we are avoiding this term here
+as it is often associated with specific usages of deterministic
+encoding only.  The terms are essentially exchangeable, however, and
+the set of core requirements set up by the present document could also be
+called "Canonical CBOR" while the length-first-ordered version of that
+could be called "Old Canonical CBOR".)
+
 ## Strict Decoding Mode {#strict-mode}
 
 Some areas of application of CBOR do not require deterministic encoding
-({{det_enc}}) but may require that different decoders reach the same
+({{det-enc}}) but may require that different decoders reach the same
 (semantically equivalent) results, even in the presence of potentially
 malicious data.  This can be required if one application (such as a
 firewall or other protecting entity) makes a decision based on the

@@ -1581,12 +1581,12 @@ requirements, the following keys are sorted correctly:
 1. "aa", encoded as 0x626161.
 1. \[100], encoded as 0x811864.
 
-(While {{RFC7049}} used the term "Canonical CBOR" for its form of
-requirements on deterministic encoding, we are avoiding this term here
-as it is often associated with specific usages of deterministic
+(Although {{RFC7049}} used the term "Canonical CBOR" for its form of
+requirements on deterministic encoding, this document avoids this term
+because "canonicalization" is often associated with specific uses of deterministic
 encoding only.  The terms are essentially exchangeable, however, and
-the set of core requirements set up by the present document could also be
-called "Canonical CBOR" while the length-first-ordered version of that
+the set of core requirements in this document could also be
+called "Canonical CBOR", while the length-first-ordered version of that
 could be called "Old Canonical CBOR".)
 
 ## Strict Decoding Mode {#strict-mode}

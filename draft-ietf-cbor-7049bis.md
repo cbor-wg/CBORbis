@@ -1471,6 +1471,8 @@ they mean by a "deterministic format" and what encoders and decoders are
 expected to do. This section defines a set of restrictions that can
 serve as the base of such a deterministic format.
 
+### Core Deterministic Encoding Requirements
+
 A CBOR encoding satisfies the "core deterministic encoding requirements" if
 it satisfies the following restrictions:
 
@@ -1504,6 +1506,8 @@ it satisfies the following restrictions:
 
 * Indefinite-length items MUST NOT appear. They can be encoded as
   definite-length items instead.
+
+### Additional Deterministic Encoding Considerations
 
 If a protocol allows for IEEE floats, then additional deterministic encoding
 rules might need to be added.  One example rule might be to have all

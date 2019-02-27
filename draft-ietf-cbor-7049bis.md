@@ -1359,10 +1359,11 @@ CBOR-based protocol MUST NOT specify that changing the key/value pair
 order in a map would change the semantics, except to specify that some,
 orders are disallowed, for example where they would not meet the
 requirements of a deterministic
-encoding ({{det-enc}}. Timing, cache usage, and
-other side channels are not considered part of the semantics.[^_20_cabo]
-
-[^_20_cabo]: I don't understand this last sentence.  Can we leave it out?
+encoding ({{det-enc}}.
+(Any secondary effects of map ordering sich as on timing, cache usage,
+and other potential side channels are not considered part of the
+semantics but may be enough reason on its own to go for a
+deterministic encoding format.)
 
 Applications for constrained devices that have maps with 24 or fewer
 frequently used keys should consider using small integers (and those

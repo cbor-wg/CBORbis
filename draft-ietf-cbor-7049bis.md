@@ -2188,7 +2188,6 @@ showing a tagged byte string (such as 2(h'010000000000000000')).
 | null                                                                                          |                                                          0xf6 |
 | undefined                                                                                     |                                                          0xf7 |
 | simple(16)                                                                                    |                                                          0xf0 |
-| simple(24)                                                                                    |                                                        0xf818 |
 | simple(255)                                                                                   |                                                        0xf8ff |
 | 0("2013-03-21T20:04:00Z")                                                                     |               0xc074323031332d30332d32315432303a 30343a30305a |
 | 1(1363896240)                                                                                 |                                                0xc11a514b67b0 |

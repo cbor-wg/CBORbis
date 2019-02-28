@@ -287,7 +287,7 @@ Well-formed:
 : A data item that follows the syntactic structure of CBOR.  A
   well-formed data item uses the initial bytes and the byte strings
   and/or data items that are implied by their values as defined in
-  CBOR and is not followed by extraneous data. CBOR parsers only
+  CBOR and is not followed by extraneous data. CBOR decoders only
   return contents from well-formed data items.
 
 Valid:
@@ -423,12 +423,12 @@ Less than 24:
 : The argument's value is the value of the additional information.
 
 24, 25, 26, or 27:
-: The argument's value is held in the following 1, 2, 4, or 8,
-  respectively, bytes, in network byte order.
+: The argument's value is held in the following 1, 2, 4, or 8 bytes,
+  respectively, in network byte order.
 
 28, 29, 30:
-: These values are reserved for future expansion.  In this version of
-  CBOR, the encoded item is not well-formed.
+: These values are reserved for future additions to the CBOR format.
+  In this version of CBOR, the encoded item is not well-formed.
 
 31:
 : If the major type is 0, 1, or 6, the encoded item is
@@ -445,8 +445,9 @@ determine the number of data items enclosed.
 If the encoded sequence of bytes ends before the end of a data item,
 that item is not well-formed. If the encoded
 sequence of bytes still has bytes remaining
-after the outermost encoded item is decoded, that outer item is
-not well-formed.
+after the outermost encoded item is decoded, the decoder MAY either
+treat that outer item as not well-formed or just identify the start of
+the remaining bytes.
 
 A CBOR decoder implementation can be based on a jump table with all
 256 defined values for the initial byte ({{jumptable}}).  A decoder in
@@ -720,7 +721,7 @@ information is in the initial bytes.
 |          25 | IEEE 754 Half-Precision Float (16 bits follow)            |
 |          26 | IEEE 754 Single-Precision Float (32 bits follow)          |
 |          27 | IEEE 754 Double-Precision Float (64 bits follow)          |
-|       28-30 | Unassigned, currently not well-formed                     |
+|       28-30 | Unassigned, not well-formed now                           |
 |          31 | "break" stop code for indefinite-length items ({{break}}) |
 {: #fpnoconttbl title='Values for Additional Information in Major Type 7'}
 
@@ -1132,12 +1133,12 @@ A generic CBOR decoder can decode all well-formed CBOR data and
 present them to an application.  See {{pseudocode}}.
 
 Even though CBOR attempts to minimize these cases, not all well-formed
-CBOR data is valid: for example, the text string `0x62c0ae` is not
-valid UTF-8 and so not a valid CBOR item.  Also, specific tags may
+CBOR data is valid: for example, the encoded text string `0x62c0ae` is
+not valid UTF-8 and so not a valid CBOR item.  Also, specific tags may
 make semantic constraints that may be violated, such as a bignum tag
-containing another tag, or a date tag containing a byte string or a
-text string with contents that don't match {{RFC3339}}'s `date-time`
-production.  There is
+containing another tag, or an instance of tag 0 containing a byte
+string or a text string with contents that don't match {{RFC3339}}'s
+`date-time` production.  There is
 no requirement that generic encoders and decoders make unnatural
 choices for their application interface to enable the processing of
 invalid data.  Generic encoders and decoders are expected to forward

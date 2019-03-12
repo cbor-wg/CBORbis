@@ -1977,7 +1977,7 @@ In addition, First Come First Served requests should include:
 
 ## Media Type ("MIME Type")
 
-The Internet media type {{RFC6838}} for CBOR data is application/cbor.
+The Internet media type {{RFC6838}} for a single encoded CBOR data item is application/cbor.
 
 Type name: application
 

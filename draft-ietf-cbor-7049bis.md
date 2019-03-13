@@ -410,9 +410,10 @@ floats as integers or vice versa, perhaps to save encoded bytes.
 A CBOR data item ({{cbor-data-models}}) is encoded to or decoded from
 a byte string carrying a well-formed encoded data item as described in this section.  The encoding is
 summarized in {{jumptable}}.  An encoder MUST produce only well-formed
-encoded data items.  A decoder MUST NOT claim that it successfully
-decoded the encoded data item when it
-encounters input that is not a well-formed CBOR data item.
+encoded data items.  A decoder MUST NOT return a decoded data item when it
+encounters input that is not a well-formed encoded CBOR data item (this does
+not detract from the usefulness of diagnostic and recovery tools that
+might make available some information from a damaged encoded CBOR data item).
 
 The initial byte of each encoded data item contains both information
 about the major type (the high-order 3 bits, described in
@@ -437,7 +438,7 @@ Less than 24:
 31:
 : No argument value is derived.
   If the major type is 0, 1, or 6, the encoded item is not
-  well-formed.  For major tyoes 2 to 5, the item's length is
+  well-formed.  For major types 2 to 5, the item's length is
   indefinite, and for major type 7, the byte does not consitute a data
   item at all but terminates an indefinite length item; both are
   described in {{indefinite}}.
@@ -1110,9 +1111,11 @@ restrictions allows CBOR to be used in extremely constrained
 environments.
 
 This section discusses some considerations in creating CBOR-based
-protocols.  With a single exception, it is advisory only and explicitly excludes any language
+protocols.  With few exceptions, it is advisory only and explicitly excludes any language
 from RFC 2119 other than words that could be interpreted as "MAY" in
-the sense of RFC 2119.
+the sense of RFC 2119.  The exceptions aim at facilitating
+interoperability of CBOR-based protocols while making use of a wide variety of
+both generic and application-specific encoders and decoders.
 
 ## CBOR in Streaming Applications
 
@@ -1144,7 +1147,7 @@ present them to an application.  See {{pseudocode}}.
 
 Even though CBOR attempts to minimize these cases, not all well-formed
 CBOR data is valid: for example, the encoded text string `0x62c0ae`
-does not contain valid UTF-8 and so not a valid CBOR item.  Also, specific tags may
+does not contain valid UTF-8 and so is not a valid CBOR item.  Also, specific tags may
 make semantic constraints that may be violated, such as a bignum tag
 containing another tag, or an instance of tag 0 containing a byte
 string or a text string with contents that do not match {{RFC3339}}'s

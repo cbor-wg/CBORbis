@@ -1952,9 +1952,8 @@ entry.
 ## Simple Values Registry
 
 IANA has created the "Concise Binary Object Representation (CBOR)
-Simple Values" registry at
-{{https://www.iana.org/assignments/cbor-simple-values/cbor-simple-values.xhtml}}.
-The initial values are shown in {{fpnoconttbl2}}.
+Simple Values" registry at {{?IANA.cbor-simple-values}}. The initial
+values are shown in {{fpnoconttbl2}}.
 
 New entries in the range 0 to 19 are assigned by Standards Action.  It
 is suggested that these Standards Actions allocate values starting
@@ -1968,9 +1967,8 @@ Required.
 ## Tags Registry {#ianatags}
 
 IANA has created the "Concise Binary Object Representation (CBOR)
-Tags" registry at
-{{https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml}}. The
-initial values are shown in {{tagvalues}}.
+Tags" registry at {{?IANA.cbor-tags}}. The initial values are shown in
+{{tagvalues}}.
 
 New entries in the range 0 to 23 are assigned by Standards Action.
 New entries in the range 24 to 255 are assigned by Specification

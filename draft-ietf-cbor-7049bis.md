@@ -2094,32 +2094,36 @@ Author/Change Controller:
 
 # Security Considerations {#securitycons}
 
-A network-facing application can exhibit vulnerabilities in its
-processing logic for incoming data. Complex parsers are well known as
-a likely source of such vulnerabilities, such as the ability to
-remotely crash a node, or even remotely execute arbitrary code on it.
-CBOR attempts to narrow the opportunities for introducing such
-vulnerabilities by reducing parser complexity, by giving the entire
-range of encodable values a meaning where possible.
+All CBOR decoders should be fully prepared for all types hostile input
+that may be aimed to corrupt, overrun or achieve control of the system
+decoding the CBOR. A CBOR decoder should assume that input is hostile
+even if it has been checked by a firewall, has come over a TLS-secured
+channel, is encrypted or signed or has come from some other source
+that is presumed trusted.
 
-Resource exhaustion attacks might attempt to lure a decoder into
-allocating very big data items (strings, arrays, maps) or exhaust the
-stack depth by setting up deeply nested items.  Decoders need to have
-appropriate resource management to mitigate these attacks.  (Items for
-which very large sizes are given can also attempt to exploit integer
-overflow vulnerabilities.)
+The hostile input may be constructed to overrun buffers, over or
+underflow integer arithmetic or cause other decoding disruption. All
+CBOR decoders should be prepared for all these sorts of hostile input.
+Much of this can be achieved by accepting only well-formed CBOR. Any
+CBOR that is not fully well-formed is fully rejected with no part of
+the data accepted or re interpreted in any way.
 
-Protocols that are used in a security
-context should be defined in such a way that potential multiple
-interpretations are reliably reduced to a single one.
-For example, an attacker could make use of duplicate keys in
-maps or precision issues in numbers to make one decoder base its
-decisions on a different interpretation than the one that will be used
-by a second decoder.
-To facilitate
-this, encoder and decoder implementations used in such contexts should
-provide at least one strict mode of operation ({{strict-mode}}).
+The decoder should also check for and reject invalid CBOR for each
+data type or tagged type that is in use for a particular CBOR-based
+protocol.
 
+Finally, the top-level implementation of the CBOR-based protocol
+should also fully validate that the input is in alignment with the
+protocol specification.
+
+CBOR encoders do not receive input directly from the network and are
+thus not so directly attackable. However, they often have an API that
+takes input from the next level up in the implementation and may be
+attacked via that API. The design and implementation of that API
+should assume the caller of it may be hostile or may make coding
+mistakes calling it. It should check inputs for buffer overruns,
+overflow and underflow of integer arithmetic and other such errors
+aimed to disrupt the encoder.
 
 # Acknowledgements
 

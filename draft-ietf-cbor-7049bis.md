@@ -2102,15 +2102,24 @@ channel, is encrypted or signed or has come from some other source
 that is presumed trusted.
 
 The hostile input may be constructed to overrun buffers, over or
-underflow integer arithmetic or cause other decoding disruption. All
-CBOR decoders should be prepared for all these sorts of hostile input.
+underflow integer arithmetic or cause other decoding disruption. For
+example, the input might have CBOR data items that have lengths or
+sizes that are intentionall extremely large for this purpose. All CBOR
+decoders should be prepared for all these sorts of hostile input.
+
 Much of this can be achieved by accepting only well-formed CBOR. Any
 CBOR that is not fully well-formed is fully rejected with no part of
 the data accepted or re interpreted in any way.
 
-The decoder should also check for and reject invalid CBOR for each
-data type or tagged type that is in use for a particular CBOR-based
-protocol.
+Some data items, particularly tagged data items have certain forms of
+them defined as invalid. If a CBOR-based protocol makes use of a data
+item that has invalid forms, these forms should be checked for and
+rejected. These checks may be performed at the software layer in the
+implementation where it is most efficient, but they should be
+performed. Some examples of these types of errors these checks might
+find include duplicate labels in a map, a tagged data item that is of
+the wrong type for the tag or data that is tagged as base64 but
+contains characters invalid for base64.
 
 Finally, the top-level implementation of the CBOR-based protocol
 should also fully validate that the input is in alignment with the

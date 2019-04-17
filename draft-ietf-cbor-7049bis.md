@@ -2117,7 +2117,7 @@ item that has invalid forms, these forms should be checked for and
 rejected. These checks may be performed at the software layer in the
 implementation where it is most efficient, but they should be
 performed. Some examples of these types of errors these checks might
-find include duplicate labels in a map, a tagged data item that is of
+find include duplicate keys in a map, a tagged data item that is of
 the wrong type for the tag or data that is tagged as base64 but
 contains characters invalid for base64.
 

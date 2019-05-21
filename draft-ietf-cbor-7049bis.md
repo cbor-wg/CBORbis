@@ -61,7 +61,6 @@ normative:
     date: 2008-08
     seriesinfo:
       IEEE Standard: 754-2008
-  RFC2119:
   RFC3629:
   RFC3339:
   RFC4287:
@@ -1108,8 +1107,8 @@ environments.
 
 This section discusses some considerations in creating CBOR-based
 protocols.  With few exceptions, it is advisory only and explicitly excludes any language
-from RFC 2119 other than words that could be interpreted as "MAY" in
-the sense of RFC 2119.  The exceptions aim at facilitating
+from BCP 14 other than words that could be interpreted as "MAY" in
+the sense of BCP 14.  The exceptions aim at facilitating
 interoperability of CBOR-based protocols while making use of a wide variety of
 both generic and application-specific encoders and decoders.
 

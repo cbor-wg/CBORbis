@@ -830,17 +830,21 @@ Protocols using tag values 0 and 1 extend the generic data model
 
 ### Standard Date/Time String {#stringdatetimesect}
 
-Tag value 0 is for date/time strings that follow the standard format
-described in {{RFC3339}}, as refined by Section 3.3 of {{RFC4287}}.
+Tag value 0 contains a text string in the standard format described by
+the `date-time` production in {{RFC3339}}, as refined by Section 3.3
+of {{RFC4287}}, representing the point in time described there. A
+nested item of another type or that doesn't match the {{RFC4287}}
+format is invalid.
 
 ### Epoch-based Date/Time {#epochdatetimesect}
 
-Tag value 1 is for numerical representation of civil time expressed in
-seconds relative to 1970-01-01T00:00Z (in UTC time).
+Tag value 1 contains a numerical value counting the number of seconds
+from 1970-01-01T00:00Z in UTC time to the represented point in civil
+time.
 
 The tagged item MUST be an unsigned or negative integer (major types 0
 and 1), or a floating-point number (major type 7 with additional
-information 25, 26, or 27).
+information 25, 26, or 27). Other contained types are invalid.
 
 Non-negative values (major type 0 and non-negative floating-point
 numbers) stand for time values on or after 1970-01-01T00:00Z UTC and
@@ -877,7 +881,8 @@ define that equivalence, and preferred encoding never makes use of
 bignums that also can be expressed as basic integers (see below).
 
 Bignums are encoded as a byte string data item, which is interpreted
-as an unsigned integer n in network byte order.  For tag value 2, the
+as an unsigned integer n in network byte order.  Contained items of
+other types are invalid.  For tag value 2, the
 value of the bignum is n.  For tag value 3, the value of the bignum is
 -1 - n.  The preferred encoding of the byte string is to leave out any
 leading zeroes (note that this means the preferred encoding for n = 0

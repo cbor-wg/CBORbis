@@ -1083,6 +1083,181 @@ formats. An easy way for an encoder to help the decoder would be to
 tag the entire CBOR item with tag 55799, the serialization of which
 will never be found at the beginning of a JSON text.
 
+# Preferred Serialization
+
+For some values at the data model level, CBOR provides multiple
+serializations.
+For many applications, it is desirable that an encoder always chooses
+a preferred serialization; however, the present specification does not
+put the burden of enforcing this preference on either encoder or decoder.
+
+Some constrained decoders may be limited in their ability to decode
+non-preferred serializations:  For example, if only integers below
+1_000_000_000 are expected in an application, the decoder may leave
+out the code that would be needed to decode 64-bit arguments in
+integers.  An encoder that always
+uses preferred serialization ("preferred encoder") interoperates with this decoder for the
+numbers that can occur in this application.
+More generally speaking, it therefore can be said that a preferred encoder
+is more universally
+interoperable (and also less wasteful) than one that, say, always uses
+64-bit integers.
+
+Similarly, a constrained encoder may be limited in the variety of
+representation variants it supports in such a way that it does not
+emit preferred serializations ("variant encoder"): Say, it could
+be designed to
+always use the 32-bit variant for an integer that it encodes even if a
+short representation is available (again,
+assuming that there is no application need for integers that can only
+be represented with the 64-bit variant).
+A decoder that does not rely on only ever
+receiving preferred serializations ("variation-tolerant decoder") can there be said to be more
+universally interoperable (it might very well optimize for the case of
+receiving preferred serializations, though).
+Full implementations of CBOR decoders are by definition
+variation-tolerant; the distinction is only relevant if a constrained
+implementation of a CBOR decoder meets a variant encoder.
+
+The preferred serialization always uses the shortest form of
+representing the argument ({{encoding}})); it also uses the shortest
+floating point encoding that preserves the value being encoded (see
+{{numbers}}).
+Definite length encoding is preferred whenever the length is known at
+the time the serialization of the item starts.
+
+# Deterministically Encoded CBOR {#det-enc}
+
+Some protocols may want encoders to only emit CBOR in a particular
+deterministic format; those protocols might also have the decoders check
+that their input is in that deterministic format. Those protocols are
+free to define what
+they mean by a "deterministic format" and what encoders and decoders are
+expected to do. This section defines a set of restrictions that can
+serve as the base of such a deterministic format.
+
+## Core Deterministic Encoding Requirements
+
+A CBOR encoding satisfies the "core deterministic encoding requirements" if
+it satisfies the following restrictions:
+
+* Arguments (see {{encoding}}) for integers, lengths in major types 2
+  through 5, and tags MUST be as short as possible. In particular:
+
+  * 0 to 23 and -1 to -24 MUST be expressed in the same byte as the
+    major type;
+
+  * 24 to 255 and -25 to -256 MUST be expressed only with an
+    additional uint8_t;
+
+  * 256 to 65535 and -257 to -65536 MUST be expressed only with an
+    additional uint16_t;
+
+  * 65536 to 4294967295 and -65537 to -4294967296 MUST be expressed
+    only with an additional uint32_t.
+
+* The keys in every map MUST be sorted in the bytewise lexicographic
+  order of their deterministic encodings. For example, the following keys
+  are sorted correctly:
+
+  1. 10, encoded as 0x0a.
+  1. 100, encoded as 0x1864.
+  1. -1, encoded as 0x20.
+  1. "z", encoded as 0x617a.
+  1. "aa", encoded as 0x626161.
+  1. \[100], encoded as 0x811864.
+  1. \[-1], encoded as 0x8120.
+  1. false, encoded as 0xf4.
+
+* Indefinite-length items MUST NOT appear. They can be encoded as
+  definite-length items instead.
+
+## Additional Deterministic Encoding Considerations
+
+If a protocol allows for IEEE floats, then additional deterministic encoding
+rules might need to be added.  One example rule might be to have all
+floats start as a 64-bit float, then do a test conversion to a 32-bit
+float; if the result is the same numeric value, use the shorter value
+and repeat the process with a test conversion to a 16-bit float. (This
+rule selects 16-bit float for positive and negative Infinity as well.)
+Also, there are many representations for NaN. If NaN is an allowed
+value, it must always be represented as 0xf97e00.
+
+CBOR tags present additional considerations for deterministic encoding. The
+absence or presence of tags in a deterministic format is determined by the
+optionality of the tags in the protocol. In a CBOR-based protocol that
+allows optional tagging anywhere, the deterministic format must not allow
+them.  In a protocol that requires tags in certain places, the tag
+needs to appear in the deterministic format. A CBOR-based protocol that
+uses deterministic encoding might instead say that all tags that appear in a
+message must be retained regardless of whether they are optional.
+
+Protocols that include floating, big integer, or other complex values
+need to define extra requirements on their deterministic encodings. For
+example:
+
+* If a protocol includes a field that can express floating values
+  ({{fpnocont}}), the protocol's deterministic encoding needs to specify
+  whether the integer 1.0 is encoded as 0x01, 0xf93c00, 0xfa3f800000,
+  or 0xfb3ff0000000000000. Three sensible rules for this are:
+  1. Encode integral values that fit in 64 bits as values from major
+     types 0 and 1, and other values as the smallest of 16-, 32-, or
+     64-bit floating point that accurately represents the value,
+  1. Encode all values as the smallest of 16-, 32-, or 64-bit floating
+     point that accurately represents the value, even for integral
+     values, or
+  1. Encode all values as 64-bit floating point.
+
+  If NaN is an allowed value, the protocol needs to pick a single
+  representation, for example 0xf97e00.
+* If a protocol includes a field that can express integers larger than
+  2^64 using tag 2 ({{bignums}}), the protocol's deterministic encoding
+  needs to specify whether small integers are expressed using the tag
+  or major types 0 and 1.
+* A protocol might give encoders the choice of representing a URL as
+  either a text string or, using {{encodedtext}}, tag 32 containing a
+  text string. This protocol's deterministic encoding needs to either
+  require that the tag is present or require that it's absent, not
+  allow either one.
+
+## Length-first map key ordering
+
+The core deterministic encoding requirements sort map keys in a different
+order from the one suggested by Section 3.9 of {{?RFC7049}} (called
+"Canonical CBOR" there). Protocols that need to
+be compatible with {{?RFC7049}}'s order can instead be specified in
+terms of this specification's "length-first core deterministic encoding
+requirements":
+
+A CBOR encoding satisfies the "length-first core deterministic encoding
+requirements" if it satisfies the core deterministic encoding requirements
+except that the keys in every map MUST be sorted such that:
+
+1. If two keys have different lengths, the shorter one sorts earlier;
+1. If two keys have the same length, the one with the lower value in
+   (byte-wise) lexical order sorts earlier.
+
+For example, under the length-first core deterministic encoding
+requirements, the following keys are sorted correctly:
+
+1. 10, encoded as 0x0a.
+1. -1, encoded as 0x20.
+1. false, encoded as 0xf4.
+1. 100, encoded as 0x1864.
+1. "z", encoded as 0x617a.
+1. \[-1], encoded as 0x8120.
+1. "aa", encoded as 0x626161.
+1. \[100], encoded as 0x811864.
+
+(Although {{RFC7049}} used the term "Canonical CBOR" for its form of
+requirements on deterministic encoding, this document avoids this term
+because "canonicalization" is often associated with specific uses of deterministic
+encoding only.  The terms are essentially exchangeable, however, and
+the set of core requirements in this document could also be
+called "Canonical CBOR", while the length-first-ordered version of that
+could be called "Old Canonical CBOR".)
+
+
 # Creating CBOR-Based Protocols
 
 Data formats such as CBOR are often used in environments where there
@@ -1373,180 +1548,6 @@ In some CBOR-based protocols, the simple value ({{fpnocont}}) of
 Undefined might be used by an encoder as a substitute for a data item
 with an encoding problem, in order to allow the rest of the enclosing
 data items to be encoded without harm.
-
-## Preferred Serialization
-
-For some values at the data model level, CBOR provides multiple
-serializations.
-For many applications, it is desirable that an encoder always chooses
-a preferred serialization; however, the present specification does not
-put the burden of enforcing this preference on either encoder or decoder.
-
-Some constrained decoders may be limited in their ability to decode
-non-preferred serializations:  For example, if only integers below
-1_000_000_000 are expected in an application, the decoder may leave
-out the code that would be needed to decode 64-bit arguments in
-integers.  An encoder that always
-uses preferred serialization ("preferred encoder") interoperates with this decoder for the
-numbers that can occur in this application.
-More generally speaking, it therefore can be said that a preferred encoder
-is more universally
-interoperable (and also less wasteful) than one that, say, always uses
-64-bit integers.
-
-Similarly, a constrained encoder may be limited in the variety of
-representation variants it supports in such a way that it does not
-emit preferred serializations ("variant encoder"): Say, it could
-be designed to
-always use the 32-bit variant for an integer that it encodes even if a
-short representation is available (again,
-assuming that there is no application need for integers that can only
-be represented with the 64-bit variant).
-A decoder that does not rely on only ever
-receiving preferred serializations ("variation-tolerant decoder") can there be said to be more
-universally interoperable (it might very well optimize for the case of
-receiving preferred serializations, though).
-Full implementations of CBOR decoders are by definition
-variation-tolerant; the distinction is only relevant if a constrained
-implementation of a CBOR decoder meets a variant encoder.
-
-The preferred serialization always uses the shortest form of
-representing the argument ({{encoding}})); it also uses the shortest
-floating point encoding that preserves the value being encoded (see
-{{numbers}}).
-Definite length encoding is preferred whenever the length is known at
-the time the serialization of the item starts.
-
-## Deterministically Encoded CBOR {#det-enc}
-
-Some protocols may want encoders to only emit CBOR in a particular
-deterministic format; those protocols might also have the decoders check
-that their input is in that deterministic format. Those protocols are
-free to define what
-they mean by a "deterministic format" and what encoders and decoders are
-expected to do. This section defines a set of restrictions that can
-serve as the base of such a deterministic format.
-
-### Core Deterministic Encoding Requirements
-
-A CBOR encoding satisfies the "core deterministic encoding requirements" if
-it satisfies the following restrictions:
-
-* Arguments (see {{encoding}}) for integers, lengths in major types 2
-  through 5, and tags MUST be as short as possible. In particular:
-
-  * 0 to 23 and -1 to -24 MUST be expressed in the same byte as the
-    major type;
-
-  * 24 to 255 and -25 to -256 MUST be expressed only with an
-    additional uint8_t;
-
-  * 256 to 65535 and -257 to -65536 MUST be expressed only with an
-    additional uint16_t;
-
-  * 65536 to 4294967295 and -65537 to -4294967296 MUST be expressed
-    only with an additional uint32_t.
-
-* The keys in every map MUST be sorted in the bytewise lexicographic
-  order of their deterministic encodings. For example, the following keys
-  are sorted correctly:
-
-  1. 10, encoded as 0x0a.
-  1. 100, encoded as 0x1864.
-  1. -1, encoded as 0x20.
-  1. "z", encoded as 0x617a.
-  1. "aa", encoded as 0x626161.
-  1. \[100], encoded as 0x811864.
-  1. \[-1], encoded as 0x8120.
-  1. false, encoded as 0xf4.
-
-* Indefinite-length items MUST NOT appear. They can be encoded as
-  definite-length items instead.
-
-### Additional Deterministic Encoding Considerations
-
-If a protocol allows for IEEE floats, then additional deterministic encoding
-rules might need to be added.  One example rule might be to have all
-floats start as a 64-bit float, then do a test conversion to a 32-bit
-float; if the result is the same numeric value, use the shorter value
-and repeat the process with a test conversion to a 16-bit float. (This
-rule selects 16-bit float for positive and negative Infinity as well.)
-Also, there are many representations for NaN. If NaN is an allowed
-value, it must always be represented as 0xf97e00.
-
-CBOR tags present additional considerations for deterministic encoding. The
-absence or presence of tags in a deterministic format is determined by the
-optionality of the tags in the protocol. In a CBOR-based protocol that
-allows optional tagging anywhere, the deterministic format must not allow
-them.  In a protocol that requires tags in certain places, the tag
-needs to appear in the deterministic format. A CBOR-based protocol that
-uses deterministic encoding might instead say that all tags that appear in a
-message must be retained regardless of whether they are optional.
-
-Protocols that include floating, big integer, or other complex values
-need to define extra requirements on their deterministic encodings. For
-example:
-
-* If a protocol includes a field that can express floating values
-  ({{fpnocont}}), the protocol's deterministic encoding needs to specify
-  whether the integer 1.0 is encoded as 0x01, 0xf93c00, 0xfa3f800000,
-  or 0xfb3ff0000000000000. Three sensible rules for this are:
-  1. Encode integral values that fit in 64 bits as values from major
-     types 0 and 1, and other values as the smallest of 16-, 32-, or
-     64-bit floating point that accurately represents the value,
-  1. Encode all values as the smallest of 16-, 32-, or 64-bit floating
-     point that accurately represents the value, even for integral
-     values, or
-  1. Encode all values as 64-bit floating point.
-
-  If NaN is an allowed value, the protocol needs to pick a single
-  representation, for example 0xf97e00.
-* If a protocol includes a field that can express integers larger than
-  2^64 using tag 2 ({{bignums}}), the protocol's deterministic encoding
-  needs to specify whether small integers are expressed using the tag
-  or major types 0 and 1.
-* A protocol might give encoders the choice of representing a URL as
-  either a text string or, using {{encodedtext}}, tag 32 containing a
-  text string. This protocol's deterministic encoding needs to either
-  require that the tag is present or require that it's absent, not
-  allow either one.
-
-### Length-first map key ordering
-
-The core deterministic encoding requirements sort map keys in a different
-order from the one suggested by Section 3.9 of {{?RFC7049}} (called
-"Canonical CBOR" there). Protocols that need to
-be compatible with {{?RFC7049}}'s order can instead be specified in
-terms of this specification's "length-first core deterministic encoding
-requirements":
-
-A CBOR encoding satisfies the "length-first core deterministic encoding
-requirements" if it satisfies the core deterministic encoding requirements
-except that the keys in every map MUST be sorted such that:
-
-1. If two keys have different lengths, the shorter one sorts earlier;
-1. If two keys have the same length, the one with the lower value in
-   (byte-wise) lexical order sorts earlier.
-
-For example, under the length-first core deterministic encoding
-requirements, the following keys are sorted correctly:
-
-1. 10, encoded as 0x0a.
-1. -1, encoded as 0x20.
-1. false, encoded as 0xf4.
-1. 100, encoded as 0x1864.
-1. "z", encoded as 0x617a.
-1. \[-1], encoded as 0x8120.
-1. "aa", encoded as 0x626161.
-1. \[100], encoded as 0x811864.
-
-(Although {{RFC7049}} used the term "Canonical CBOR" for its form of
-requirements on deterministic encoding, this document avoids this term
-because "canonicalization" is often associated with specific uses of deterministic
-encoding only.  The terms are essentially exchangeable, however, and
-the set of core requirements in this document could also be
-called "Canonical CBOR", while the length-first-ordered version of that
-could be called "Old Canonical CBOR".)
 
 ## Strict Decoding Mode {#strict-mode}
 

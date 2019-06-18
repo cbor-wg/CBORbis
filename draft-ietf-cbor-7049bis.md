@@ -51,16 +51,15 @@ normative:
       Section 4.15: "'Seconds Since the Epoch'"
       IEEE Std: '1003.1'
       '2013': Edition
-  IEEE.754.2008:
+  IEEE754:
     -: fp
     title: IEEE Standard for Floating-Point Arithmetic
     author:
       -
-        org:
-          Institute of Electrical and Electronics Engineers
-    date: 2008-08
+        org: IEEE
     seriesinfo:
-      IEEE Standard: 754-2008
+      IEEE Std: 754-2008
+    date: false
   RFC3629:
   RFC3339:
   RFC4287:

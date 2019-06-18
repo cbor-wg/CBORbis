@@ -1165,75 +1165,23 @@ application to specify any well-formed value, including simple values
 and tags unknown to the encoder.
 
 
-## Syntax Errors
+## Invalid Items {#semantic-errors}
 
-A decoder encountering a CBOR data item that is not well-formed
-generally can choose to completely fail the decoding (issue an error
-and/or stop processing altogether), substitute the problematic data
-and data items using a decoder-specific convention that clearly
-indicates there has been a problem, or take some other action.
+A well-formed but invalid CBOR data item presents a problem with
+interpreting the data encoded in it in the CBOR data model.  A
+CBOR-based protocol could be specified in several layers, in which the
+lower layers don't process the semantics of some of the CBOR data they
+forward.  These layers can't notice the invalidity in data they don't
+process and MUST forward that data as-is.  The first layer that does
+process the semantics of an invalid CBOR item MUST take one of two
+choices:
 
-### Incomplete CBOR Data Items
+1. Replace the problematic item with an error marker and continue with
+   the next item, or
+1. Issue an error and stop processing altogether.
 
-The representation of a CBOR data item has a specific length,
-determined by its initial bytes and by the structure of any data items
-enclosed in the data items.  If less data is available, this can be
-treated as a syntax error.  A decoder may also decode incrementally,
-that is, decode the data item as far as it is available and
-present the data found so far (such as in an event-based interface),
-with the option of continuing the decoding once further data is
-available.
-
-Examples of incomplete data items include:
-
-* A decoder expects a certain number of array or map entries but
-  instead encounters the end of the data.
-
-* A decoder processes what it expects to be the last pair in a map and
-  comes to the end of the data.
-
-* A decoder has just seen a tag and then encounters the end of the
-  data.
-
-* A decoder has seen the beginning of an indefinite-length item but
-  encounters the end of the data before it sees the "break" stop code.
-
-
-
-### Malformed Indefinite-Length Items
-
-Examples of malformed indefinite-length data items include:
-
-* Within an indefinite-length byte string or text, a decoder finds an
-  item that is not of the appropriate major type before it finds the
-  "break" stop code.
-
-* Within an indefinite-length map, a decoder encounters the "break"
-  stop code immediately after reading a key (the value is missing).
-
-Another error is finding a "break" stop code at a point in the data
-where there is no immediately enclosing (unclosed) indefinite-length
-item.
-
-
-### Unknown Additional Information Values
-
-At the time of writing, some additional information values are
-unassigned and reserved for future versions of this document (see
-{{curating}}).  Since the overall syntax for these additional
-information values is not yet defined, a decoder that sees an
-additional information value that it does not understand cannot
-continue decoding.
-
-
-## Other Decoding Errors {#semantic-errors}
-
-A CBOR data item may be syntactically well-formed but present a
-problem with interpreting the data encoded in it in the CBOR data
-model.  Generally speaking, a decoder that finds a data item with such
-a problem might issue a warning, might stop processing altogether,
-might handle the error and make the problematic value available to the
-application as such, or take some other type of action.
+A CBOR-based protocol MUST specify which of these options its decoders
+take, for each kind of invalid item they might encounter.
 
 Such problems might include:
 
@@ -1284,14 +1232,6 @@ item only to the application, or take some other type of action.
 
 
 ## Numbers {#numbers}
-
-An application or protocol that uses CBOR might restrict the
-representations of numbers.  For instance, a protocol that only deals
-with integers might say that floating-point numbers may not be used
-and that decoders of that protocol do not need to be able to handle
-floating-point numbers. Similarly, a protocol or application that uses
-CBOR might say that decoders need to be able to handle either type of
-number.
 
 CBOR-based protocols should take into account that different language
 environments pose different restrictions on the range and precision of
@@ -1355,7 +1295,7 @@ enclosing data item is completely available ("streaming encoder") may
 want to reduce its overhead significantly by relying on its data
 source to maintain uniqueness.
 
-A CBOR-based protocol should make an intentional decision about what
+A CBOR-based protocol MUST define what
 to do when a receiving application does see multiple identical keys in
 a map.  The resulting rule in the protocol MUST respect the CBOR
 data model: it cannot prescribe a specific handling of the entries

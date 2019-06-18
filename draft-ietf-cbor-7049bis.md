@@ -1083,7 +1083,9 @@ formats. An easy way for an encoder to help the decoder would be to
 tag the entire CBOR item with tag 55799, the serialization of which
 will never be found at the beginning of a JSON text.
 
-# Preferred Serialization
+# Serialization Considerations
+
+## Preferred Serialization
 
 For some values at the data model level, CBOR provides multiple
 serializations.
@@ -1126,7 +1128,7 @@ floating point encoding that preserves the value being encoded (see
 Definite length encoding is preferred whenever the length is known at
 the time the serialization of the item starts.
 
-# Deterministically Encoded CBOR {#det-enc}
+## Deterministically Encoded CBOR {#det-enc}
 
 Some protocols may want encoders to only emit CBOR in a particular
 deterministic format; those protocols might also have the decoders check
@@ -1136,7 +1138,7 @@ they mean by a "deterministic format" and what encoders and decoders are
 expected to do. This section defines a set of restrictions that can
 serve as the base of such a deterministic format.
 
-## Core Deterministic Encoding Requirements
+### Core Deterministic Encoding Requirements
 
 A CBOR encoding satisfies the "core deterministic encoding requirements" if
 it satisfies the following restrictions:
@@ -1172,7 +1174,7 @@ it satisfies the following restrictions:
 * Indefinite-length items MUST NOT appear. They can be encoded as
   definite-length items instead.
 
-## Additional Deterministic Encoding Considerations
+### Additional Deterministic Encoding Considerations
 
 If a protocol allows for IEEE floats, then additional deterministic encoding
 rules might need to be added.  One example rule might be to have all
@@ -1220,7 +1222,7 @@ example:
   require that the tag is present or require that it's absent, not
   allow either one.
 
-## Length-first map key ordering
+### Length-first map key ordering
 
 The core deterministic encoding requirements sort map keys in a different
 order from the one suggested by Section 3.9 of {{?RFC7049}} (called

@@ -2533,7 +2533,7 @@ around the year 2012.  BinaryPack is a minor derivation of MessagePack
 that was developed by Eric Zhang for the binaryjs project.  A similar,
 but different, extension was made by Tim Caswell for his msgpack-js
 and msgpack-js-browser projects.  Many people have contributed to the
-recent discussion about extending MessagePack to separate text string
+discussion about extending MessagePack to separate text string
 representation from byte string representation.
 
 The encoding of the additional information in CBOR was inspired by the

@@ -2069,32 +2069,6 @@ this, encoder and decoder implementations used in such contexts should
 provide at least one strict mode of operation ({{strict-mode}}).
 
 
-# Acknowledgements
-
-CBOR was inspired by MessagePack.  MessagePack was developed and
-promoted by Sadayuki Furuhashi ("frsyuki").  This reference to
-MessagePack is solely for attribution; CBOR is not intended as a
-version of or replacement for MessagePack, as it has different design
-goals and requirements.
-
-The need for functionality beyond the original MessagePack
-Specification became obvious to many people at about the same time
-around the year 2012.  BinaryPack is a minor derivation of MessagePack
-that was developed by Eric Zhang for the binaryjs project.  A similar,
-but different, extension was made by Tim Caswell for his msgpack-js
-and msgpack-js-browser projects.  Many people have contributed to the
-recent discussion about extending MessagePack to separate text string
-representation from byte string representation.
-
-The encoding of the additional information in CBOR was inspired by the
-encoding of length information designed by Klaus Hartke for CoAP.
-
-This document also incorporates suggestions made by many people,
-notably Dan Frost, James Manger, Jeffrey Yaskin, Joe Hildebrand, Keith Moore, Laurence
-Lundblade, Matthew Lepinski, Michael Richardson,
-Nico Williams, Phillip Hallam-Baker, Ray Polk, Tim Bray,
-Tony Finch, Tony Hansen, and Yaron Sheffer.
-
 
 
 --- back
@@ -2542,3 +2516,31 @@ significant differences.
 
 <!--  LocalWords:  UTC
  -->
+
+
+# Acknowledgements
+{: numbered="no"}
+
+CBOR was inspired by MessagePack.  MessagePack was developed and
+promoted by Sadayuki Furuhashi ("frsyuki").  This reference to
+MessagePack is solely for attribution; CBOR is not intended as a
+version of or replacement for MessagePack, as it has different design
+goals and requirements.
+
+The need for functionality beyond the original MessagePack
+Specification became obvious to many people at about the same time
+around the year 2012.  BinaryPack is a minor derivation of MessagePack
+that was developed by Eric Zhang for the binaryjs project.  A similar,
+but different, extension was made by Tim Caswell for his msgpack-js
+and msgpack-js-browser projects.  Many people have contributed to the
+recent discussion about extending MessagePack to separate text string
+representation from byte string representation.
+
+The encoding of the additional information in CBOR was inspired by the
+encoding of length information designed by Klaus Hartke for CoAP.
+
+This document also incorporates suggestions made by many people,
+notably Dan Frost, James Manger, Jeffrey Yaskin, Joe Hildebrand, Keith Moore, Laurence
+Lundblade, Matthew Lepinski, Michael Richardson,
+Nico Williams, Phillip Hallam-Baker, Ray Polk, Tim Bray,
+Tony Finch, Tony Hansen, and Yaron Sheffer.

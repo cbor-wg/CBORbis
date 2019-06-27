@@ -1651,7 +1651,8 @@ as a JSON null.
   convert other keys into UTF-8 strings (such as by converting
   integers into strings containing their decimal representation);
   however, doing so introduces a danger of key collision.
-  Note also that tagged UTF-8 strings will cause a key
+  Note also that, if tags on UTF-8 strings are ignored as proposed
+  below, this will cause a key
   collision if the tags are different but the strings are the same.
 
 * False (major type 7, additional information 20) becomes a JSON

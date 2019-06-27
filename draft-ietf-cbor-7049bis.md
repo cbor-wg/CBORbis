@@ -787,7 +787,7 @@ hints about the content of items.  Understanding the semantic tags is
 optional for a decoder; it can just jump over the initial bytes of the
 tag and interpret the tagged data item itself.
 
-A tag always applies to the item that is directly followed by it.
+A tag always applies to the item that directly follows it.
 Thus, if tag A is followed by tag B, which is followed by data item C,
 tag A applies to the result of applying tag B on data item C.  That
 is, a tagged item is a data item consisting of a tag and a value.  The
@@ -1063,7 +1063,7 @@ being employed for encoding a data item.  For instance, a specific
 protocol might specify the use of CBOR, or a media type is indicated
 that specifies its use.  However, there may be applications where such
 context information is not available, such as when CBOR data is stored
-in a file and disambiguating metadata is not in use.  Here, it may
+in a file that does not have disambiguating metadata.  Here, it may
 help to have some distinguishing characteristics for the data itself.
 
 Tag 55799 is defined for this purpose.  It does not impart any special
@@ -1071,10 +1071,10 @@ semantics on the data item that follows; that is, the semantics of a
 data item tagged with tag 55799 is exactly identical to the semantics
 of the data item itself.
 
-The serialization of this tag is 0xd9d9f7, which appears not to be in
-use as a distinguishing mark for frequently used file types.  In
-particular, it is not a valid start of a Unicode text in any Unicode
-encoding if followed by a valid CBOR data item.
+The serialization of this tag is 0xd9d9f7, which does not appear to be in
+use as a distinguishing mark for any frequently used file types.  In
+particular, 0xd9d9f7 is not a valid start of a Unicode text in any Unicode
+encoding if it is followed by a valid CBOR data item.
 
 For instance, a decoder might be able to decode both CBOR and
 JSON. Such a decoder would need to mechanically distinguish the two

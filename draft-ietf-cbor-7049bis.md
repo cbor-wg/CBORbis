@@ -2069,18 +2069,18 @@ CBOR attempts to narrow the opportunities for introducing such
 vulnerabilities by reducing parser complexity, by giving the entire
 range of encodable values a meaning where possible.
 
-Since CBOR decoders are often used as a first step in processing
+Because CBOR decoders are often used as a first step in processing
 unvalidated input, they need to be fully prepared for all types of
-hostile input that may be aimed to corrupt, overrun or achieve control
+hostile input that may be designed to corrupt, overrun, or achieve control
 of the system decoding the CBOR data item. A CBOR decoder needs to
-assume that input may be hostile even if it has been checked by a
-firewall, has come over a TLS-secured channel, is encrypted or signed
+assume that all input may be hostile even if it has been checked by a
+firewall, has come over a TLS-secured channel, is encrypted or signed,
 or has come from some other source that is presumed trusted.
 
 Hostile input may be constructed to overrun buffers, overflow or
-underflow integer arithmetic or cause other decoding disruption.  CBOR
+underflow integer arithmetic, or cause other decoding disruption.  CBOR
 data items might have lengths or sizes that are intentionally
-extremely large.
+extremely large or too short.
 Resource exhaustion attacks might attempt to lure a decoder into
 allocating very big data items (strings, arrays, maps) or exhaust the
 stack depth by setting up deeply nested items.  Decoders need to have
@@ -2088,31 +2088,33 @@ appropriate resource management to mitigate these attacks.  (Items for
 which very large sizes are given can also attempt to exploit integer
 overflow vulnerabilities.)
 
-A CBOR decoder by definition only accepts well-formed CBOR, which is
+A CBOR decoder, by definition, only accepts well-formed CBOR; this is
 the first step to its robustness.  Input that is not well-formed CBOR
 causes no further processing from the point where the lack of
 well-formedness was detected.  If possible, any data decoded up to
-this point should have no impact on the application.
+this point should have no impact on the application using the CBOR
+decoder.
 
-In addition to ascertaining well-formedness, a CBOR decoder may
+In addition to ascertaining well-formedness, a CBOR decoder might also
 perform validity checks on the CBOR data.  Alternatively, it can leave
 those checks to the application using the decoder.  This choice needs
-to be clearly documented.  Beyond the validity at the CBOR level, the
-application will also need to ascertain that the input is in alignment
-with the application protocol serialized via CBOR.
+to be clearly documented in the decoder.  Beyond the validity at the CBOR level, an
+application also needs to ascertain that the input is in alignment
+with the application protocol that is serialized in CBOR.
 
 CBOR encoders do not receive input directly from the network and are
-thus not so directly attackable. However, they often have an API that
-takes input from the next level up in the implementation and may be
-attacked via that API. The design and implementation of that API
+thus not directly attackable in the same way as CBOR decoders.
+However, CBOR encoders often have an API that
+takes input from another level in the implementation and can be
+attacked through that API. The design and implementation of that API
 should assume the behavior of its caller may be based on hostile input
 or on coding mistakes. It should check inputs for buffer overruns,
-overflow and underflow of integer arithmetic and other such errors
-aimed to disrupt the encoder.
+overflow and underflow of integer arithmetic, and other such errors
+that are aimed to disrupt the encoder.
 
 Protocols that are used in a security context should be defined in
 such a way that potential multiple interpretations are reliably
-reduced to a single one.  For example, an attacker could make use of
+reduced to a single interpretation.  For example, an attacker could make use of
 invalid input such as duplicate keys in maps, or exploit different
 precision in processing numbers to make one application base its
 decisions on a different interpretation than the one that will be used

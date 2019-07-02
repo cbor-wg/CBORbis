@@ -110,6 +110,7 @@ informative:
   RFC8259: json
   RFC7228:
   RFC6838:
+  RFC7049:
   RFC0713:
   PCRE:
       target: http://www.pcre.org/
@@ -127,6 +128,8 @@ extensibility without the
 need for version negotiation. These design goals make it different from earlier
 binary
 serializations such as ASN.1 and MessagePack.
+
+This document obsoletes RFC 7049.
 
 --- note_Contributing
 
@@ -164,6 +167,8 @@ that starts from JSON.
 {{comparison-app}} lists some existing binary formats and discusses
 how well they do or do not fit the design objectives of the Concise
 Binary Object Representation (CBOR).
+
+This document obsoletes {{RFC7049}}.
 
 ## Objectives
 
@@ -1224,9 +1229,9 @@ example:
 ### Length-first map key ordering
 
 The core deterministic encoding requirements sort map keys in a different
-order from the one suggested by Section 3.9 of {{?RFC7049}} (called
+order from the one suggested by Section 3.9 of {{RFC7049}} (called
 "Canonical CBOR" there). Protocols that need to
-be compatible with {{?RFC7049}}'s order can instead be specified in
+be compatible with {{RFC7049}}'s order can instead be specified in
 terms of this specification's "length-first core deterministic encoding
 requirements":
 

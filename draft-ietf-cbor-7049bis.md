@@ -800,8 +800,10 @@ content of the tagged item is the data item (the value) that is being
 tagged.
 
 IANA maintains a registry of tag values as described in {{ianatags}}.
-{{tagvalues}} provides a list of initial values, with definitions in
+{{tagvalues}} provides a list of values that were defined in {{RFC7049}}, with definitions in
 the rest of this section.
+Note that many other tags have been defined since the publication of {{RFC7049}};
+see the registry described at {{ianatags}} for the complete list.
 
 |       Tag | Data Item    | Semantics                                                     |
 |-----------+--------------+---------------------------------------------------------------|
@@ -811,20 +813,16 @@ the rest of this section.
 |         3 | byte string  | Negative bignum; see {{bignums}}                              |
 |         4 | array        | Decimal fraction; see {{fractions}}                           |
 |         5 | array        | Bigfloat; see {{fractions}}                                   |
-|     6..20 | (Unassigned) | (Unassigned)                                                  |
 |        21 | multiple     | Expected conversion to base64url encoding; see {{convexpect}} |
 |        22 | multiple     | Expected conversion to base64 encoding; see {{convexpect}}    |
 |        23 | multiple     | Expected conversion to base16 encoding; see {{convexpect}}    |
 |        24 | byte string  | Encoded CBOR data item; see {{embedded-di}}                   |
-|    25..31 | (Unassigned) | (Unassigned)                                                  |
 |        32 | UTF-8 string | URI; see {{encodedtext}}                                      |
 |        33 | UTF-8 string | base64url; see {{encodedtext}}                                |
 |        34 | UTF-8 string | base64; see {{encodedtext}}                                   |
 |        35 | UTF-8 string | Regular expression; see {{encodedtext}}                       |
 |        36 | UTF-8 string | MIME message; see {{encodedtext}}                             |
-| 37..55798 | (Unassigned) | (Unassigned)                                                  |
 |     55799 | multiple     | Self-described CBOR; see {{self-describe}}                    |
-|    55800+ | (Unassigned) | (Unassigned)                                                  |
 {: #tagvalues title='Values for Tags'}
 
 ### Date and Time {#datetimesect}
@@ -1917,8 +1915,9 @@ Required.
 ## Tags Registry {#ianatags}
 
 IANA has created the "Concise Binary Object Representation (CBOR)
-Tags" registry at {{?IANA.cbor-tags}}. The initial values are shown in
-{{tagvalues}}.
+Tags" registry at {{?IANA.cbor-tags}}.
+The tags that were defined in {{RFC7049}} are described in detail in {{tags}},
+but other tags have already been defined.
 
 New entries in the range 0 to 23 are assigned by Standards Action.
 New entries in the range 24 to 255 are assigned by Specification

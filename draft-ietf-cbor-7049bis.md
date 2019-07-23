@@ -129,7 +129,11 @@ need for version negotiation. These design goals make it different from earlier
 binary
 serializations such as ASN.1 and MessagePack.
 
-This document obsoletes RFC 7049.
+This document is a revised edition of RFC 7049, with editorial improvements,
+added detail, and fixed errata.
+This revision formally obsoletes RFC 7049, while keeping full compatibility
+of the interchange format from RFC 7049.
+It does not create a new version of the format.
 
 --- note_Contributing
 

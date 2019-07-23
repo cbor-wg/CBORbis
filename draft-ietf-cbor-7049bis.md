@@ -172,7 +172,11 @@ that starts from JSON.
 how well they do or do not fit the design objectives of the Concise
 Binary Object Representation (CBOR).
 
-This document obsoletes {{RFC7049}}.
+This document is a revised edition of {{RFC7049}}, with editorial improvements,
+added detail, and fixed errata.
+This revision formally obsoletes RFC 7049, while keeping full compatibility
+of the interchange format from RFC 7049.
+It does not create a new version of the format.
 
 ## Objectives
 

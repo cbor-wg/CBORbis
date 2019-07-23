@@ -2518,7 +2518,7 @@ unclear.
 {{BSON}} is a data format that was developed for the storage of
 JSON-like maps (JSON objects) in the MongoDB database.  Its major
 distinguishing feature is the capability for in-place update,
-foregoing a compact representation.  BSON uses a counted
+which prevents a compact representation.  BSON uses a counted
 representation except for map keys, which are null-byte terminated.
 While BSON can be used for the representation of JSON-like objects on
 the wire, its specification is dominated by the requirements of the

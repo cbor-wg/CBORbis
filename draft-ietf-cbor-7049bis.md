@@ -583,7 +583,7 @@ a definite-length array or map — the enclosing item is not well-formed.
 
 Indefinite-length arrays and maps are represented using their major
 type with the additional information value of 31, followed by an
-arbitrary-length sequence of items for an array or key/value pairs for
+arbitrary-length sequence (zero or more) of items for an array or key/value pairs for
 a map, followed by the "break" stop code ({{break}}).  In other words, indefinite-length
 arrays and maps look identical to other arrays and maps except for
 beginning with the additional information value of 31 and ending with the
@@ -689,10 +689,11 @@ BF           -- Start indefinite-length map
 ### Indefinite-Length Byte Strings and Text Strings
 
 Indefinite-length strings are represented by a byte containing the major type
-and additional information value of 31, followed by a series of byte
+and additional information value of 31, followed by a series of zero or more byte
 or text strings ("chunks") that have definite lengths, followed by the
 "break" stop code ({{break}}).  The data item represented by the
-indefinite-length string is the concatenation of the chunks.
+indefinite-length string is the concatenation of the chunks (i.e., the
+empty byte or text string, respectively, if no chunk is present).
 
 If any item between the indefinite-length string indicator
 (0b010_11111 or 0b011_11111) and the "break" stop code is not a definite-length

@@ -535,7 +535,10 @@ Major type 5:
   0b101_01001 (major type of 5, additional information of 9 for the
   number of pairs) followed by the 18 remaining items. The first item
   is the first key, the second item is the first value, the third item
-  is the second key, and so on.  A map that has duplicate keys may be
+  is the second key, and so on.  As items in a map come in pairs,
+  their total number is always even:  A map that contains an odd
+  number of items (no value present for the last key) is not well-formed.
+  A map that has duplicate keys may be
   well-formed, but it is not valid, and thus it causes indeterminate
   decoding; see also {{map-keys}}.
 

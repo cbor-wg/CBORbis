@@ -2323,6 +2323,12 @@ The pseudocode has the following prerequisites:
 
 * All variables are unsigned integers of sufficient range.
 
+Note that `well_formed` returns the major type for well-formed
+definite length items, but 0 for an indefinite length item (or -1 for
+a break stop code, only if `breakable` is set).  This is used in
+`well_formed_indefinite` to ascertain that indefinite length strings
+only contain definite length strings as chunks.
+
 ~~~~
 well_formed (breakable = false) {
   // process initial bytes
@@ -2354,7 +2360,7 @@ well_formed_indefinite(mt, breakable) {
   switch (mt) {
     case 2: case 3:
       while ((it = well_formed(true)) != -1)
-        if (it != mt)           // need finite embedded
+        if (it != mt)           // need finite-length chunk
           fail();               //    of same type
       break;
     case 4: while (well_formed(true) != -1); break;

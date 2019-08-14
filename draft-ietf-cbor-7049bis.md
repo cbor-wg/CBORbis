@@ -755,7 +755,7 @@ the additional information in the first byte. {{fpnoconttbl2}} lists
 the values assigned and available for simple types.
 
 |   Value | Semantics       |
-|---------+-----------------|
+|---------|-----------------|
 |   0..19 | (Unassigned)    |
 |      20 | False           |
 |      21 | True            |
@@ -2630,5 +2630,5 @@ encoding of length information designed by Klaus Hartke for CoAP.
 This document also incorporates suggestions made by many people,
 notably Dan Frost, James Manger, Jeffrey Yaskin, Joe Hildebrand, Keith Moore, Laurence
 Lundblade, Matthew Lepinski, Michael Richardson,
-Nico Williams, Phillip Hallam-Baker, Ray Polk, Tim Bray,
+Nico Williams, Peter Occil, Phillip Hallam-Baker, Ray Polk, Tim Bray,
 Tony Finch, Tony Hansen, and Yaron Sheffer.

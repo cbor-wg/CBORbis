@@ -736,7 +736,7 @@ integers, items of this major type do not carry content data; all the
 information is in the initial bytes.
 
 | 5-Bit Value | Semantics                                                 |
-|-------------+-----------------------------------------------------------|
+|-------------|-----------------------------------------------------------|
 |       0..23 | Simple value (value 0..23)                                |
 |          24 | Simple value (value 32..255 in following byte)            |
 |          25 | IEEE 754 Half-Precision Float (16 bits follow)            |

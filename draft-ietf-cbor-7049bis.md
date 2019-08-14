@@ -1206,8 +1206,8 @@ floats start as a 64-bit float, then do a test conversion to a 32-bit
 float; if the result is the same numeric value, use the shorter value
 and repeat the process with a test conversion to a 16-bit float. (This
 rule selects 16-bit float for positive and negative Infinity as well.)
-While IEEE floats can represent both positive and negative zero as
-distinct values, the application may not distinguish these and decide
+Although IEEE floats can represent both positive and negative zero as
+distinct values, the application might not distinguish these and might decide
 to represent all zero values with a positive sign, disallowing
 negative zero.
 Also, there are many representations for NaN. If NaN is an allowed

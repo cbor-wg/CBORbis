@@ -583,7 +583,7 @@ a definite-length array or map — the enclosing item is not well-formed.
 
 Indefinite-length arrays and maps are represented using their major
 type with the additional information value of 31, followed by an
-arbitrary-length sequence (zero or more) of items for an array or key/value pairs for
+arbitrary-length sequence of zero or more items for an array or key/value pairs for
 a map, followed by the "break" stop code ({{break}}).  In other words, indefinite-length
 arrays and maps look identical to other arrays and maps except for
 beginning with the additional information value of 31 and ending with the

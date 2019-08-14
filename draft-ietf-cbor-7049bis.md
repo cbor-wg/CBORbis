@@ -1209,6 +1209,10 @@ floats start as a 64-bit float, then do a test conversion to a 32-bit
 float; if the result is the same numeric value, use the shorter value
 and repeat the process with a test conversion to a 16-bit float. (This
 rule selects 16-bit float for positive and negative Infinity as well.)
+Although IEEE floats can represent both positive and negative zero as
+distinct values, the application might not distinguish these and might decide
+to represent all zero values with a positive sign, disallowing
+negative zero.
 Also, there are many representations for NaN. If NaN is an allowed
 value, it must always be represented as 0xf97e00.
 
@@ -1518,7 +1522,7 @@ CBOR-based protocol MUST NOT specify that changing the key/value pair
 order in a map would change the semantics, except to specify that some,
 orders are disallowed, for example where they would not meet the
 requirements of a deterministic
-encoding ({{det-enc}}.
+encoding ({{det-enc}}).
 (Any secondary effects of map ordering such as on timing, cache usage,
 and other potential side channels are not considered part of the
 semantics but may be enough reason on its own for a protocol to require a

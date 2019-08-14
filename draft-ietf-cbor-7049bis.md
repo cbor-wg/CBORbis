@@ -118,6 +118,7 @@ informative:
       author:
         - name: Andrew Ho
       date: 2018
+  SIPHASH: DOI.10.1007_978-3-642-34931-7_28
 
 --- abstract
 
@@ -2090,7 +2091,8 @@ unvalidated input, they need to be fully prepared for all types of
 hostile input that may be designed to corrupt, overrun, or achieve control
 of the system decoding the CBOR data item. A CBOR decoder needs to
 assume that all input may be hostile even if it has been checked by a
-firewall, has come over a TLS-secured channel, is encrypted or signed,
+firewall, has come over a secure channel such as TLS, is encrypted or
+signed,
 or has come from some other source that is presumed trusted.
 
 Hostile input may be constructed to overrun buffers, overflow or
@@ -2118,6 +2120,18 @@ those checks to the application using the decoder.  This choice needs
 to be clearly documented in the decoder.  Beyond the validity at the CBOR level, an
 application also needs to ascertain that the input is in alignment
 with the application protocol that is serialized in CBOR.
+
+The input check itself may consume resources.  This is usually linear
+in the size of the input, which means that an attacker has to spend
+resources that are commensurate to the resources spent by the defender
+on input validation.  Processing for arbitrary-precision numbers may
+exceed linear effort.  Also, some hash-table implementations that are
+used by decoders to build in-memory representations of maps can be
+attacked to spend quadratic effort, unless a secret key is employed
+(see Section 7 of {{SIPHASH}}).  Such superlinear efforts can be
+employed by an attacker to exhaust resources at or before the input
+validator; they therefore need to be avoided in a CBOR decoder
+implementation.
 
 CBOR encoders do not receive input directly from the network and are
 thus not directly attackable in the same way as CBOR decoders.

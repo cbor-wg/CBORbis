@@ -736,13 +736,13 @@ integers, items of this major type do not carry content data; all the
 information is in the initial bytes.
 
 | 5-Bit Value | Semantics                                                 |
-|-------------|-----------------------------------------------------------|
+|-------------+-----------------------------------------------------------|
 |       0..23 | Simple value (value 0..23)                                |
 |          24 | Simple value (value 32..255 in following byte)            |
 |          25 | IEEE 754 Half-Precision Float (16 bits follow)            |
 |          26 | IEEE 754 Single-Precision Float (32 bits follow)          |
 |          27 | IEEE 754 Double-Precision Float (64 bits follow)          |
-|       28-30 | Unassigned, not well-formed in the present document       |
+|       28-30 | Reserved, not well-formed in the present document         |
 |          31 | "break" stop code for indefinite-length items ({{break}}) |
 {: #fpnoconttbl title='Values for Additional Information in Major Type 7'}
 

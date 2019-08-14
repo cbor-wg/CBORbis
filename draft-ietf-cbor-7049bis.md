@@ -2097,7 +2097,8 @@ underflow integer arithmetic, or cause other decoding disruption.  CBOR
 data items might have lengths or sizes that are intentionally
 extremely large or too short.
 Resource exhaustion attacks might attempt to lure a decoder into
-allocating very big data items (strings, arrays, maps) or exhaust the
+allocating very big data items (strings, arrays, maps, or even
+arbitrary precision numbers) or exhaust the
 stack depth by setting up deeply nested items.  Decoders need to have
 appropriate resource management to mitigate these attacks.  (Items for
 which very large sizes are given can also attempt to exploit integer

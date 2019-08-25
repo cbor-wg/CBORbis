@@ -451,7 +451,7 @@ Less than 24:
   item at all but terminates an indefinite length item; both are
   described in {{indefinite}}.
 
-Initial byte and any additional bytes consumed to construct the
+The initial byte and any additional bytes consumed to construct the
 argument are collectively referred to as the "head" of the data item.
 
 The meaning of this argument depends on the major type.
@@ -574,7 +574,7 @@ for the argument, mt for the major type.
 |  2 | byte string           | N bytes                          |
 |  3 | text string           | N bytes (UTF-8 text)             |
 |  4 | array                 | N data items (elements)          |
-|  5 | map                   | 2 N data items (key/value pairs) |
+|  5 | map                   | 2N data items (key/value pairs)  |
 |  6 | tag of number N       | 1 data item                      |
 |  7 | simple/float          | -                                |
 {: #major-type-table title="Overview over CBOR major types (definite length encoded)"}
@@ -830,7 +830,6 @@ tag A applies to the result of applying tag B on data item C.  That
 is, a tagged item is a data item consisting of a tag number and an enclosed value.  The
 content of the tagged item (the enclosed data item) is the data item (the value) that is being
 tagged.
-<!-- xxx this is now a bit redundant -->
 
 IANA maintains a registry of tag numbers as described in {{ianatags}}.
 {{tagvalues}} provides a list of tag numbers that were defined in {{RFC7049}}, with definitions in
@@ -1457,7 +1456,7 @@ might handle the error by making the unknown value available to the
 application as such (as is expected of generic decoders), or take some
 other type of action.
 
-A decoder that comes across a tag number({{tags}}) that it does not
+A decoder that comes across a tag number ({{tags}}) that it does not
 recognize, such as a tag number that was added to the IANA registry after the
 decoder was deployed or a tag number that the decoder chose not to implement,
 might issue a warning, might stop processing altogether, might handle

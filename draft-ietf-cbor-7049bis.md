@@ -838,25 +838,25 @@ the rest of this section.
 Note that many other tag numbers have been defined since the publication of {{RFC7049}};
 see the registry described at {{ianatags}} for the complete list.
 
-|       Tag | Data Item    | Semantics                                                     |
-|-----------+--------------+---------------------------------------------------------------|
-|         0 | UTF-8 string | Standard date/time string; see {{stringdatetimesect}}         |
-|         1 | multiple     | Epoch-based date/time; see {{epochdatetimesect}}              |
-|         2 | byte string  | Positive bignum; see {{bignums}}                              |
-|         3 | byte string  | Negative bignum; see {{bignums}}                              |
-|         4 | array        | Decimal fraction; see {{fractions}}                           |
-|         5 | array        | Bigfloat; see {{fractions}}                                   |
-|        21 | multiple     | Expected conversion to base64url encoding; see {{convexpect}} |
-|        22 | multiple     | Expected conversion to base64 encoding; see {{convexpect}}    |
-|        23 | multiple     | Expected conversion to base16 encoding; see {{convexpect}}    |
-|        24 | byte string  | Encoded CBOR data item; see {{embedded-di}}                   |
-|        32 | UTF-8 string | URI; see {{encodedtext}}                                      |
-|        33 | UTF-8 string | base64url; see {{encodedtext}}                                |
-|        34 | UTF-8 string | base64; see {{encodedtext}}                                   |
-|        35 | UTF-8 string | Regular expression; see {{encodedtext}}                       |
-|        36 | UTF-8 string | MIME message; see {{encodedtext}}                             |
-|     55799 | multiple     | Self-described CBOR; see {{self-describe}}                    |
-{: #tagvalues title='Values for Tags'}
+| Tag Number | Data Item   | Semantics                                                     |
+|------------+-------------+---------------------------------------------------------------|
+|          0 | text string | Standard date/time string; see {{stringdatetimesect}}         |
+|          1 | multiple    | Epoch-based date/time; see {{epochdatetimesect}}              |
+|          2 | byte string | Positive bignum; see {{bignums}}                              |
+|          3 | byte string | Negative bignum; see {{bignums}}                              |
+|          4 | array       | Decimal fraction; see {{fractions}}                           |
+|          5 | array       | Bigfloat; see {{fractions}}                                   |
+|         21 | multiple    | Expected conversion to base64url encoding; see {{convexpect}} |
+|         22 | multiple    | Expected conversion to base64 encoding; see {{convexpect}}    |
+|         23 | multiple    | Expected conversion to base16 encoding; see {{convexpect}}    |
+|         24 | byte string | Encoded CBOR data item; see {{embedded-di}}                   |
+|         32 | text string | URI; see {{encodedtext}}                                      |
+|         33 | text string | base64url; see {{encodedtext}}                                |
+|         34 | text string | base64; see {{encodedtext}}                                   |
+|         35 | text string | Regular expression; see {{encodedtext}}                       |
+|         36 | text string | MIME message; see {{encodedtext}}                             |
+|      55799 | multiple    | Self-described CBOR; see {{self-describe}}                    |
+{: #tagvalues title='Tag numbers defined in RFC 7049'}
 
 ### Date and Time {#datetimesect}
 

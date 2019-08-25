@@ -2131,7 +2131,9 @@ attacked to spend quadratic effort, unless a secret key is employed
 (see Section 7 of {{SIPHASH}}).  Such superlinear efforts can be
 employed by an attacker to exhaust resources at or before the input
 validator; they therefore need to be avoided in a CBOR decoder
-implementation.
+implementation.  Note that Tag definitions and their implementations
+can add security considerations of this kind; this should then be
+discussed in the security considerations of the Tag definition.
 
 CBOR encoders do not receive input directly from the network and are
 thus not directly attackable in the same way as CBOR decoders.

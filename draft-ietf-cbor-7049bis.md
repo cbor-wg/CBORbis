@@ -451,6 +451,9 @@ Less than 24:
   item at all but terminates an indefinite length item; both are
   described in {{indefinite}}.
 
+Initial byte and any additional bytes consumed to construct the
+argument are collectively referred to as the "head" of the data item.
+
 The meaning of this argument depends on the major type.
 For example, in major type 0, the argument is the value of the data
 item itself (and in major type 1 the value of the data item is
@@ -544,8 +547,10 @@ Major type 5:
   decoding; see also {{map-keys}}.
 
 Major type 6:
-: a tagged data item whose tag is the argument and whose value
-  is the single following encoded item.  See {{tags}}.
+: a tagged data item whose tag is the argument and whose value is the
+  single encoded data item that follows the head.  Similar to major
+  types 4 and 5, we also talk about the "enclosed" data item.  See
+  {{tags}}.
 
 Major type 7:
 : floating-point numbers and simple values, as well as the "break"
@@ -779,7 +784,7 @@ are encoded in the additional bytes of the appropriate size.  (See
 
 ## Optional Tagging of Items {#tags}
 
-In CBOR, a data item can optionally be preceded by a tag to give it
+In CBOR, a data item can optionally be enclosed by a tag to give it
 additional semantics while retaining its structure. The tag is major
 type 6, and represents an unsigned integer as indicated by the tag's
 argument ({{encoding}}); the (sole)
@@ -805,11 +810,11 @@ hints about the content of items.  Understanding the semantic tags is
 optional for a decoder; it can just jump over the initial bytes of the
 tag and interpret the tagged data item itself.
 
-A tag always applies to the item that directly follows it.
-Thus, if tag A is followed by tag B, which is followed by data item C,
+A tag always applies to the item it encloses.
+Thus, if tag A encloses tag B, which encloses data item C,
 tag A applies to the result of applying tag B on data item C.  That
 is, a tagged item is a data item consisting of a tag and a value.  The
-content of the tagged item is the data item (the value) that is being
+content of the tagged item (the enclosed data item) is the data item (the value) that is being
 tagged.
 
 IANA maintains a registry of tag values as described in {{ianatags}}.
@@ -1097,7 +1102,7 @@ in a file that does not have disambiguating metadata.  Here, it may
 help to have some distinguishing characteristics for the data itself.
 
 Tag 55799 is defined for this purpose.  It does not impart any special
-semantics on the data item that follows; that is, the semantics of a
+semantics on the data item that it encloses; that is, the semantics of a
 data item tagged with tag 55799 is exactly identical to the semantics
 of the data item itself.
 
@@ -1409,8 +1414,9 @@ Duplicate keys in a map:
   stop processing altogether.  On the other hand, a "streaming
   decoder" may not even be able to notice ({{map-keys}}).
 
-Inadmissible type on the value following a tag:
-: Tags ({{tags}}) specify what type of data item is supposed to follow
+Inadmissible type on the value enclosed by a tag:
+: Tags ({{tags}}) specify what type of data item is supposed to be
+  enclosed by
   the tag; for example, the tags for positive or negative bignums are
   supposed to be put on byte strings. A decoder that decodes the
   tagged data item into a native representation (a native big integer
@@ -1809,7 +1815,7 @@ CBOR has three major extension points:
   of the codepoint space has been allocated, and the space is abundant
   (although the early numbers are more efficient than the later ones).
   Implementations receiving an unknown tag can choose to simply ignore
-  it or to process it as an unknown tag wrapping the following data
+  it or to process it as an unknown tag wrapping the enclosed data
   item. The IANA registry in {{ianatags}} is the appropriate way to
   address the extensibility of this codepoint space.
 
@@ -1865,7 +1871,7 @@ key position).  Undefined is written >undefined\< as in JavaScript.
 The non-finite floating-point numbers Infinity, -Infinity, and NaN are
 written exactly as in this sentence (this is also a way they can be
 written in JavaScript, although JSON does not allow them).  A tagged
-item is written as an integer number for the tag followed by the item
+item is written as an integer number for the tag, followed by the item
 in parentheses; for instance, an RFC 3339 (ISO 8601) date could be
 notated as:
 

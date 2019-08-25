@@ -565,6 +565,21 @@ In major types 6 and 7, many of the possible values are reserved for
 future specification. See {{ianacons}} for more information on these
 values.
 
+{{major-type-table}} summarizes the major types defined by CBOR,
+ignoring the next section for now.  The number N in this table stands
+for the argument, mt for the major type.
+
+| mt | Meaning               | Content                          |
+|  0 | unsigned integer N    | -                                |
+|  1 | negative integer -1-N | -                                |
+|  2 | byte string           | N bytes                          |
+|  3 | text string           | N bytes (UTF-8 text)             |
+|  4 | array                 | N data items (elements)          |
+|  5 | map                   | 2 N data items (key/value pairs) |
+|  6 | tag number N          | 1 data item                      |
+|  7 | simple/float          | -                                |
+{: #major-type-table title="Overview over CBOR major types (definite length encoded)"}
+
 
 ## Indefinite Lengths for Some Major Types {#indefinite}
 

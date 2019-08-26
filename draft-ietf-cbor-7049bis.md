@@ -3,6 +3,7 @@ stand_alone: true
 ipr: trust200902
 cat: std
 # number: '7049'
+obsoletes: 7049
 docname: draft-ietf-cbor-7049bis-latest
 # consensus: 'yes'
 # submissiontype: IETF

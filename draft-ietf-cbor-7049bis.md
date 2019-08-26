@@ -51,17 +51,15 @@ normative:
       Section 4.15: "'Seconds Since the Epoch'"
       IEEE Std: '1003.1'
       '2013': Edition
-  IEEE.754.2008:
+  IEEE754:
     -: fp
     title: IEEE Standard for Floating-Point Arithmetic
     author:
       -
-        org:
-          Institute of Electrical and Electronics Engineers
-    date: 2008-08
+        org: IEEE
     seriesinfo:
-      IEEE Standard: 754-2008
-  RFC2119:
+      IEEE Std: 754-2008
+    date: false
   RFC3629:
   RFC3339:
   RFC4287:
@@ -112,6 +110,7 @@ informative:
   RFC8259: json
   RFC7228:
   RFC6838:
+  RFC7049:
   RFC0713:
   PCRE:
       target: http://www.pcre.org/
@@ -119,6 +118,7 @@ informative:
       author:
         - name: Andrew Ho
       date: 2018
+  SIPHASH: DOI.10.1007_978-3-642-34931-7_28
 
 --- abstract
 
@@ -129,6 +129,12 @@ extensibility without the
 need for version negotiation. These design goals make it different from earlier
 binary
 serializations such as ASN.1 and MessagePack.
+
+This document is a revised edition of RFC 7049, with editorial improvements,
+added detail, and fixed errata.
+This revision formally obsoletes RFC 7049, while keeping full compatibility
+of the interchange format from RFC 7049.
+It does not create a new version of the format.
 
 --- note_Contributing
 
@@ -166,6 +172,12 @@ that starts from JSON.
 {{comparison-app}} lists some existing binary formats and discusses
 how well they do or do not fit the design objectives of the Concise
 Binary Object Representation (CBOR).
+
+This document is a revised edition of {{RFC7049}}, with editorial improvements,
+added detail, and fixed errata.
+This revision formally obsoletes RFC 7049, while keeping full compatibility
+of the interchange format from RFC 7049.
+It does not create a new version of the format.
 
 ## Objectives
 
@@ -330,15 +342,15 @@ In the basic (un-extended) generic data model, a data item is one of:
 * an integer in the range -2\*\*64..2\*\*64-1 inclusive
 * a simple value, identified by a number
   between 0 and 255, but distinct from that number
-* a floating point value, distinct from an integer, out of the set
+* a floating-point value, distinct from an integer, out of the set
   representable by IEEE 754 binary64 (including non-finites) {{-fp}}
 * a sequence of zero or more bytes ("byte string")
 * a sequence of zero or more Unicode code points ("text string")
 * a sequence of zero or more data items ("array")
 * a mapping (mathematical function) from zero or more data items
   ("keys") each to a data item ("values"), ("map")
-* a tagged data item, comprising a tag (an integer in the range
-  0..2\*\*64-1) and a value (a data item)
+* a tagged data item ("tag"), comprising a tag number (an integer in
+  the range 0..2\*\*64-1) and a tagged value (a data item)
 
 Note that integer and floating-point values are distinct in this
 model, even if they have the same numeric value.
@@ -346,20 +358,20 @@ model, even if they have the same numeric value.
 Also note that serialization variants, such as number of bytes of the
 encoded floating value, or the choice of one of the ways in which an
 integer, the length of a text or byte string, the number of elements
-in an array or pairs in a map, or a tag value, (collectively "the
+in an array or pairs in a map, or a tag number, (collectively "the
 argument", see {{encoding}}) can be encoded, are not visible at the
 generic data model level.
 
 ## Extended Generic Data Models
 
 This basic generic data model comes pre-extended by the registration
-of a number of simple values and tags right in this document, such as:
+of a number of simple values and tag numbers right in this document, such as:
 
 * `false`, `true`, `null`, and `undefined` (simple values identified by 20..23)
-* integer and floating point values with a larger range and precision
-  than the above (tags 2 to 5)
+* integer and floating-point values with a larger range and precision
+  than the above (tag numbers 2 to 5)
 * application data types such as a point in time or an RFC 3339
-  date/time string (tags 1, 0)
+  date/time string (tag numbers 1, 0)
 
 Further elements of the extended generic data model can be (and have
 been) defined via the IANA registries created for CBOR.  Even if such
@@ -367,11 +379,11 @@ an extension is unknown to a generic encoder or decoder, data items
 using that extension can be passed to or from the application by
 representing them at the interface to the application within the basic
 generic data model, i.e., as generic values of a simple type or
-generic tagged items.
+generic tags.
 
 In other words, the basic generic data model is stable as defined in
 this document, while the extended generic data model expands by the
-registration of new simple values or tags, but never shrinks.
+registration of new simple values or tag numbers, but never shrinks.
 
 While there is a strong expectation that generic encoders and decoders
 can represent `false`, `true`, and `null` (`undefined` is intentionally
@@ -395,7 +407,7 @@ are equivalent for the purposes of map keys and encoder freedom. For
 example, in the generic data model, a valid map MAY have both `0` and
 `0.0` as keys, and an encoder MUST NOT encode `0.0` as an integer
 (major type 0, {{majortypes}}).  However, if a specific data model
-declares that floating point and integer representations of integral
+declares that floating-point and integer representations of integral
 values are equivalent, using both map keys `0` and `0.0` in a single
 map would be considered
 duplicates and so invalid, and an encoder could encode integral-valued
@@ -424,7 +436,7 @@ Less than 24:
 : The argument's value is held in the following 1, 2, 4, or 8 bytes,
   respectively, in network byte order.  For major type 7 and
   additional information value 25, 26, 27, these bytes are not used as
-  an integer argument, but as a floating point value (see
+  an integer argument, but as a floating-point value (see
   {{fpnocont}}).
 
 28, 29, 30:
@@ -438,6 +450,9 @@ Less than 24:
   indefinite, and for major type 7, the byte does not consitute a data
   item at all but terminates an indefinite length item; both are
   described in {{indefinite}}.
+
+The initial byte and any additional bytes consumed to construct the
+argument are collectively referred to as the "head" of the data item.
 
 The meaning of this argument depends on the major type.
 For example, in major type 0, the argument is the value of the data
@@ -524,13 +539,17 @@ Major type 5:
   0b101_01001 (major type of 5, additional information of 9 for the
   number of pairs) followed by the 18 remaining items. The first item
   is the first key, the second item is the first value, the third item
-  is the second key, and so on.  A map that has duplicate keys may be
+  is the second key, and so on.  Because items in a map come in pairs,
+  their total number is always even:  A map that contains an odd
+  number of items (no value data present after the last key data item) is not well-formed.
+  A map that has duplicate keys may be
   well-formed, but it is not valid, and thus it causes indeterminate
   decoding; see also {{map-keys}}.
 
 Major type 6:
-: a tagged data item whose tag is the argument and whose value
-  is the single following encoded item.  See {{tags}}.
+: a tagged data item ("tag") whose tag number is the argument and
+  whose enclosed data item is the single encoded data item that follows the head.
+  See {{tags}}.
 
 Major type 7:
 : floating-point numbers and simple values, as well as the "break"
@@ -544,6 +563,21 @@ These eight major types lead to a simple table showing which of the
 In major types 6 and 7, many of the possible values are reserved for
 future specification. See {{ianacons}} for more information on these
 values.
+
+{{major-type-table}} summarizes the major types defined by CBOR,
+ignoring the next section for now.  The number N in this table stands
+for the argument, mt for the major type.
+
+| mt | Meaning               | Content                          |
+|  0 | unsigned integer N    | -                                |
+|  1 | negative integer -1-N | -                                |
+|  2 | byte string           | N bytes                          |
+|  3 | text string           | N bytes (UTF-8 text)             |
+|  4 | array                 | N data items (elements)          |
+|  5 | map                   | 2N data items (key/value pairs)  |
+|  6 | tag of number N       | 1 data item                      |
+|  7 | simple/float          | -                                |
+{: #major-type-table title="Overview over CBOR major types (definite length encoded)"}
 
 
 ## Indefinite Lengths for Some Major Types {#indefinite}
@@ -572,7 +606,7 @@ a definite-length array or map — the enclosing item is not well-formed.
 
 Indefinite-length arrays and maps are represented using their major
 type with the additional information value of 31, followed by an
-arbitrary-length sequence of items for an array or key/value pairs for
+arbitrary-length sequence of zero or more items for an array or key/value pairs for
 a map, followed by the "break" stop code ({{break}}).  In other words, indefinite-length
 arrays and maps look identical to other arrays and maps except for
 beginning with the additional information value of 31 and ending with the
@@ -678,10 +712,11 @@ BF           -- Start indefinite-length map
 ### Indefinite-Length Byte Strings and Text Strings
 
 Indefinite-length strings are represented by a byte containing the major type
-and additional information value of 31, followed by a series of byte
+and additional information value of 31, followed by a series of zero or more byte
 or text strings ("chunks") that have definite lengths, followed by the
 "break" stop code ({{break}}).  The data item represented by the
-indefinite-length string is the concatenation of the chunks.
+indefinite-length string is the concatenation of the chunks (i.e., the
+empty byte or text string, respectively, if no chunk is present).
 
 If any item between the indefinite-length string indicator
 (0b010_11111 or 0b011_11111) and the "break" stop code is not a definite-length
@@ -726,7 +761,7 @@ information is in the initial bytes.
 |          25 | IEEE 754 Half-Precision Float (16 bits follow)            |
 |          26 | IEEE 754 Single-Precision Float (32 bits follow)          |
 |          27 | IEEE 754 Double-Precision Float (64 bits follow)          |
-|       28-30 | Unassigned, not well-formed in the present document       |
+|       28-30 | Reserved, not well-formed in the present document         |
 |          31 | "break" stop code for indefinite-length items ({{break}}) |
 {: #fpnoconttbl title='Values for Additional Information in Major Type 7'}
 
@@ -739,7 +774,7 @@ the additional information in the first byte. {{fpnoconttbl2}} lists
 the values assigned and available for simple types.
 
 |   Value | Semantics       |
-|---------+-----------------|
+|---------|-----------------|
 |   0..19 | (Unassigned)    |
 |      20 | False           |
 |      21 | True            |
@@ -761,24 +796,24 @@ IEEE 754 binary floating-point values {{-fp}}.  These floating-point values
 are encoded in the additional bytes of the appropriate size.  (See
 {{half-precision}} for some information about 16-bit floating point.)
 
-## Optional Tagging of Items {#tags}
+## Tagging of Items {#tags}
 
-In CBOR, a data item can optionally be preceded by a tag to give it
+In CBOR, a data item can be enclosed by a tag to give it
 additional semantics while retaining its structure. The tag is major
 type 6, and represents an unsigned integer as indicated by the tag's
-argument ({{encoding}}); the (sole)
+argument ({{encoding}}); the (sole) enclosed
 data item is carried as content data.  If a tag requires structured
 data, this structure is encoded into the nested data item.  The
-definition of a tag usually restricts what kinds of nested data item
-or items are valid for this tag.
+definition of a tag number usually restricts what kinds of nested data item
+or items are valid for tags using this tag number.
 
 For example, assume that a byte string of length 12 is marked with a
-tag to indicate it is a positive bignum ({{bignums}}).  This would be
+tag of number 2 to indicate it is a positive bignum ({{bignums}}).  This would be
 marked as 0b110_00010 (major type 6, additional information 2 for the
-tag) followed by 0b010_01100 (major type 2, additional information of
+tag number) followed by 0b010_01100 (major type 2, additional information of
 12 for the length) followed by the 12 bytes of the bignum.
 
-Decoders do not need to understand tags, and thus tags may be of
+Decoders do not need to understand tags of every tag number, and tags may be of
 little value in applications where the implementation creating a
 particular CBOR data item and the implementation decoding that stream
 know the semantic meaning of each item in the data flow. Their primary
@@ -789,59 +824,61 @@ hints about the content of items.  Understanding the semantic tags is
 optional for a decoder; it can just jump over the initial bytes of the
 tag and interpret the tagged data item itself.
 
-A tag always applies to the item that is directly followed by it.
-Thus, if tag A is followed by tag B, which is followed by data item C,
+A tag applies semantics to the data item it encloses.
+Thus, if tag A encloses tag B, which encloses data item C,
 tag A applies to the result of applying tag B on data item C.  That
-is, a tagged item is a data item consisting of a tag and a value.  The
-content of the tagged item is the data item (the value) that is being
+is, a tagged item is a data item consisting of a tag number and an enclosed value.  The
+content of the tagged item (the enclosed data item) is the data item (the value) that is being
 tagged.
 
-IANA maintains a registry of tag values as described in {{ianatags}}.
-{{tagvalues}} provides a list of initial values, with definitions in
+IANA maintains a registry of tag numbers as described in {{ianatags}}.
+{{tagvalues}} provides a list of tag numbers that were defined in {{RFC7049}}, with definitions in
 the rest of this section.
+Note that many other tag numbers have been defined since the publication of {{RFC7049}};
+see the registry described at {{ianatags}} for the complete list.
 
-|       Tag | Data Item    | Semantics                                                     |
-|-----------+--------------+---------------------------------------------------------------|
-|         0 | UTF-8 string | Standard date/time string; see {{stringdatetimesect}}         |
-|         1 | multiple     | Epoch-based date/time; see {{epochdatetimesect}}              |
-|         2 | byte string  | Positive bignum; see {{bignums}}                              |
-|         3 | byte string  | Negative bignum; see {{bignums}}                              |
-|         4 | array        | Decimal fraction; see {{fractions}}                           |
-|         5 | array        | Bigfloat; see {{fractions}}                                   |
-|     6..20 | (Unassigned) | (Unassigned)                                                  |
-|        21 | multiple     | Expected conversion to base64url encoding; see {{convexpect}} |
-|        22 | multiple     | Expected conversion to base64 encoding; see {{convexpect}}    |
-|        23 | multiple     | Expected conversion to base16 encoding; see {{convexpect}}    |
-|        24 | byte string  | Encoded CBOR data item; see {{embedded-di}}                   |
-|    25..31 | (Unassigned) | (Unassigned)                                                  |
-|        32 | UTF-8 string | URI; see {{encodedtext}}                                      |
-|        33 | UTF-8 string | base64url; see {{encodedtext}}                                |
-|        34 | UTF-8 string | base64; see {{encodedtext}}                                   |
-|        35 | UTF-8 string | Regular expression; see {{encodedtext}}                       |
-|        36 | UTF-8 string | MIME message; see {{encodedtext}}                             |
-| 37..55798 | (Unassigned) | (Unassigned)                                                  |
-|     55799 | multiple     | Self-described CBOR; see {{self-describe}}                    |
-|    55800+ | (Unassigned) | (Unassigned)                                                  |
-{: #tagvalues title='Values for Tags'}
+| Tag Number | Data Item   | Semantics                                                     |
+|------------+-------------+---------------------------------------------------------------|
+|          0 | text string | Standard date/time string; see {{stringdatetimesect}}         |
+|          1 | multiple    | Epoch-based date/time; see {{epochdatetimesect}}              |
+|          2 | byte string | Positive bignum; see {{bignums}}                              |
+|          3 | byte string | Negative bignum; see {{bignums}}                              |
+|          4 | array       | Decimal fraction; see {{fractions}}                           |
+|          5 | array       | Bigfloat; see {{fractions}}                                   |
+|         21 | multiple    | Expected conversion to base64url encoding; see {{convexpect}} |
+|         22 | multiple    | Expected conversion to base64 encoding; see {{convexpect}}    |
+|         23 | multiple    | Expected conversion to base16 encoding; see {{convexpect}}    |
+|         24 | byte string | Encoded CBOR data item; see {{embedded-di}}                   |
+|         32 | text string | URI; see {{encodedtext}}                                      |
+|         33 | text string | base64url; see {{encodedtext}}                                |
+|         34 | text string | base64; see {{encodedtext}}                                   |
+|         35 | text string | Regular expression; see {{encodedtext}}                       |
+|         36 | text string | MIME message; see {{encodedtext}}                             |
+|      55799 | multiple    | Self-described CBOR; see {{self-describe}}                    |
+{: #tagvalues title='Tag numbers defined in RFC 7049'}
 
 ### Date and Time {#datetimesect}
 
-Protocols using tag values 0 and 1 extend the generic data model
+Protocols using tag numbers 0 and 1 extend the generic data model
 ({{cbor-data-models}}) with data items representing points in time.
 
 ### Standard Date/Time String {#stringdatetimesect}
 
-Tag value 0 is for date/time strings that follow the standard format
-described in {{RFC3339}}, as refined by Section 3.3 of {{RFC4287}}.
+Tag number 0 contains a text string in the standard format described by
+the `date-time` production in {{RFC3339}}, as refined by Section 3.3
+of {{RFC4287}}, representing the point in time described there. A
+nested item of another type or that doesn't match the {{RFC4287}}
+format is invalid.
 
 ### Epoch-based Date/Time {#epochdatetimesect}
 
-Tag value 1 is for numerical representation of civil time expressed in
-seconds relative to 1970-01-01T00:00Z (in UTC time).
+Tag number 1 contains a numerical value counting the number of seconds
+from 1970-01-01T00:00Z in UTC time to the represented point in civil
+time.
 
-The tagged item MUST be an unsigned or negative integer (major types 0
+The enclosed item MUST be an unsigned or negative integer (major types 0
 and 1), or a floating-point number (major type 7 with additional
-information 25, 26, or 27).
+information 25, 26, or 27). Other contained types are invalid.
 
 Non-negative values (major type 0 and non-negative floating-point
 numbers) stand for time values on or after 1970-01-01T00:00Z UTC and
@@ -850,7 +887,7 @@ are interpreted according to POSIX {{TIME_T}}.
 are handled specially by POSIX time and this results in a 1 second
 discontinuity several times per decade.)
 Note that applications that require the expression of times beyond
-early 2106 cannot leave out support of 64-bit integers for the tagged
+early 2106 cannot leave out support of 64-bit integers for the enclosed
 value.
 
 Negative values (major type 1 and negative floating-point numbers) are
@@ -860,17 +897,17 @@ no universal standard for UTC count-of-seconds time before
 precede discontinuities in national calendars).  The same applies to
 non-finite values.
 
-To indicate fractional seconds, floating point values can be used
-within Tag 1 instead of integer values.  Note that this generally
+To indicate fractional seconds, floating-point values can be used
+within Tag number 1 instead of integer values.  Note that this generally
 requires binary64 support, as binary16 and binary32 provide non-zero
 fractions of seconds only for a short period of time around
-early 1970.  An application that requires Tag 1 support may restrict
-the tagged value to be an integer (or a floating-point value) only.
+early 1970.  An application that requires Tag number 1 support may restrict
+the enclosed value to be an integer (or a floating-point value) only.
 
 
 ### Bignums {#bignums}
 
-Protocols using tag values 2 and 3 extend the generic data model
+Protocols using tag numbers 2 and 3 extend the generic data model
 ({{cbor-data-models}}) with "bignums" representing arbitrarily sized
 integers. In the generic data model, bignum values are not equal to
 integers from the basic data model, but specific data models can
@@ -878,8 +915,9 @@ define that equivalence, and preferred encoding never makes use of
 bignums that also can be expressed as basic integers (see below).
 
 Bignums are encoded as a byte string data item, which is interpreted
-as an unsigned integer n in network byte order.  For tag value 2, the
-value of the bignum is n.  For tag value 3, the value of the bignum is
+as an unsigned integer n in network byte order.  Contained items of
+other types are invalid.  For tag number 2, the
+value of the bignum is n.  For tag number 3, the value of the bignum is
 -1 - n.  The preferred encoding of the byte string is to leave out any
 leading zeroes (note that this means the preferred encoding for n = 0
 is the empty byte string, but see below).
@@ -896,7 +934,7 @@ basic integer representation than needed, such as 0x1800 for 0x00 does
 not).
 
 For example, the number 18446744073709551616 (2\*\*64) is represented
-as 0b110_00010 (major type 6, tag 2), followed by 0b010_01001 (major
+as 0b110_00010 (major type 6, tag number 2), followed by 0b010_01001 (major
 type 2, length 9), followed by 0x010000000000000000 (one byte 0x01 and
 eight bytes 0x00). In hexadecimal:
 
@@ -910,9 +948,9 @@ C2                        -- Tag 2
 
 ### Decimal Fractions and Bigfloats {#fractions}
 
-Protocols using tag value 4 extend the generic data model with data
+Protocols using tag number 4 extend the generic data model with data
 items representing arbitrary-length decimal fractions m*(10**e).
-Protocols using tag value 5 extend the generic data model with data
+Protocols using tag number 5 extend the generic data model with data
 items representing arbitrary-length binary fractions m*(2**e). As with
 bignums, values of different types are not equal in the generic data
 model.
@@ -932,15 +970,16 @@ without the need for supporting IEEE 754.
 
 A decimal fraction or a bigfloat is represented as a tagged array that
 contains exactly two integer numbers: an exponent e and a mantissa m.
-Decimal fractions (tag 4) use base-10 exponents; the value of a
-decimal fraction data item is m\*(10\*\*e).  Bigfloats (tag 5) use
+Decimal fractions (tag number 4) use base-10 exponents; the value of a
+decimal fraction data item is m\*(10\*\*e).  Bigfloats (tag number 5) use
 base-2 exponents; the value of a bigfloat data item is m\*(2\*\*e).
 The exponent e MUST be represented in an integer of major type 0 or 1,
-while the mantissa also can be a bignum ({{bignums}}).
+while the mantissa also can be a bignum ({{bignums}}).  Contained
+items with other structures are invalid.
 
 An example of a decimal fraction is that the number 273.15 could be
 represented as 0b110_00100 (major type of 6 for the tag, additional
-information of 4 for the type of tag), followed by 0b100_00010 (major
+information of 4 for the number of tag), followed by 0b100_00010 (major
 type of 4 for the array, additional information of 2 for the length of
 the array), followed by 0b001_00001 (major type of 1 for the first
 integer, additional information of 1 for the value of -2), followed by
@@ -957,7 +996,7 @@ C4             -- Tag 4
 
 An example of a bigfloat is that the number 1.5 could be represented
 as 0b110_00101 (major type of 6 for the tag, additional information of
-5 for the type of tag), followed by 0b100_00010 (major type of 4 for
+5 for the number of tag), followed by 0b100_00010 (major type of 4 for
 the array, additional information of 2 for the length of the array),
 followed by 0b001_00000 (major type of 1 for the first integer,
 additional information of 0 for the value of -1), followed by
@@ -991,13 +1030,15 @@ data model.
 
 Sometimes it is beneficial to carry an embedded CBOR data item that is
 not meant to be decoded immediately at the time the enclosing data
-item is being decoded.  Tag 24 (CBOR data item) can be used to tag the
-embedded byte string as a data item encoded in CBOR format.
+item is being decoded.  Tag number 24 (CBOR data item) can be used to tag the
+embedded byte string as a data item encoded in CBOR format.  Contained
+items that aren't byte strings are invalid.  Any contained byte string
+is valid, even if it encodes an invalid or ill-formed CBOR item.
 
 
 #### Expected Later Encoding for CBOR-to-JSON Converters {#convexpect}
 
-Tags 21 to 23 indicate that a byte string might require a specific
+Tags number 21 to 23 indicate that a byte string might require a specific
 encoding when interoperating with a text-based representation.  These
 tags are useful when an encoder knows that the byte string data it is
 writing is likely to be later converted to a particular JSON-based
@@ -1013,15 +1054,15 @@ the latter case, the tag applies to all of the byte string data items
 contained in the data item, except for those contained in a nested
 data item tagged with an expected conversion.
 
-These three tag types suggest conversions to three of the base data
-encodings defined in {{RFC4648}}.  For base64url encoding (tag 21),
+These three tag numbers suggest conversions to three of the base data
+encodings defined in {{RFC4648}}.  For base64url encoding (tag number 21),
 padding is not used (see Section 3.2 of RFC 4648); that is, all
 trailing equals signs ("=") are removed from the encoded string.
-For base64 encoding (tag 22), padding is used as defined in RFC 4648.
+For base64 encoding (tag number 22), padding is used as defined in RFC 4648.
 For both base64url and base64, padding bits are set to zero (see
 Section 3.5 of RFC 4648), and encoding
 is performed without the inclusion of any line breaks, whitespace, or
-other additional characters.  Note that, for all three tags, the
+other additional characters.  Note that, for all three tag numbers, the
 encoding of the empty byte string is the empty text string.
 
 
@@ -1030,25 +1071,36 @@ encoding of the empty byte string is the empty text string.
 Some text strings hold data that have formats widely used on the
 Internet, and sometimes those formats can be validated and presented
 to the application in appropriate form by the decoder. There are tags
-for some of these formats.
+for some of these formats. As with tag numbers 21 to 23, if these tags are
+applied to an item other than a text string, they apply to all text
+string data items it contains.
 
-* Tag 32 is for URIs, as defined in {{RFC3986}};
+* Tag number 32 is for URIs, as defined in {{RFC3986}}.  If the text string
+  doesn't match the `URI-reference` production, the string is invalid.
 
-* Tags 33 and 34 are for base64url- and base64-encoded text strings,
-  as defined in {{RFC4648}};
+* Tag numbers 33 and 34 are for base64url- and base64-encoded text strings,
+  as defined in {{RFC4648}}.  If any of:
+  * the encoded text string contains non-alphabet characters or only 1
+    character in the last block of 4, or
+  * the padding bits in a 2- or 3-character block are not 0, or
+  * the base64 encoding has the wrong number of padding characters, or
+  * the base64url encoding has padding characters,
 
-* Tag 35 is for regular expressions that are roughly in Perl
+  the string is invalid.
+
+* Tag number 35 is for regular expressions that are roughly in Perl
   Compatible Regular Expressions (PCRE/PCRE2) form {{PCRE}} or a
   version of the JavaScript regular expression syntax {{ECMA262}}.
   (Note that more specific identification may be necessary if the
   actual version of the specification underlying the regular
   expression, or more than just the text of the regular expression
-  itself, need to be conveyed.)
+  itself, need to be conveyed.) Any contained string value is valid.
 
-* Tag 36 is for MIME messages (including all headers), as defined in
-  {{RFC2045}};
+* Tag number 36 is for MIME messages (including all headers), as defined in
+  {{RFC2045}}. A text string that isn't a valid MIME message is
+  invalid.
 
-Note that tags 33 and 34 differ from 21 and 22 in that the data is
+Note that tag numbers 33 and 34 differ from 21 and 22 in that the data is
 transported in base-encoded form for the former and in raw byte string
 form for the latter.
 
@@ -1060,375 +1112,26 @@ being employed for encoding a data item.  For instance, a specific
 protocol might specify the use of CBOR, or a media type is indicated
 that specifies its use.  However, there may be applications where such
 context information is not available, such as when CBOR data is stored
-in a file and disambiguating metadata is not in use.  Here, it may
+in a file that does not have disambiguating metadata.  Here, it may
 help to have some distinguishing characteristics for the data itself.
 
-Tag 55799 is defined for this purpose.  It does not impart any special
-semantics on the data item that follows; that is, the semantics of a
-data item tagged with tag 55799 is exactly identical to the semantics
+Tag number 55799 is defined for this purpose.  It does not impart any special
+semantics on the data item that it encloses; that is, the semantics of a
+data item enclosed in tag number 55799 is exactly identical to the semantics
 of the data item itself.
 
-The serialization of this tag is 0xd9d9f7, which appears not to be in
-use as a distinguishing mark for frequently used file types.  In
-particular, it is not a valid start of a Unicode text in any Unicode
-encoding if followed by a valid CBOR data item.
+The serialization of this tag's head is 0xd9d9f7, which does not appear to be in
+use as a distinguishing mark for any frequently used file types.  In
+particular, 0xd9d9f7 is not a valid start of a Unicode text in any Unicode
+encoding if it is followed by a valid CBOR data item.
 
 For instance, a decoder might be able to decode both CBOR and
 JSON. Such a decoder would need to mechanically distinguish the two
 formats. An easy way for an encoder to help the decoder would be to
-tag the entire CBOR item with tag 55799, the serialization of which
+tag the entire CBOR item with tag number 55799, the serialization of which
 will never be found at the beginning of a JSON text.
 
-# Creating CBOR-Based Protocols
-
-Data formats such as CBOR are often used in environments where there
-is no format negotiation. A specific design goal of CBOR is to not
-need any included or assumed schema: a decoder can take a CBOR item
-and decode it with no other knowledge.
-
-Of course, in real-world implementations, the encoder and the decoder
-will have a shared view of what should be in a CBOR data item.  For
-example, an agreed-to format might be "the item is an array whose
-first value is a UTF-8 string, second value is an integer, and
-subsequent values are zero or more floating-point numbers" or "the
-item is a map that has byte strings for keys and contains at least one
-pair whose key is 0xab01".
-
-CBOR-based protocols MUST specify how their decoders handle
-invalid and other unexpected data.  CBOR-based protocols
-MAY specify that they treat arbitrary valid data as unexpected.
-Encoders for CBOR-based protocols MUST produce only valid items, that
-is, the protocol cannot be designed to make use of invalid items.  An
-encoder can be capable of encoding as many or as few types of values
-as is required by the protocol in which it is used; a decoder can be
-capable of understanding as many or as few types of values as is
-required by the protocols in which it is used. This lack of
-restrictions allows CBOR to be used in extremely constrained
-environments.
-
-This section discusses some considerations in creating CBOR-based
-protocols.  With few exceptions, it is advisory only and explicitly excludes any language
-from RFC 2119 other than words that could be interpreted as "MAY" in
-the sense of RFC 2119.  The exceptions aim at facilitating
-interoperability of CBOR-based protocols while making use of a wide variety of
-both generic and application-specific encoders and decoders.
-
-## CBOR in Streaming Applications
-
-In a streaming application, a data stream may be composed of a
-sequence of CBOR data items concatenated back-to-back. In such an
-environment, the decoder immediately begins decoding a new data item
-if data is found after the end of a previous data item.
-
-Not all of the bytes making up a data item may be immediately
-available to the decoder; some decoders will buffer additional data
-until a complete data item can be presented to the application.  Other
-decoders can present partial information about a top-level data item
-to an application, such as the nested data items that could already be
-decoded, or even parts of a byte string that hasn't completely arrived
-yet.
-
-Note that some applications and protocols will not want to use
-indefinite-length encoding.  Using indefinite-length encoding allows
-an encoder to not need to marshal all the data for counting, but it
-requires a decoder to allocate increasing amounts of memory while
-waiting for the end of the item. This might be fine for some
-applications but not others.
-
-
-## Generic Encoders and Decoders {#generic}
-
-A generic CBOR decoder can decode all well-formed CBOR data and
-present them to an application.  See {{pseudocode}}.
-
-Even though CBOR attempts to minimize these cases, not all well-formed
-CBOR data is valid: for example, the encoded text string `0x62c0ae`
-does not contain valid UTF-8 and so is not a valid CBOR item.  Also, specific tags may
-make semantic constraints that may be violated, such as a bignum tag
-containing another tag, or an instance of tag 0 containing a byte
-string or a text string with contents that do not match {{RFC3339}}'s
-`date-time` production.  There is
-no requirement that generic encoders and decoders make unnatural
-choices for their application interface to enable the processing of
-invalid data.  Generic encoders and decoders are expected to forward
-simple values and tags even if their specific codepoints are not
-registered at the time the encoder/decoder is written
-({{unknown-tags}}).
-
-Generic decoders provide ways to present well-formed CBOR values, both
-valid and invalid, to an application.  The diagnostic notation
-({{diagnostic-notation}}) may be used to present well-formed CBOR
-values to humans.
-
-Generic encoders provide an application interface that allows the
-application to specify any well-formed value, including simple values
-and tags unknown to the encoder.
-
-
-## Syntax Errors
-
-A decoder encountering a CBOR data item that is not well-formed
-generally can choose to completely fail the decoding (issue an error
-and/or stop processing altogether), substitute the problematic data
-and data items using a decoder-specific convention that clearly
-indicates there has been a problem, or take some other action.
-
-### Incomplete CBOR Data Items
-
-The representation of a CBOR data item has a specific length,
-determined by its initial bytes and by the structure of any data items
-enclosed in the data items.  If less data is available, this can be
-treated as a syntax error.  A decoder may also decode incrementally,
-that is, decode the data item as far as it is available and
-present the data found so far (such as in an event-based interface),
-with the option of continuing the decoding once further data is
-available.
-
-Examples of incomplete data items include:
-
-* A decoder expects a certain number of array or map entries but
-  instead encounters the end of the data.
-
-* A decoder processes what it expects to be the last pair in a map and
-  comes to the end of the data.
-
-* A decoder has just seen a tag and then encounters the end of the
-  data.
-
-* A decoder has seen the beginning of an indefinite-length item but
-  encounters the end of the data before it sees the "break" stop code.
-
-
-
-### Malformed Indefinite-Length Items
-
-Examples of malformed indefinite-length data items include:
-
-* Within an indefinite-length byte string or text, a decoder finds an
-  item that is not of the appropriate major type before it finds the
-  "break" stop code.
-
-* Within an indefinite-length map, a decoder encounters the "break"
-  stop code immediately after reading a key (the value is missing).
-
-Another error is finding a "break" stop code at a point in the data
-where there is no immediately enclosing (unclosed) indefinite-length
-item.
-
-
-### Unknown Additional Information Values
-
-At the time of writing, some additional information values are
-unassigned and reserved for future versions of this document (see
-{{curating}}).  Since the overall syntax for these additional
-information values is not yet defined, a decoder that sees an
-additional information value that it does not understand cannot
-continue decoding.
-
-
-## Other Decoding Errors {#semantic-errors}
-
-A CBOR data item may be syntactically well-formed but present a
-problem with interpreting the data encoded in it in the CBOR data
-model.  Generally speaking, a decoder that finds a data item with such
-a problem might issue a warning, might stop processing altogether,
-might handle the error and make the problematic value available to the
-application as such, or take some other type of action.
-
-Such problems might include:
-
-Duplicate keys in a map:
-: Generic decoders ({{generic}}) make data available to applications
-  using the native CBOR data model.  That data model includes maps
-  (key-value mappings with unique keys), not multimaps (key-value
-  mappings where multiple entries can have the same key).  Thus, a
-  generic decoder that gets a CBOR map item that has duplicate keys
-  will decode to a map with only one instance of that key, or it might
-  stop processing altogether.  On the other hand, a "streaming
-  decoder" may not even be able to notice ({{map-keys}}).
-
-Inadmissible type on the value following a tag:
-: Tags ({{tags}}) specify what type of data item is supposed to follow
-  the tag; for example, the tags for positive or negative bignums are
-  supposed to be put on byte strings. A decoder that decodes the
-  tagged data item into a native representation (a native big integer
-  in this example) is expected to check the type of the data item
-  being tagged.  Even decoders that don't have such native
-  representations available in their environment may perform the check
-  on those tags known to them and react appropriately.
-
-Invalid UTF-8 string:
-: A decoder might or might not want to verify that the sequence of
-  bytes in a UTF-8 string (major type 3) is actually valid UTF-8 and
-  react appropriately.
-
-
-## Handling Unknown Simple Values and Tags {#unknown-tags}
-
-A decoder that comes across a simple value ({{fpnocont}}) that it does
-not recognize, such as a value that was added to the IANA registry
-after the decoder was deployed or a value that the decoder chose not
-to implement, might issue a warning, might stop processing altogether,
-might handle the error by making the unknown value available to the
-application as such (as is expected of generic decoders), or take some
-other type of action.
-
-A decoder that comes across a tag ({{tags}}) that it does not
-recognize, such as a tag that was added to the IANA registry after the
-decoder was deployed or a tag that the decoder chose not to implement,
-might issue a warning, might stop processing altogether, might handle
-the error and present the unknown tag value together with the
-contained data item to the application (as is expected of generic
-decoders), might ignore the tag and simply present the contained data
-item only to the application, or take some other type of action.
-
-
-## Numbers {#numbers}
-
-An application or protocol that uses CBOR might restrict the
-representations of numbers.  For instance, a protocol that only deals
-with integers might say that floating-point numbers may not be used
-and that decoders of that protocol do not need to be able to handle
-floating-point numbers. Similarly, a protocol or application that uses
-CBOR might say that decoders need to be able to handle either type of
-number.
-
-CBOR-based protocols should take into account that different language
-environments pose different restrictions on the range and precision of
-numbers that are representable.  For example, the JavaScript number
-system treats all numbers as floating point, which may result in
-silent loss of precision in decoding integers with more than 53
-significant bits.  A protocol that uses numbers should define its
-expectations on the handling of non-trivial numbers in decoders and
-receiving applications.
-
-A CBOR-based protocol that includes floating-point numbers can
-restrict which of the three formats (half-precision, single-precision,
-and double-precision) are to be supported.  For an integer-only
-application, a protocol may want to completely exclude the use of
-floating-point values.
-
-A CBOR-based protocol designed for compactness may want to exclude
-specific integer encodings that are longer than necessary for the
-application, such as to save the need to implement 64-bit integers.
-There is an expectation that encoders will use the most compact
-integer representation that can represent a given value.  However, a
-compact application should accept values that use a longer-than-needed
-encoding (such as encoding "0" as 0b000_11001 followed by two bytes of
-0x00) as long as the application can decode an integer of the given
-size.
-
-The preferred encoding for a floating point value is the shortest
-floating point encoding that preserves its value, e.g., 0xf94580 for
-the number 5.5, and 0xfa45ad9c00 for the number 5555.5, unless the
-CBOR-based protocol specifically excludes the use of the shorter
-floating point encodings.  For NaN values, a shorter encoding is
-preferred if zero-padding the shorter significand towards the right
-reconstitutes the original NaN value (for many applications, the
-single NaN encoding 0xf97e00 will suffice).
-
-
-## Specifying Keys for Maps {#map-keys}
-
-The encoding and decoding applications need to agree on what types of
-keys are going to be used in maps.  In applications that need to
-interwork with JSON-based applications, keys probably should be
-limited to UTF-8 strings only; otherwise, there has to be a specified
-mapping from the other CBOR types to Unicode characters, and this
-often leads to implementation errors.  In applications where keys are
-numeric in nature and numeric ordering of keys is important to the
-application, directly using the numbers for the keys is useful.
-
-If multiple types of keys are to be used, consideration should be
-given to how these types would be represented in the specific
-programming environments that are to be used.  For example, in
-JavaScript Maps {{ECMA262}}, a key of integer 1 cannot be
-distinguished from a key of floating point 1.0. This means that, if integer
-keys are used, the protocol needs to avoid use of
-floating-point keys the values of which happen to be integer numbers in the same map.
-
-Decoders that deliver data items nested within a CBOR data item
-immediately on decoding them ("streaming decoders") often do not keep
-the state that is necessary to ascertain uniqueness of a key in a map.
-Similarly, an encoder that can start encoding data items before the
-enclosing data item is completely available ("streaming encoder") may
-want to reduce its overhead significantly by relying on its data
-source to maintain uniqueness.
-
-A CBOR-based protocol should make an intentional decision about what
-to do when a receiving application does see multiple identical keys in
-a map.  The resulting rule in the protocol MUST respect the CBOR
-data model: it cannot prescribe a specific handling of the entries
-with the identical keys, except that it might have a rule that having
-identical keys in a map indicates a malformed map and that the decoder
-has to stop with an error. Duplicate keys are also prohibited by CBOR
-decoders that are using strict mode ({{strict-mode}}).
-
-The CBOR data model for maps does not allow ascribing semantics to the
-order of the key/value pairs in the map representation.  Thus, a
-CBOR-based protocol MUST NOT specify that changing the key/value pair
-order in a map would change the semantics, except to specify that some,
-orders are disallowed, for example where they would not meet the
-requirements of a deterministic
-encoding ({{det-enc}}.
-(Any secondary effects of map ordering such as on timing, cache usage,
-and other potential side channels are not considered part of the
-semantics but may be enough reason on its own for a protocol to require a
-deterministic encoding format.)
-
-Applications for constrained devices that have maps with 24 or fewer
-frequently used keys should consider using small integers (and those
-with up to 48 frequently used keys should consider also using small
-negative integers) because the keys can then be encoded in a single
-byte.
-
-
-### Equivalence of Keys
-
-The specific data model applying to a CBOR data item is used to
-determine whether keys occurring in maps are duplicates or distinct.
-
-At the generic data model level, numerically equivalent integer and
-floating point values are distinct from each other, as they are from
-the various big numbers (Tags 2 to 5).  Similarly, text strings are
-distinct from byte strings, even if composed of the same bytes.  A
-tagged value is distinct from an untagged value or from a value tagged
-with a different tag.
-
-Within each of these groups, numeric values are distinct unless they
-are numerically equal (specifically, -0.0 is equal to 0.0); for the
-purpose of map key equivalence, NaN (not a number)
-values are equivalent if they have the same significand after
-zero-extending both significands at the right to 64 bits.
-
-(Byte and text) strings are compared
-byte by byte, arrays element by element, and are equal if they have
-the same number of bytes/elements and the same values at the same
-positions.
-Two maps are equal if they have the same set of pairs regardless of
-their order; pairs are equal if both the key and value are equal.
-
-Tagged values are equal if both the tag and the value are equal.
-Simple values are equal if they simply have the same value.
-Nothing else is equal in the generic data model, a simple value 2 is
-not equivalent to an integer 2 and an array is never equivalent to a map.
-
-As discussed in {{specific-data-models}}, specific data models can
-make values equivalent for the purpose of comparing map keys that are
-distinct in the generic data model.  Note that this implies that a
-generic decoder may deliver a decoded map to an application that needs
-to be checked for duplicate map keys by that application
-(alternatively, the decoder may provide a programming interface to
-perform this service for the application).  Specific data models
-cannot distinguish values for map keys that are equal for this purpose
-at the generic data model level.
-
-## Undefined Values {#undefined-values}
-
-In some CBOR-based protocols, the simple value ({{fpnocont}}) of
-Undefined might be used by an encoder as a substitute for a data item
-with an encoding problem, in order to allow the rest of the enclosing
-data items to be encoded without harm.
+# Serialization Considerations
 
 ## Preferred Serialization
 
@@ -1468,7 +1171,7 @@ implementation of a CBOR decoder meets a variant encoder.
 
 The preferred serialization always uses the shortest form of
 representing the argument ({{encoding}})); it also uses the shortest
-floating point encoding that preserves the value being encoded (see
+floating-point encoding that preserves the value being encoded (see
 {{numbers}}).
 Definite length encoding is preferred whenever the length is known at
 the time the serialization of the item starts.
@@ -1527,6 +1230,10 @@ floats start as a 64-bit float, then do a test conversion to a 32-bit
 float; if the result is the same numeric value, use the shorter value
 and repeat the process with a test conversion to a 16-bit float. (This
 rule selects 16-bit float for positive and negative Infinity as well.)
+Although IEEE floats can represent both positive and negative zero as
+distinct values, the application might not distinguish these and might decide
+to represent all zero values with a positive sign, disallowing
+negative zero.
 Also, there are many representations for NaN. If NaN is an allowed
 value, it must always be represented as 0xf97e00.
 
@@ -1543,7 +1250,7 @@ Protocols that include floating, big integer, or other complex values
 need to define extra requirements on their deterministic encodings. For
 example:
 
-* If a protocol includes a field that can express floating values
+* If a protocol includes a field that can express floating-point values
   ({{fpnocont}}), the protocol's deterministic encoding needs to specify
   whether the integer 1.0 is encoded as 0x01, 0xf93c00, 0xfa3f800000,
   or 0xfb3ff0000000000000. Three sensible rules for this are:
@@ -1557,12 +1264,13 @@ example:
 
   If NaN is an allowed value, the protocol needs to pick a single
   representation, for example 0xf97e00.
-* If a protocol includes a field that can express integers larger than
-  2^64 using tag 2 ({{bignums}}), the protocol's deterministic encoding
+* If a protocol includes a field that can express integers with an
+  absolute value of
+  2^64 or larger using tag numbers 2 or 3 ({{bignums}}), the protocol's deterministic encoding
   needs to specify whether small integers are expressed using the tag
   or major types 0 and 1.
 * A protocol might give encoders the choice of representing a URL as
-  either a text string or, using {{encodedtext}}, tag 32 containing a
+  either a text string or, using {{encodedtext}}, tag number 32 containing a
   text string. This protocol's deterministic encoding needs to either
   require that the tag is present or require that it's absent, not
   allow either one.
@@ -1570,9 +1278,9 @@ example:
 ### Length-first map key ordering
 
 The core deterministic encoding requirements sort map keys in a different
-order from the one suggested by Section 3.9 of {{?RFC7049}} (called
+order from the one suggested by Section 3.9 of {{RFC7049}} (called
 "Canonical CBOR" there). Protocols that need to
-be compatible with {{?RFC7049}}'s order can instead be specified in
+be compatible with {{RFC7049}}'s order can instead be specified in
 terms of this specification's "length-first core deterministic encoding
 requirements":
 
@@ -1603,6 +1311,299 @@ encoding only.  The terms are essentially exchangeable, however, and
 the set of core requirements in this document could also be
 called "Canonical CBOR", while the length-first-ordered version of that
 could be called "Old Canonical CBOR".)
+
+
+# Creating CBOR-Based Protocols
+
+Data formats such as CBOR are often used in environments where there
+is no format negotiation. A specific design goal of CBOR is to not
+need any included or assumed schema: a decoder can take a CBOR item
+and decode it with no other knowledge.
+
+Of course, in real-world implementations, the encoder and the decoder
+will have a shared view of what should be in a CBOR data item.  For
+example, an agreed-to format might be "the item is an array whose
+first value is a UTF-8 string, second value is an integer, and
+subsequent values are zero or more floating-point numbers" or "the
+item is a map that has byte strings for keys and contains at least one
+pair whose key is 0xab01".
+
+CBOR-based protocols MUST specify how their decoders handle
+invalid and other unexpected data.  CBOR-based protocols
+MAY specify that they treat arbitrary valid data as unexpected.
+Encoders for CBOR-based protocols MUST produce only valid items, that
+is, the protocol cannot be designed to make use of invalid items.  An
+encoder can be capable of encoding as many or as few types of values
+as is required by the protocol in which it is used; a decoder can be
+capable of understanding as many or as few types of values as is
+required by the protocols in which it is used. This lack of
+restrictions allows CBOR to be used in extremely constrained
+environments.
+
+This section discusses some considerations in creating CBOR-based
+protocols.  With few exceptions, it is advisory only and explicitly excludes any language
+from BCP 14 other than words that could be interpreted as "MAY" in
+the sense of BCP 14.  The exceptions aim at facilitating
+interoperability of CBOR-based protocols while making use of a wide variety of
+both generic and application-specific encoders and decoders.
+
+## CBOR in Streaming Applications
+
+In a streaming application, a data stream may be composed of a
+sequence of CBOR data items concatenated back-to-back. In such an
+environment, the decoder immediately begins decoding a new data item
+if data is found after the end of a previous data item.
+
+Not all of the bytes making up a data item may be immediately
+available to the decoder; some decoders will buffer additional data
+until a complete data item can be presented to the application.  Other
+decoders can present partial information about a top-level data item
+to an application, such as the nested data items that could already be
+decoded, or even parts of a byte string that hasn't completely arrived
+yet.
+
+Note that some applications and protocols will not want to use
+indefinite-length encoding.  Using indefinite-length encoding allows
+an encoder to not need to marshal all the data for counting, but it
+requires a decoder to allocate increasing amounts of memory while
+waiting for the end of the item. This might be fine for some
+applications but not others.
+
+
+## Generic Encoders and Decoders {#generic}
+
+A generic CBOR decoder can decode all well-formed CBOR data and
+present them to an application.  See {{pseudocode}}.
+
+Even though CBOR attempts to minimize these cases, not all well-formed
+CBOR data is valid: for example, the encoded text string `0x62c0ae`
+does not contain valid UTF-8 and so is not a valid CBOR item.  Also, specific tags may
+make semantic constraints that may be violated, such as a bignum tag
+enclosing another tag, or an instance of tag number 0 containing a byte
+string or a text string with contents that do not match {{RFC3339}}'s
+`date-time` production.  There is
+no requirement that generic encoders and decoders make unnatural
+choices for their application interface to enable the processing of
+invalid data.  Generic encoders and decoders are expected to forward
+simple values and tags even if their specific codepoints are not
+registered at the time the encoder/decoder is written
+({{unknown-tags}}).
+
+Generic decoders provide ways to present well-formed CBOR values, both
+valid and invalid, to an application.  The diagnostic notation
+({{diagnostic-notation}}) may be used to present well-formed CBOR
+values to humans.
+
+Generic encoders provide an application interface that allows the
+application to specify any well-formed value, including simple values
+and tags unknown to the encoder.
+
+
+## Invalid Items {#semantic-errors}
+
+A well-formed but invalid CBOR data item presents a problem with
+interpreting the data encoded in it in the CBOR data model.  A
+CBOR-based protocol could be specified in several layers, in which the
+lower layers don't process the semantics of some of the CBOR data they
+forward.  These layers can't notice the invalidity in data they don't
+process and MUST forward that data as-is.  The first layer that does
+process the semantics of an invalid CBOR item MUST take one of two
+choices:
+
+1. Replace the problematic item with an error marker and continue with
+   the next item, or
+1. Issue an error and stop processing altogether.
+
+A CBOR-based protocol MUST specify which of these options its decoders
+take, for each kind of invalid item they might encounter.
+
+Such problems might include:
+
+Duplicate keys in a map:
+: Generic decoders ({{generic}}) make data available to applications
+  using the native CBOR data model.  That data model includes maps
+  (key-value mappings with unique keys), not multimaps (key-value
+  mappings where multiple entries can have the same key).  Thus, a
+  generic decoder that gets a CBOR map item that has duplicate keys
+  will decode to a map with only one instance of that key, or it might
+  stop processing altogether.  On the other hand, a "streaming
+  decoder" may not even be able to notice ({{map-keys}}).
+
+Inadmissible type on the value enclosed by a tag:
+: Tags ({{tags}}) specify what type of data item is supposed to be
+  enclosed by
+  the tag; for example, the tags for positive or negative bignums are
+  supposed to be put on byte strings. A decoder that decodes the
+  tagged data item into a native representation (a native big integer
+  in this example) is expected to check the type of the data item
+  being tagged.  Even decoders that don't have such native
+  representations available in their environment may perform the check
+  on those tags known to them and react appropriately.
+
+Invalid UTF-8 string:
+: A decoder might or might not want to verify that the sequence of
+  bytes in a UTF-8 string (major type 3) is actually valid UTF-8 and
+  react appropriately.
+
+
+## Handling Unknown Simple Values and Tags {#unknown-tags}
+
+A decoder that comes across a simple value ({{fpnocont}}) that it does
+not recognize, such as a value that was added to the IANA registry
+after the decoder was deployed or a value that the decoder chose not
+to implement, might issue a warning, might stop processing altogether,
+might handle the error by making the unknown value available to the
+application as such (as is expected of generic decoders), or take some
+other type of action.
+
+A decoder that comes across a tag number ({{tags}}) that it does not
+recognize, such as a tag number that was added to the IANA registry after the
+decoder was deployed or a tag number that the decoder chose not to implement,
+might issue a warning, might stop processing altogether, might handle
+the error and present the unknown tag number together with the
+enclosed data item to the application (as is expected of generic
+decoders), might ignore the tag and simply present the contained data
+item only to the application, or take some other type of action.
+
+
+## Numbers {#numbers}
+
+CBOR-based protocols should take into account that different language
+environments pose different restrictions on the range and precision of
+numbers that are representable.  For example, the JavaScript number
+system treats all numbers as floating point, which may result in
+silent loss of precision in decoding integers with more than 53
+significant bits.  A protocol that uses numbers should define its
+expectations on the handling of non-trivial numbers in decoders and
+receiving applications.
+
+A CBOR-based protocol that includes floating-point numbers can
+restrict which of the three formats (half-precision, single-precision,
+and double-precision) are to be supported.  For an integer-only
+application, a protocol may want to completely exclude the use of
+floating-point values.
+
+A CBOR-based protocol designed for compactness may want to exclude
+specific integer encodings that are longer than necessary for the
+application, such as to save the need to implement 64-bit integers.
+There is an expectation that encoders will use the most compact
+integer representation that can represent a given value.  However, a
+compact application should accept values that use a longer-than-needed
+encoding (such as encoding "0" as 0b000_11001 followed by two bytes of
+0x00) as long as the application can decode an integer of the given
+size.
+
+The preferred encoding for a floating-point value is the shortest
+floating-point encoding that preserves its value, e.g., 0xf94580 for
+the number 5.5, and 0xfa45ad9c00 for the number 5555.5, unless the
+CBOR-based protocol specifically excludes the use of the shorter
+floating-point encodings.  For NaN values, a shorter encoding is
+preferred if zero-padding the shorter significand towards the right
+reconstitutes the original NaN value (for many applications, the
+single NaN encoding 0xf97e00 will suffice).
+
+
+## Specifying Keys for Maps {#map-keys}
+
+The encoding and decoding applications need to agree on what types of
+keys are going to be used in maps.  In applications that need to
+interwork with JSON-based applications, keys probably should be
+limited to UTF-8 strings only; otherwise, there has to be a specified
+mapping from the other CBOR types to Unicode characters, and this
+often leads to implementation errors.  In applications where keys are
+numeric in nature and numeric ordering of keys is important to the
+application, directly using the numbers for the keys is useful.
+
+If multiple types of keys are to be used, consideration should be
+given to how these types would be represented in the specific
+programming environments that are to be used.  For example, in
+JavaScript Maps {{ECMA262}}, a key of integer 1 cannot be
+distinguished from a key of floating-point 1.0. This means that, if integer
+keys are used, the protocol needs to avoid use of
+floating-point keys the values of which happen to be integer numbers in the same map.
+
+Decoders that deliver data items nested within a CBOR data item
+immediately on decoding them ("streaming decoders") often do not keep
+the state that is necessary to ascertain uniqueness of a key in a map.
+Similarly, an encoder that can start encoding data items before the
+enclosing data item is completely available ("streaming encoder") may
+want to reduce its overhead significantly by relying on its data
+source to maintain uniqueness.
+
+A CBOR-based protocol MUST define what
+to do when a receiving application does see multiple identical keys in
+a map.  The resulting rule in the protocol MUST respect the CBOR
+data model: it cannot prescribe a specific handling of the entries
+with the identical keys, except that it might have a rule that having
+identical keys in a map indicates a malformed map and that the decoder
+has to stop with an error. Duplicate keys are also prohibited by CBOR
+decoders that are using strict mode ({{strict-mode}}).
+
+The CBOR data model for maps does not allow ascribing semantics to the
+order of the key/value pairs in the map representation.  Thus, a
+CBOR-based protocol MUST NOT specify that changing the key/value pair
+order in a map would change the semantics, except to specify that some,
+orders are disallowed, for example where they would not meet the
+requirements of a deterministic
+encoding ({{det-enc}}).
+(Any secondary effects of map ordering such as on timing, cache usage,
+and other potential side channels are not considered part of the
+semantics but may be enough reason on its own for a protocol to require a
+deterministic encoding format.)
+
+Applications for constrained devices that have maps with 24 or fewer
+frequently used keys should consider using small integers (and those
+with up to 48 frequently used keys should consider also using small
+negative integers) because the keys can then be encoded in a single
+byte.
+
+
+### Equivalence of Keys
+
+The specific data model applying to a CBOR data item is used to
+determine whether keys occurring in maps are duplicates or distinct.
+
+At the generic data model level, numerically equivalent integer and
+floating-point values are distinct from each other, as they are from
+the various big numbers (Tags 2 to 5).  Similarly, text strings are
+distinct from byte strings, even if composed of the same bytes.  A
+tagged value is distinct from an untagged value or from a value tagged
+with a different tag.
+
+Within each of these groups, numeric values are distinct unless they
+are numerically equal (specifically, -0.0 is equal to 0.0); for the
+purpose of map key equivalence, NaN (not a number)
+values are equivalent if they have the same significand after
+zero-extending both significands at the right to 64 bits.
+
+(Byte and text) strings are compared
+byte by byte, arrays element by element, and are equal if they have
+the same number of bytes/elements and the same values at the same
+positions.
+Two maps are equal if they have the same set of pairs regardless of
+their order; pairs are equal if both the key and value are equal.
+
+Tagged values are equal if both the tag number and the enclosed item are equal.
+Simple values are equal if they simply have the same value.
+Nothing else is equal in the generic data model, a simple value 2 is
+not equivalent to an integer 2 and an array is never equivalent to a map.
+
+As discussed in {{specific-data-models}}, specific data models can
+make values equivalent for the purpose of comparing map keys that are
+distinct in the generic data model.  Note that this implies that a
+generic decoder may deliver a decoded map to an application that needs
+to be checked for duplicate map keys by that application
+(alternatively, the decoder may provide a programming interface to
+perform this service for the application).  Specific data models
+cannot distinguish values for map keys that are equal for this purpose
+at the generic data model level.
+
+## Undefined Values {#undefined-values}
+
+In some CBOR-based protocols, the simple value ({{fpnocont}}) of
+Undefined might be used by an encoder as a substitute for a data item
+with an encoding problem, in order to allow the rest of the enclosing
+data items to be encoded without harm.
 
 ## Strict Decoding Mode {#strict-mode}
 
@@ -1637,16 +1638,16 @@ item that contains any of the following:
 
 * a data item that is incorrectly formatted for the type given to it,
   such as invalid UTF-8 or data that cannot be interpreted with the
-  specific tag that it has been tagged with
+  specific tag number that it has been tagged with
 
 A decoder in strict mode can do one of two things when it encounters a
-tag or simple value that it does not recognize:
+tag number or simple value that it does not recognize:
 
 * It can report an error (and not return data).
 
 * It can emit the unknown item (type, value, and, for tags, the
   decoded tagged data item) to the application calling the decoder
-  with an indication that the decoder did not recognize that tag or
+  with an indication that the decoder did not recognize that tag number or
   simple value.
 
 The latter approach, which is also appropriate for non-strict
@@ -1705,6 +1706,9 @@ as a JSON null.
   convert other keys into UTF-8 strings (such as by converting
   integers into strings containing their decimal representation);
   however, doing so introduces a danger of key collision.
+  Note also that, if tags on UTF-8 strings are ignored as proposed
+  below, this will cause a key
+  collision if the tags are different but the strings are the same.
 
 * False (major type 7, additional information 20) becomes a JSON
   false.
@@ -1722,18 +1726,18 @@ as a JSON null.
 * Any other simple value (major type 7, any additional information
   value not yet discussed) is represented by the substitute value.
 
-* A bignum (major type 6, tag value 2 or 3) is represented by encoding
+* A bignum (major type 6, tag number 2 or 3) is represented by encoding
   its byte string in base64url without padding and becomes a JSON
-  string.  For tag value 3 (negative bignum), a "~" (ASCII tilde) is
+  string.  For tag number 3 (negative bignum), a "~" (ASCII tilde) is
   inserted before the base-encoded value. (The conversion to a binary
   blob instead of a number is to prevent a likely numeric overflow for
   the JSON decoder.)
 
-* A byte string with an encoding hint (major type 6, tag value 21
+* A byte string with an encoding hint (major type 6, tag number 21
   through 23) is encoded as described and becomes a JSON string.
 
-* For all other tags (major type 6, any other tag value), the embedded
-  CBOR item is represented as a JSON value; the tag value is ignored.
+* For all other tags (major type 6, any other tag number), the enclosed
+  CBOR item is represented as a JSON value; the tag number is ignored.
 
 * Indefinite-length items are made definite before conversion.
 
@@ -1747,7 +1751,7 @@ conversion:
 
 * JSON numbers without fractional parts (integer numbers) are
   represented as integers (major types 0 and 1, possibly major type 6
-  tag value 2 and 3), choosing the shortest form; integers longer than
+  tag number 2 and 3), choosing the shortest form; integers longer than
   an implementation-defined threshold (which is usually either 32 or
   64 bits) may instead be represented as floating-point values.  (If
   the JSON was generated from a JavaScript implementation, its
@@ -1825,8 +1829,8 @@ CBOR has three major extension points:
 * the "tag" space (values in major type 6).  Again, only a small part
   of the codepoint space has been allocated, and the space is abundant
   (although the early numbers are more efficient than the later ones).
-  Implementations receiving an unknown tag can choose to simply ignore
-  it or to process it as an unknown tag wrapping the following data
+  Implementations receiving an unknown tag number can choose to simply ignore
+  it or to process it as an unknown tag number wrapping the enclosed data
   item. The IANA registry in {{ianatags}} is the appropriate way to
   address the extensibility of this codepoint space.
 
@@ -1882,7 +1886,7 @@ key position).  Undefined is written >undefined\< as in JavaScript.
 The non-finite floating-point numbers Infinity, -Infinity, and NaN are
 written exactly as in this sentence (this is also a way they can be
 written in JavaScript, although JSON does not allow them).  A tagged
-item is written as an integer number for the tag followed by the item
+item is written as an integer number for the tag, followed by the item
 in parentheses; for instance, an RFC 3339 (ISO 8601) date could be
 notated as:
 
@@ -1963,8 +1967,9 @@ Required.
 ## Tags Registry {#ianatags}
 
 IANA has created the "Concise Binary Object Representation (CBOR)
-Tags" registry at {{?IANA.cbor-tags}}. The initial values are shown in
-{{tagvalues}}.
+Tags" registry at {{?IANA.cbor-tags}}.
+The tags that were defined in {{RFC7049}} are described in detail in {{tags}},
+but other tags have already been defined.
 
 New entries in the range 0 to 23 are assigned by Standards Action.
 New entries in the range 24 to 255 are assigned by Specification
@@ -2102,52 +2107,74 @@ CBOR attempts to narrow the opportunities for introducing such
 vulnerabilities by reducing parser complexity, by giving the entire
 range of encodable values a meaning where possible.
 
+Because CBOR decoders are often used as a first step in processing
+unvalidated input, they need to be fully prepared for all types of
+hostile input that may be designed to corrupt, overrun, or achieve control
+of the system decoding the CBOR data item. A CBOR decoder needs to
+assume that all input may be hostile even if it has been checked by a
+firewall, has come over a secure channel such as TLS, is encrypted or
+signed,
+or has come from some other source that is presumed trusted.
+
+Hostile input may be constructed to overrun buffers, overflow or
+underflow integer arithmetic, or cause other decoding disruption.  CBOR
+data items might have lengths or sizes that are intentionally
+extremely large or too short.
 Resource exhaustion attacks might attempt to lure a decoder into
-allocating very big data items (strings, arrays, maps) or exhaust the
+allocating very big data items (strings, arrays, maps, or even
+arbitrary precision numbers) or exhaust the
 stack depth by setting up deeply nested items.  Decoders need to have
 appropriate resource management to mitigate these attacks.  (Items for
 which very large sizes are given can also attempt to exploit integer
 overflow vulnerabilities.)
 
-Protocols that are used in a security
-context should be defined in such a way that potential multiple
-interpretations are reliably reduced to a single one.
-For example, an attacker could make use of duplicate keys in
-maps or precision issues in numbers to make one decoder base its
+A CBOR decoder, by definition, only accepts well-formed CBOR; this is
+the first step to its robustness.  Input that is not well-formed CBOR
+causes no further processing from the point where the lack of
+well-formedness was detected.  If possible, any data decoded up to
+this point should have no impact on the application using the CBOR
+decoder.
+
+In addition to ascertaining well-formedness, a CBOR decoder might also
+perform validity checks on the CBOR data.  Alternatively, it can leave
+those checks to the application using the decoder.  This choice needs
+to be clearly documented in the decoder.  Beyond the validity at the CBOR level, an
+application also needs to ascertain that the input is in alignment
+with the application protocol that is serialized in CBOR.
+
+The input check itself may consume resources.  This is usually linear
+in the size of the input, which means that an attacker has to spend
+resources that are commensurate to the resources spent by the defender
+on input validation.  Processing for arbitrary-precision numbers may
+exceed linear effort.  Also, some hash-table implementations that are
+used by decoders to build in-memory representations of maps can be
+attacked to spend quadratic effort, unless a secret key is employed
+(see Section 7 of {{SIPHASH}}).  Such superlinear efforts can be
+employed by an attacker to exhaust resources at or before the input
+validator; they therefore need to be avoided in a CBOR decoder
+implementation.  Note that Tag number definitions and their implementations
+can add security considerations of this kind; this should then be
+discussed in the security considerations of the Tag number definition.
+
+CBOR encoders do not receive input directly from the network and are
+thus not directly attackable in the same way as CBOR decoders.
+However, CBOR encoders often have an API that
+takes input from another level in the implementation and can be
+attacked through that API. The design and implementation of that API
+should assume the behavior of its caller may be based on hostile input
+or on coding mistakes. It should check inputs for buffer overruns,
+overflow and underflow of integer arithmetic, and other such errors
+that are aimed to disrupt the encoder.
+
+Protocols that are used in a security context should be defined in
+such a way that potential multiple interpretations are reliably
+reduced to a single interpretation.  For example, an attacker could make use of
+invalid input such as duplicate keys in maps, or exploit different
+precision in processing numbers to make one application base its
 decisions on a different interpretation than the one that will be used
-by a second decoder.
-To facilitate
-this, encoder and decoder implementations used in such contexts should
+by a second application.  To facilitate consistent interpretation,
+encoder and decoder implementations used in such contexts should
 provide at least one strict mode of operation ({{strict-mode}}).
-
-
-# Acknowledgements
-
-CBOR was inspired by MessagePack.  MessagePack was developed and
-promoted by Sadayuki Furuhashi ("frsyuki").  This reference to
-MessagePack is solely for attribution; CBOR is not intended as a
-version of or replacement for MessagePack, as it has different design
-goals and requirements.
-
-The need for functionality beyond the original MessagePack
-Specification became obvious to many people at about the same time
-around the year 2012.  BinaryPack is a minor derivation of MessagePack
-that was developed by Eric Zhang for the binaryjs project.  A similar,
-but different, extension was made by Tim Caswell for his msgpack-js
-and msgpack-js-browser projects.  Many people have contributed to the
-recent discussion about extending MessagePack to separate text string
-representation from byte string representation.
-
-The encoding of the additional information in CBOR was inspired by the
-encoding of length information designed by Klaus Hartke for CoAP.
-
-This document also incorporates suggestions made by many people,
-notably Dan Frost, James Manger, Joe Hildebrand, Keith Moore, Laurence
-Lundblade, Matthew Lepinski, Michael Richardson,
-Nico Williams, Phillip Hallam-Baker, Ray Polk, Tim Bray,
-Tony Finch, Tony Hansen, and Yaron Sheffer.
-
-
 
 --- back
 
@@ -2342,6 +2369,12 @@ The pseudocode has the following prerequisites:
 
 * All variables are unsigned integers of sufficient range.
 
+Note that `well_formed` returns the major type for well-formed
+definite length items, but 0 for an indefinite length item (or -1 for
+a break stop code, only if `breakable` is set).  This is used in
+`well_formed_indefinite` to ascertain that indefinite length strings
+only contain definite length strings as chunks.
+
 ~~~~
 well_formed (breakable = false) {
   // process initial bytes
@@ -2373,7 +2406,7 @@ well_formed_indefinite(mt, breakable) {
   switch (mt) {
     case 2: case 3:
       while ((it = well_formed(true)) != -1)
-        if (it != mt)           // need finite embedded
+        if (it != mt)           // need finite-length chunk
           fail();               //    of same type
       break;
     case 4: while (well_formed(true) != -1); break;
@@ -2541,7 +2574,7 @@ unclear.
 {{BSON}} is a data format that was developed for the storage of
 JSON-like maps (JSON objects) in the MongoDB database.  Its major
 distinguishing feature is the capability for in-place update,
-foregoing a compact representation.  BSON uses a counted
+which prevents a compact representation.  BSON uses a counted
 representation except for map keys, which are null-byte terminated.
 While BSON can be used for the representation of JSON-like objects on
 the wire, its specification is dominated by the requirements of the
@@ -2594,3 +2627,31 @@ significant differences.
 
 <!--  LocalWords:  UTC
  -->
+
+
+# Acknowledgements
+{: numbered="no"}
+
+CBOR was inspired by MessagePack.  MessagePack was developed and
+promoted by Sadayuki Furuhashi ("frsyuki").  This reference to
+MessagePack is solely for attribution; CBOR is not intended as a
+version of or replacement for MessagePack, as it has different design
+goals and requirements.
+
+The need for functionality beyond the original MessagePack
+Specification became obvious to many people at about the same time
+around the year 2012.  BinaryPack is a minor derivation of MessagePack
+that was developed by Eric Zhang for the binaryjs project.  A similar,
+but different, extension was made by Tim Caswell for his msgpack-js
+and msgpack-js-browser projects.  Many people have contributed to the
+discussion about extending MessagePack to separate text string
+representation from byte string representation.
+
+The encoding of the additional information in CBOR was inspired by the
+encoding of length information designed by Klaus Hartke for CoAP.
+
+This document also incorporates suggestions made by many people,
+notably Dan Frost, James Manger, Jeffrey Yaskin, Joe Hildebrand, Keith Moore, Laurence
+Lundblade, Matthew Lepinski, Michael Richardson,
+Nico Williams, Peter Occil, Phillip Hallam-Baker, Ray Polk, Tim Bray,
+Tony Finch, Tony Hansen, and Yaron Sheffer.

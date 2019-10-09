@@ -2629,6 +2629,115 @@ significant differences.
 <!--  LocalWords:  UTC
  -->
 
+# Well-formedness errors and examples
+
+There are three basic kinds of well-formedness errors that can occur
+in decoding a CBOR data item:
+
+* Too much data: There are input bytes left that were not consumed.
+  This is only an error if the application assumed that the input
+  bytes would span exexactly one data item.  Where the application
+  uses the self-delimiting nature of CBOR encoding to permit
+  additional data after the data item, as is for example done in CBOR
+  sequences {{?I-D.ietf-cbor-sequence}}, the CBOR decoder can simply
+  indicate what part of the input has not been consumed.
+
+* Too little data: The input data available would need additional
+  bytes added at their end for a complete CBOR data item.  For some
+  applications, this may not be actually be an error, as the
+  application can obtain or wait for additional input bytes.  Some of
+  these applications may have an upper limit for how much additional
+  data can show up; here the decoder may be able to indicate that the
+  encoded CBOR data item cannot be completed within this limit.
+
+* Syntax error: The input data are not consistent with the
+  requirements of the CBOR encoding, and this cannot be remedied by
+  adding (or removing) data at the end.
+
+In {{pseudocode}}, errors of the first kind are addressed in the first
+paragraph/bullet list (requiring "no bytes are left"), and errors of
+the second kind are addressed in the second paragraph/bullet list
+(failing "if n bytes are no longer available").  Errors of the third
+kind are identified in the pseudocode by specific instances of calling
+fail(), in order:
+
+* a reserved value is used for additional information (28, 29, 30)
+* major type 7, additional information 24, value < 32 (incorrect or
+  incorrectly encoded simple type)
+* incorrect substructure of indefinite length byte/text string (may
+  only contain definite length strings of the same major type)
+* break stop code (mt=7, ai=31) occurs in a value position of a map or
+  except at a position directly in an indefinite length item where
+  also another enclosed data item could occur
+* additional information 31 used with major type 0, 1, or 6
+
+## Examples for CBOR data items that are not well-formed
+
+This subsection shows a few examples for CBOR data items that are not
+well-formed.  Each example is a sequence of bytes each shown in
+hexadecimal; multiple examples in a list are separated by commas.
+
+
+Examples for well-formedness error kind 1 (too much data) can easily
+be formed by adding data to a well-formed encoded CBOR data item.
+
+Similarly, examples for well-formedness error kind 2 (too little data)
+can be formed by truncating a well-formed encoded CBOR data item.  In
+test suites, it may be beneficial to specifically test with incomplete
+data items that would require large amounts of addition to be
+completed (for instance by starting the encoding of a string of a very
+large size).
+
+A premature end of the input can occur in a head or within the enclosed
+data, which may be bare strings or enclosed data items that are either
+counted or should have been ended by a break stop code.
+
+* End of input in a head: 18, 19, 1a, 1b, 19 01, 1a 01 02, 1b 01 02 03
+  04 05 06 07, 38, 58, 78, 98, 9a 01 ff 00, b8, d8, f8, f9 00, fa 00
+  00, fb 00 00 00
+* Definite length strings with short data: 41, 61, 5a ff ff ff ff 00,
+  5b ff ff ff ff ff ff ff ff 01 02 03, 7a ff ff ff ff 00, 7b 7f ff ff
+  ff ff ff ff ff 01 02 03
+* Definite length maps and arrays not closed with enough items: 81, 81
+  81 81 81 81 81 81 81 81, 82 00, a1, a2 01 02, a1 00, a2 00 00 00
+* Indefinite length strings not closed by a break stop code: 5f 41 00, 7f 61 00
+* Indefinite length maps and arrays not closed by a break stop code:
+  9f, 9f 01 02, bf, bf 01 02 01 02, 81 9f, 9f 80 00, 9f 9f 9f 9f 9f ff
+  ff ff ff, 9f 81 9f 81 9f 9f ff ff ff
+
+A few examples for the five subkinds of well-formedness error kind 3
+(syntax error) are shown below.
+
+Subkind 1:
+
+* Reserved additional information values: 1c, 1d, 1e, 3c, 3d, 3e, 5c,
+  5d, 5e, 7c, 7d, 7e, 9c, 9d, 9e, bc, bd, be, dc, dd, de, fc, fd, fe,
+
+Subkind 2:
+
+* Reserved two-byte encodings of simple types: f8 00, f8 01, f8 18, f8 1f
+
+Subkind 3:
+
+* Indefinite length string chunks not of the correct type: 5f 00 ff,
+  5f 21 ff, 5f 61 00 ff, 5f 80 ff, 5f a0 ff, 5f c0 00 ff, 5f e0 ff, 7f
+  41 00 ff
+* Indefinite length string chunks not definite length:
+  5f 5f 41 00 ff ff, 7f 7f 61 00 ff ff
+
+Subkind 4:
+
+* Break occurring on its own outside of an indefinite length item: ff
+* Break occurring in a definite length array or map or a tag: 81 ff,
+  82 00 ff, a1 ff, a1 ff 00, a1 00 ff, a2 00 00 ff, 9f 81 ff, 9f 82 9f
+  81 9f 9f ff ff ff ff
+* Break in indefinite length map would lead to odd number of items
+  (break in a value position): bf 00 ff, bf 00 00 00 ff
+
+Subkind 5:
+
+* Major type 0, 1, 6 with additional information 31: 1f, 3f, df
+
 
 # Acknowledgements
 {: numbered="no"}

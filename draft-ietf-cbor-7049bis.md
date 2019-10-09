@@ -2643,9 +2643,12 @@ in decoding a CBOR data item:
   indicate what part of the input has not been consumed.
 
 * Too little data: The input data available would need additional
-  bytes added at their end for a complete CBOR data item.  For some
-  applications, this may not be actually be an error, as the
-  application can obtain or wait for additional input bytes.  Some of
+  bytes added at their end for a complete CBOR data item.  This may
+  indicate the input is truncated; it is also a common error when
+  trying to decode random data as CBOR.  For some
+  applications however, this may not be actually be an error, as the
+  application may not be certain it has all the data yet and can
+  obtain or wait for additional input bytes.  Some of
   these applications may have an upper limit for how much additional
   data can show up; here the decoder may be able to indicate that the
   encoded CBOR data item cannot be completed within this limit.

@@ -303,6 +303,13 @@ Valid:
 : A data item that is well-formed and also follows the semantic
   restrictions that apply to CBOR data items.
 
+Expected:
+: Besides its normal English meaning, the term "expected" is used to
+  describe requirements beyond CBOR validity that an application has
+  on its input data.  Well-formed (processable at all), valid (checked
+  by a valdity-checking generic decoder), and expected (checked by the
+  application) form a hierarchy of layers of acceptability.
+
 Stream decoder:
 : A process that decodes a data stream and makes each of the data
   items in the sequence available to an application as they are
@@ -1538,7 +1545,7 @@ data model: it cannot prescribe a specific handling of the entries
 with the identical keys, except that it might have a rule that having
 identical keys in a map indicates a malformed map and that the decoder
 has to stop with an error. Duplicate keys are also prohibited by CBOR
-decoders that are using strict mode ({{strict-mode}}).
+decoders that enforce validity ({{validity-checking}}).
 
 The CBOR data model for maps does not allow ascribing semantics to the
 order of the key/value pairs in the map representation.  Thus, a
@@ -1606,7 +1613,7 @@ Undefined might be used by an encoder as a substitute for a data item
 with an encoding problem, in order to allow the rest of the enclosing
 data items to be encoded without harm.
 
-## Strict Decoding Mode {#strict-mode}
+## Validity Checking {#validity-checking}
 
 Some areas of application of CBOR do not require deterministic encoding
 ({{det-enc}}) but may require that different decoders reach the same
@@ -1621,52 +1628,53 @@ decodable data.  However, the sender might be an attacker specially
 making up CBOR data such that it will be interpreted differently by
 different decoders in an attempt to exploit that as a vulnerability.
 Generic decoders used in applications where this might be a problem
-need to support a strict mode in which it is also the responsibility
-of the receiver to reject ambiguously decodable data. It is expected
-that firewalls and other security systems that decode CBOR will only
-decode in strict mode.
+can help by providing a validity-checking mode in which it is also the
+responsibility of the generic decoder to reject invalid
+data. It is expected that firewalls and other security systems that
+decode CBOR will employ their decoders with validity checking applied.
 
-A decoder in strict mode will reliably reject any data that could be
-interpreted by other decoders in different ways.  It will expend
-the effort to reliably detect invalid data items
-({{semantic-errors}}). For example, a strict decoder needs to have an
-API that reports an error (and does not return data) for a CBOR data
-item that contains any of the following:
+A decoder with validity checking will expend the effort to reliably
+detect invalid data items ({{semantic-errors}}). For example, such a
+decoder needs to have an API that reports an error (and does not
+return data) for a CBOR data item that contains any of the following:
 
 * a map (major type 5) that has more than one entry with the same key
 
 * a tag that is used on a data item of the incorrect type
 
 * a data item that is incorrectly formatted for the type given to it,
-  such as invalid UTF-8 or data that cannot be interpreted with the
-  specific tag number that it has been tagged with
+  such as invalid UTF-8 in a text string or data that (even if of the
+  correct type) cannot be interpreted with the specific tag number
+  that it has been tagged with
 
-A decoder in strict mode can do one of two things when it encounters a
+A validity-checking decoder can do one of two things when it encounters a
 tag number or simple value that it does not recognize:
 
 * It can report an error (and not return data).
 
 * It can emit the unknown item (type, value, and, for tags, the
-  decoded tagged data item) to the application calling the decoder
-  with an indication that the decoder did not recognize that tag number or
-  simple value.
+  decoded tagged data item) to the application calling the decoder,
+  with an indication that the decoder did not recognize that tag
+  number or simple value.
 
-The latter approach, which is also appropriate for non-strict
-decoders, supports forward compatibility with newly registered tags
-and simple values without the requirement to update the encoder at the
-same time as the calling application.  (For this, the API for the
-decoder needs to have a way to mark unknown items so that the calling
-application can handle them in a manner appropriate for the program.)
+The latter approach, which is also appropriate for decoders that do
+not support validity checking, provides forward compatibility with
+newly registered tags and simple values without the requirement to
+update the encoder at the same time as the calling application.  (For
+this, the API for the decoder needs to have a way to mark unknown
+items so that the calling application can handle them in a manner
+appropriate for the program.)
 
-Since some of this processing may have an appreciable cost (in
-particular with duplicate detection for maps), support of strict mode
-is not a requirement placed on all CBOR decoders.
+Since some of the processing needed for validity checking may have an
+appreciable cost (in particular with duplicate detection for maps),
+support of validity checking is not a requirement placed on all CBOR
+decoders.
 
 Some encoders will rely on their applications to provide input data in
-such a way that unambiguously decodable CBOR results.  A generic
-encoder also may want to provide a strict mode where it reliably
-limits its output to unambiguously decodable CBOR, independent of
-whether or not its application is providing API-conformant data.
+such a way that valid CBOR results.  A generic encoder also may want
+to provide a validity-checking mode where it reliably limits its
+output to valid CBOR, independent of whether or not its application is
+providing API-conformant data.
 
 
 # Converting Data between CBOR and JSON
@@ -2167,15 +2175,25 @@ or on coding mistakes. It should check inputs for buffer overruns,
 overflow and underflow of integer arithmetic, and other such errors
 that are aimed to disrupt the encoder.
 
-Protocols that are used in a security context should be defined in
+Protocols should be defined in
 such a way that potential multiple interpretations are reliably
 reduced to a single interpretation.  For example, an attacker could make use of
 invalid input such as duplicate keys in maps, or exploit different
 precision in processing numbers to make one application base its
 decisions on a different interpretation than the one that will be used
 by a second application.  To facilitate consistent interpretation,
-encoder and decoder implementations used in such contexts should
-provide at least one strict mode of operation ({{strict-mode}}).
+encoder and decoder implementations should
+provide a validity checking mode of operation
+({{validity-checking}}).  Note, however, that a generic decoder cannot
+know about all requirements that an application poses on its input
+data; it is therefore not relieving the application from performing its
+own input checking.  Also, since the set of defined tag numbers
+evolves, the application may employ a tag number that is not yet
+supported for validity checking by the generic decoder it uses.  Generic
+decoders therefore need to provide documentation which tag numbers
+they support and what validity checking they can provide for each of
+them as well as for basic CBOR validity (UTF-8 checking, duplicate map
+key checking).
 
 --- back
 

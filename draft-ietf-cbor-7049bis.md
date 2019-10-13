@@ -1040,8 +1040,10 @@ Sometimes it is beneficial to carry an embedded CBOR data item that is
 not meant to be decoded immediately at the time the enclosing data
 item is being decoded.  Tag number 24 (CBOR data item) can be used to tag the
 embedded byte string as a data item encoded in CBOR format.  Contained
-items that aren't byte strings are invalid.  Any contained byte string
-is valid, even if it encodes an invalid or ill-formed CBOR item.
+items that aren't byte strings are invalid.  A contained byte string
+is valid if it encodes a well-formed CBOR item; validity checking of
+the decoded CBOR item is not required for tag validity (but could be
+offered by a generic decoder as a special option).
 
 
 #### Expected Later Encoding for CBOR-to-JSON Converters {#convexpect}
@@ -1106,7 +1108,9 @@ string data items it contains.
 
 * Tag number 36 is for MIME messages (including all headers), as defined in
   {{RFC2045}}. A text string that isn't a valid MIME message is
-  invalid.
+  invalid.  (For this tag, validity checking
+  may be particularly onerous for a generic decoder and might
+  therefore not be offered.)
 
 Note that tag numbers 33 and 34 differ from 21 and 22 in that the data is
 transported in base-encoded form for the former and in raw byte string

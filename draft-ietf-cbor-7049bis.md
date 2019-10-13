@@ -1134,12 +1134,12 @@ will never be found at the beginning of a JSON text.
 
 # Serialization Considerations
 
-## Preferred Serialization
+## Preferred Serialization {#preferred}
 
 For some values at the data model level, CBOR provides multiple
 serializations.
 For many applications, it is desirable that an encoder always chooses
-a preferred serialization; however, the present specification does not
+a preferred serialization (preferred encoding); however, the present specification does not
 put the burden of enforcing this preference on either encoder or decoder.
 
 Some constrained decoders may be limited in their ability to decode
@@ -1192,8 +1192,9 @@ serve as the base of such a deterministic format.
 A CBOR encoding satisfies the "core deterministic encoding requirements" if
 it satisfies the following restrictions:
 
-* Arguments (see {{encoding}}) for integers, lengths in major types 2
-  through 5, and tags MUST be as short as possible. In particular:
+* Preferred serialization MUST be used.  In particular, this means
+  that arguments (see {{encoding}}) for integers, lengths in major types
+  2 through 5, and tags MUST be as short as possible, for instance:
 
   * 0 to 23 and -1 to -24 MUST be expressed in the same byte as the
     major type;
@@ -1207,6 +1208,13 @@ it satisfies the following restrictions:
   * 65536 to 4294967295 and -65537 to -4294967296 MUST be expressed
     only with an additional uint32_t.
 
+  Floating point values also MUST use the shortest form that preserves
+  the value, e.g. 1.5 is encoded as 0xf93e00 and 1000000.5 as
+  0xfa49742408.
+
+* Indefinite-length items MUST NOT appear. They can be encoded as
+  definite-length items instead.
+
 * The keys in every map MUST be sorted in the bytewise lexicographic
   order of their deterministic encodings. For example, the following keys
   are sorted correctly:
@@ -1219,9 +1227,6 @@ it satisfies the following restrictions:
   1. \[100], encoded as 0x811864.
   1. \[-1], encoded as 0x8120.
   1. false, encoded as 0xf4.
-
-* Indefinite-length items MUST NOT appear. They can be encoded as
-  definite-length items instead.
 
 ### Additional Deterministic Encoding Considerations
 
@@ -1308,7 +1313,7 @@ requirements, the following keys are sorted correctly:
 (Although {{RFC7049}} used the term "Canonical CBOR" for its form of
 requirements on deterministic encoding, this document avoids this term
 because "canonicalization" is often associated with specific uses of deterministic
-encoding only.  The terms are essentially exchangeable, however, and
+encoding only.  The terms are essentially interchangeable, however, and
 the set of core requirements in this document could also be
 called "Canonical CBOR", while the length-first-ordered version of that
 could be called "Old Canonical CBOR".)

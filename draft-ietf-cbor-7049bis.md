@@ -2498,6 +2498,99 @@ def decode_half(half):
 {: #decode-half-py title='Python Code for a Half-Precision Decoder'}
 
 
+# Test Vectors for Not Well-Formed CBOR
+
+The columns in the following tables form a categorization of the types of not well-formed CBOR.
+The test vectors for each category are
+not exhaustive, but will cover most error conditions for most CBOR decoder implementations.
+
+All test vectors are strings of bytes shown in hexadecimal.
+
+| Incomplete Integers     | Incomplete strings, arrays and maps | Incomplete tags, simple types and floats |
+|-------------------------+-------------------------------------+------------------------------------------|
+| 18                      | 58                                  | d8                                       |
+| 19                      | 78                                  | f8                                       |
+| 1a                      | 98                                  | f9 00                                    |
+| 1b                      | b8                                  | fa 00 00                                 |
+| 19 01                   |                                     | fb 00 00 00                              |
+| 1a 01 02                |                                     |                                          |
+| 1b 01 02 03 04 05 06 07 |                                     |                                          |
+| 38                      |                                     |                                          |
+{: #nwf-incomplete-argument title='Data items with an incomplete argument'}
+
+
+| Indefinite length maps and arrays not closed by a break | Definite length maps and arrays not closed by having the right number of items | Maps with an odd number of items |
+|---------------------------------------------------------+--------------------------------------------------------------------------------+----------------------------------|
+| 9f                                                      | 81                                                                             | a1 00                            |
+| 9f 01 02                                                | 82 00                                                                          | a2 00 00 00                      |
+| bf                                                      | 9a 01 ff 00                                                                    | bf 00 ff                         |
+| bf 01 02 01 02                                          | a1                                                                             | bf 00 00 00 ff                   |
+| 81 9f                                                   | a2 01 02                                                                       |                                  |
+| 9f 80 00                                                | 81 81 81 81 81 81 81 81 81                                                     |                                  |
+| 9f 9f 9f 9f 9f ff ff ff ff                              |                                                                                |                                  |
+| 9f 81 9f 81 9f 9f ff ff ff                              |                                                                                |                                  |
+{: #nwf-incomplete-maps-and-arrays title='Maps and arrays that are incomplete'}
+
+| Indefinite length strings not closed of by break | Definite length strings with short or missing content |
+|--------------------------------------------------+-------------------------------------------------------|
+| 5f 41 00                                         | 41                                                    |
+| 7f 61 00                                         | 61                                                    |
+|                                                  | 5a ff ff ff ff 00                                     |
+|                                                  | 7a ff ff ff ff 00                                     |
+{: #nwf-incomplete-strings title='Incomplete strings'}
+
+| Indefinite length string chunks not of the correct type | Indefinite string chunks not definite length |
+|---------------------------------------------------------+----------------------------------------------|
+| 5f 61 00 ff                                             | 5f 5f 41 00 ff ff                            |
+| 7f 41 00 ff                                             | 7f 7f 61 00 ff ff                            |
+| 5f 00 ff                                                |                                              |
+| 5f 21 ff                                                |                                              |
+| 5f 80 ff                                                |                                              |
+| 5f a0 ff                                                |                                              |
+| 5f c0 00 ff                                             |                                              |
+| 5f e0 ff                                                |                                              |
+{: #nwf-indefinite-length-strings title='Not well-formed indefinite length strings'}
+
+| Break occurring in a definite length array or map | Break on its own outside of an indefinite length item |
+|---------------------------------------------------+-------------------------------------------------------|  
+| 81 ff                                             | ff                                                    |
+| 82 00 ff                                          | 80 ff                                                 |
+| a1 ff                                             | 9f ff ff                                              |
+| a1 ff 00                                          |                                                       | 
+| a1 00 ff                                          |                                                       | 
+| a2 00 00 ff                                       |                                                       | 
+| 9f 82 9f 81 9f 9f ff ff ff ff                     |                                                       |
+{: #nwf-incorrect-breaks title='Incorrect use of break'}
+
+| Reserved two-byte encodings of simple types  | Reserved additional information values | Integer with argument that is an indefinite length |
+|----------------------------------------------+----------------------------------------+----------------------------------------------------| 
+| f8 00                                        | 1c                                     | 1f                                                 | 
+| f8 01                                        | 1d                                     | 3f                                                 | 
+| ...                                          | 1e                                     | df 00                                              |
+| f8 1f                                        | 3c                                     | df                                                 |
+|                                              | 3d                                     |                                                    |
+|                                              | 3e                                     |                                                    |
+|                                              | 5c                                     |                                                    |
+|                                              | 5d                                     |                                                    |
+|                                              | 5e                                     |                                                    |
+|                                              | 7c                                     |                                                    |
+|                                              | 7d                                     |                                                    |
+|                                              | 7e                                     |                                                    |
+|                                              | 9c                                     |                                                    |
+|                                              | 9d                                     |                                                    |
+|                                              | 9e                                     |                                                    |
+|                                              | bc                                     |                                                    |
+|                                              | bd                                     |                                                    |
+|                                              | be                                     |                                                    |
+|                                              | dc                                     |                                                    |
+|                                              | dd                                     |                                                    |
+|                                              | de                                     |                                                    |
+|                                              | fc                                     |                                                    |
+|                                              | fd                                     |                                                    |
+|                                              | fe                                     |                                                    |
+{: #nwf-reserved-and-excluded title='Complete data items that are reserved or explicitly excluded'}
+
+
 # Comparison of Other Binary Formats to CBOR's Design Objectives {#comparison-app}
 
 The proposal for CBOR follows a history of binary formats that is as

@@ -1766,19 +1766,32 @@ conversion:
 * JSON numbers without fractional parts (integer numbers) are
   represented as integers (major types 0 and 1, possibly major type 6
   tag number 2 and 3), choosing the shortest form; integers longer than
-  an implementation-defined threshold (which is usually either 32 or
-  64 bits) may instead be represented as floating-point values.  (If
+  an implementation-defined threshold may instead be represented as
+  floating-point values.  The
+  default range that is represented as integer is
+  -2\*\*53+1..2\*\*53-1 (fully exploiting the range for exact integers
+  in the binary64 representation often used for decoding JSON {{?RFC7493}}),
+  implementations may choose -2\*\*32..2\*\*32-1 or -2\*\*64..2\*\*64-1 (fully
+  using the integer ranges available in CBOR with uint32_t or
+  uint64_t, respectively) or even -2\*\*31..2\*\*31-1 or
+  -2\*\*63..2\*\*63-1 (using popular ranges for two's complement
+  signed integers).
+  (If
   the JSON was generated from a JavaScript implementation, its
   precision is already limited to 53 bits maximum.)
 
 * Numbers with fractional parts are represented as floating-point
-  values.  Preferably, the shortest exact floating-point
-  representation is used; for instance, 1.5 is represented in a 16-bit
-  floating-point value (not all implementations will be capable of
-  efficiently finding the minimum form, though).  There may be an
-  implementation-defined limit to the precision that will affect the
-  precision of the represented values. Decimal representation should
-  only be used if that is specified in a protocol.
+  values, performing the decimal-to-binary conversion based on the
+  precision provided by IEEE 754 binary64.  Then, when encoding in
+  CBOR, the preferred serialization uses the shortest floating-point
+  representation exactly representing this conversion result; for
+  instance, 1.5 is represented in a 16-bit floating-point value (not
+  all implementations will be capable of efficiently finding the
+  minimum form, though).  Instead of using the default binary64
+  precision, there may be an implementation-defined limit to the
+  precision of the conversion that will affect the precision of the
+  represented values. Decimal representation should only be used on
+  the CBOR side if that is specified in a protocol.
 
 CBOR has been designed to generally provide a more compact encoding
 than JSON.  One implementation strategy that might come to mind is to

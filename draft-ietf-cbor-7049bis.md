@@ -957,9 +957,10 @@ C2                        -- Tag 2
 ### Decimal Fractions and Bigfloats {#fractions}
 
 Protocols using tag number 4 extend the generic data model with data
-items representing arbitrary-length decimal fractions m*(10**e).
+items representing arbitrary-length decimal fractions of the form m\*(10\*\*e).
 Protocols using tag number 5 extend the generic data model with data
-items representing arbitrary-length binary fractions m*(2**e). As with
+items representing arbitrary-length binary fractions of the form m\*(2\*\*e).
+As with
 bignums, values of different types are not equal in the generic data
 model.
 

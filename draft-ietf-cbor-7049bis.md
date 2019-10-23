@@ -273,7 +273,8 @@ Data item:
 : A single piece of CBOR data.  The structure of a data item may
   contain zero, one, or more nested data items.  The term is used both
   for the data item in representation format and for the abstract idea
-  that can be derived from that by a decoder.
+  that can be derived from that by a decoder; the former can be
+  addressed specifically by using "encoded data item".
 
 Decoder:
 : A process that decodes a well-formed CBOR data item and makes it available to an

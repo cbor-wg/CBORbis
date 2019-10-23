@@ -556,7 +556,7 @@ Major type 5:
 
 Major type 6:
 : a tagged data item ("tag") whose tag number is the argument and
-  whose enclosed data item is the single encoded data item that follows the head.
+  whose enclosed data item ("tag content") is the single encoded data item that follows the head.
   See {{tags}}.
 
 Major type 7:
@@ -826,17 +826,19 @@ little value in applications where the implementation creating a
 particular CBOR data item and the implementation decoding that stream
 know the semantic meaning of each item in the data flow. Their primary
 purpose in this specification is to define common data types such as
-dates. A secondary purpose is to allow optional tagging when the
-decoder is a generic CBOR decoder that might be able to benefit from
-hints about the content of items.  Understanding the semantic tags is
+dates. A secondary purpose is to provide conversion hints when it is
+foreseen that the CBOR data item needs to be translated into a
+different format, requiring hints about the content of items.
+Understanding the semantics of tags is
 optional for a decoder; it can just jump over the initial bytes of the
-tag and interpret the tagged data item itself.
+tag (that encode the tag number) and interpret the tag content itself, presenting both tag
+number and tag content to the application.
 
 A tag applies semantics to the data item it encloses.
 Thus, if tag A encloses tag B, which encloses data item C,
 tag A applies to the result of applying tag B on data item C.  That
-is, a tagged item is a data item consisting of a tag number and an enclosed value.  The
-content of the tagged item (the enclosed data item) is the data item (the value) that is being
+is, a tag is a data item consisting of a tag number and an enclosed value.  The
+content of the tag (the enclosed data item) is the data item (the value) that is being
 tagged.
 
 IANA maintains a registry of tag numbers as described in {{ianatags}}.
@@ -906,10 +908,10 @@ precede discontinuities in national calendars).  The same applies to
 non-finite values.
 
 To indicate fractional seconds, floating-point values can be used
-within Tag number 1 instead of integer values.  Note that this generally
+within tag number 1 instead of integer values.  Note that this generally
 requires binary64 support, as binary16 and binary32 provide non-zero
 fractions of seconds only for a short period of time around
-early 1970.  An application that requires Tag number 1 support may restrict
+early 1970.  An application that requires tag number 1 support may restrict
 the enclosed value to be an integer (or a floating-point value) only.
 
 
@@ -1254,14 +1256,14 @@ negative zero.
 Also, there are many representations for NaN. If NaN is an allowed
 value, it must always be represented as 0xf97e00.
 
-CBOR tags present additional considerations for deterministic encoding. The
-absence or presence of tags in a deterministic format is determined by the
-optionality of the tags in the protocol. In a CBOR-based protocol that
-allows optional tagging anywhere, the deterministic format must not allow
-them.  In a protocol that requires tags in certain places, the tag
-needs to appear in the deterministic format. A CBOR-based protocol that
-uses deterministic encoding might instead say that all tags that appear in a
-message must be retained regardless of whether they are optional.
+CBOR tags present additional considerations for deterministic
+encoding.  If a CBOR-based protocol were to provide the same semantics
+for the presence and absence of a specific tag (e.g., by allowing both
+tag 1 data items and raw numbers in a date/time position, treating the
+latter as if they were tagged), the deterministic format would not
+allow them.  In a protocol that requires tags in certain places to
+obtain specific semantics, the tag needs to appear in the
+deterministic format as well.
 
 Protocols that include floating, big integer, or other complex values
 need to define extra requirements on their deterministic encodings. For
@@ -1416,13 +1418,13 @@ application to specify any well-formed value, including simple values
 and tags unknown to the encoder.
 
 
-## Invalid Items {#semantic-errors}
+## Validity of Items {#semantic-errors}
 
 A well-formed but invalid CBOR data item presents a problem with
 interpreting the data encoded in it in the CBOR data model.  A
 CBOR-based protocol could be specified in several layers, in which the
 lower layers don't process the semantics of some of the CBOR data they
-forward.  These layers can't notice the invalidity in data they don't
+forward.  These layers can't notice any validity errors in data they don't
 process and MUST forward that data as-is.  The first layer that does
 process the semantics of an invalid CBOR item MUST take one of two
 choices:
@@ -1434,7 +1436,10 @@ choices:
 A CBOR-based protocol MUST specify which of these options its decoders
 take, for each kind of invalid item they might encounter.
 
-Such problems might include:
+Such problems might occur at the basic validity level of CBOR or in
+the context of tags (tag validity).
+
+### Basic validity
 
 Duplicate keys in a map:
 : Generic decoders ({{generic}}) make data available to applications
@@ -1446,7 +1451,14 @@ Duplicate keys in a map:
   stop processing altogether.  On the other hand, a "streaming
   decoder" may not even be able to notice ({{map-keys}}).
 
-Inadmissible type on the value enclosed by a tag:
+Invalid UTF-8 string:
+: A decoder might or might not want to verify that the sequence of
+  bytes in a UTF-8 string (major type 3) is actually valid UTF-8 and
+  react appropriately.
+
+### Tag validity
+
+Inadmissible type for tag content:
 : Tags ({{tags}}) specify what type of data item is supposed to be
   enclosed by
   the tag; for example, the tags for positive or negative bignums are
@@ -1457,13 +1469,17 @@ Inadmissible type on the value enclosed by a tag:
   representations available in their environment may perform the check
   on those tags known to them and react appropriately.
 
-Invalid UTF-8 string:
-: A decoder might or might not want to verify that the sequence of
-  bytes in a UTF-8 string (major type 3) is actually valid UTF-8 and
-  react appropriately.
+Inadmissible value for tag content:
+: The type of data item may be admissible for a tag's content, but the
+  specific value may not be; e.g., a value of "yesterday" is not
+  acceptable for the content of tag 0, even though it properly is a
+  text string.  A decoder that normally ingests such tags into
+  equivalent platform types might present this tag to the application
+  in a similar way to how it would
+  present a tag with an unknown tag number ({{unknown-tags}}).
 
 
-## Handling Unknown Simple Values and Tags {#unknown-tags}
+## Handling Unknown Simple Values and Tag numbers {#unknown-tags}
 
 A decoder that comes across a simple value ({{fpnocont}}) that it does
 not recognize, such as a value that was added to the IANA registry
@@ -1479,8 +1495,7 @@ decoder was deployed or a tag number that the decoder chose not to implement,
 might issue a warning, might stop processing altogether, might handle
 the error and present the unknown tag number together with the
 enclosed data item to the application (as is expected of generic
-decoders), might ignore the tag and simply present the contained data
-item only to the application, or take some other type of action.
+decoders), or take some other type of action.
 
 
 ## Numbers {#numbers}
@@ -1585,7 +1600,7 @@ floating-point values are distinct from each other, as they are from
 the various big numbers (Tags 2 to 5).  Similarly, text strings are
 distinct from byte strings, even if composed of the same bytes.  A
 tagged value is distinct from an untagged value or from a value tagged
-with a different tag.
+with a different tag number.
 
 Within each of these groups, numeric values are distinct unless they
 are numerically equal (specifically, -0.0 is equal to 0.0); for the
@@ -1601,6 +1616,10 @@ Two maps are equal if they have the same set of pairs regardless of
 their order; pairs are equal if both the key and value are equal.
 
 Tagged values are equal if both the tag number and the enclosed item are equal.
+(Note that a generic decoder that provides processing for a specific
+tag may not be able to distinguish some semantically equivalent
+values, e.g. if leading zeroes occur in the content of tag 2/3
+({{bignums}}).)
 Simple values are equal if they simply have the same value.
 Nothing else is equal in the generic data model, a simple value 2 is
 not equivalent to an integer 2 and an array is never equivalent to a map.
@@ -1622,7 +1641,7 @@ Undefined might be used by an encoder as a substitute for a data item
 with an encoding problem, in order to allow the rest of the enclosing
 data items to be encoded without harm.
 
-## Validity Checking {#validity-checking}
+## Validity Checking and Robustness {#validity-checking}
 
 Some areas of application of CBOR do not require deterministic encoding
 ({{det-enc}}) but may require that different decoders reach the same
@@ -1641,6 +1660,8 @@ can help by providing a validity-checking mode in which it is also the
 responsibility of the generic decoder to reject invalid
 data. It is expected that firewalls and other security systems that
 decode CBOR will employ their decoders with validity checking applied.
+
+<!-- Move the below to 5.3, validity  -->
 
 A decoder with validity checking will expend the effort to reliably
 detect invalid data items ({{semantic-errors}}). For example, such a
@@ -1916,8 +1937,8 @@ diagnostic notation extends JSON here by allowing any data item in the
 key position).  Undefined is written >undefined\< as in JavaScript.
 The non-finite floating-point numbers Infinity, -Infinity, and NaN are
 written exactly as in this sentence (this is also a way they can be
-written in JavaScript, although JSON does not allow them).  A tagged
-item is written as an integer number for the tag, followed by the item
+written in JavaScript, although JSON does not allow them).  A tag is
+written as an integer number for the tag number, followed by the tag content
 in parentheses; for instance, an RFC 3339 (ISO 8601) date could be
 notated as:
 
@@ -2183,9 +2204,9 @@ attacked to spend quadratic effort, unless a secret key is employed
 (see Section 7 of {{SIPHASH}}).  Such superlinear efforts can be
 employed by an attacker to exhaust resources at or before the input
 validator; they therefore need to be avoided in a CBOR decoder
-implementation.  Note that Tag number definitions and their implementations
+implementation.  Note that tag number definitions and their implementations
 can add security considerations of this kind; this should then be
-discussed in the security considerations of the Tag number definition.
+discussed in the security considerations of the tag number definition.
 
 CBOR encoders do not receive input directly from the network and are
 thus not directly attackable in the same way as CBOR decoders.
@@ -2331,7 +2352,7 @@ initial bytes that can be used for optional features.  (All
 unsigned integers are in network byte order.)
 
 |       Byte | Structure/Semantics                                                    |
-|------------|------------------------------------------------------------------------|
+|------------+------------------------------------------------------------------------|
 | 0x00..0x17 | Integer 0x00..0x17 (0..23)                                             |
 |       0x18 | Unsigned integer (one-byte uint8_t follows)                            |
 |       0x19 | Unsigned integer (two-byte uint16_t follows)                           |
@@ -2372,9 +2393,9 @@ unsigned integers are in network byte order.)
 |       0xc3 | Negative bignum (data item "byte string" follows)                      |
 |       0xc4 | Decimal Fraction (data item "array" follows; see {{fractions}})        |
 |       0xc5 | Bigfloat (data item "array" follows; see {{fractions}})                |
-| 0xc6..0xd4 | (tagged item)                                                          |
+| 0xc6..0xd4 | (tag)                                                                  |
 | 0xd5..0xd7 | Expected Conversion (data item follows; see {{convexpect}})            |
-| 0xd8..0xdb | (more tagged items, 1/2/4/8 bytes and then a data item follow)         |
+| 0xd8..0xdb | (more tags, 1/2/4/8 bytes and then a data item follow)                 |
 | 0xe0..0xf3 | (simple value)                                                         |
 |       0xf4 | False                                                                  |
 |       0xf5 | True                                                                   |

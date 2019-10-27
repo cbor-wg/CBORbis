@@ -120,6 +120,7 @@ informative:
         - name: Andrew Ho
       date: 2018
   SIPHASH: DOI.10.1007_978-3-642-34931-7_28
+  RFC8618: cdns
 
 --- abstract
 
@@ -2574,6 +2575,9 @@ brief recap of the objectives from {{objectives}} is:
 
 7. extensibility
 
+A discussion of CBOR and other formats with respect to a different set
+of design objectives is provided in Section 5 and Appendix C of
+{{RFC8618}}.
 
 ## ASN.1 DER, BER, and PER
 

@@ -311,7 +311,7 @@ Expected:
 : Besides its normal English meaning, the term "expected" is used to
   describe requirements beyond CBOR validity that an application has
   on its input data.  Well-formed (processable at all), valid (checked
-  by a valdity-checking generic decoder), and expected (checked by the
+  by a validity-checking generic decoder), and expected (checked by the
   application) form a hierarchy of layers of acceptability.
 
 Stream decoder:
@@ -1411,7 +1411,7 @@ choices for their application interface to enable the processing of
 invalid data.  Generic encoders and decoders are expected to forward
 simple values and tags even if their specific codepoints are not
 registered at the time the encoder/decoder is written
-({{unknown-tags}}).
+({{validity-checking}}).
 
 Generic decoders provide ways to present well-formed CBOR values, both
 valid and invalid, to an application.  The diagnostic notation
@@ -1446,6 +1446,8 @@ the context of tags (tag validity).
 
 ### Basic validity
 
+Two kinds of validity errors can occur in the basic generic data model:
+
 Duplicate keys in a map:
 : Generic decoders ({{generic}}) make data available to applications
   using the native CBOR data model.  That data model includes maps
@@ -1462,6 +1464,9 @@ Invalid UTF-8 string:
   react appropriately.
 
 ### Tag validity
+
+Two additional kinds of validity errors are introduced by adding tags
+to the basic generic data model:
 
 Inadmissible type for tag content:
 : Tags ({{tags}}) specify what type of data item is supposed to be
@@ -1480,27 +1485,52 @@ Inadmissible value for tag content:
   acceptable for the content of tag 0, even though it properly is a
   text string.  A decoder that normally ingests such tags into
   equivalent platform types might present this tag to the application
-  in a similar way to how it would
-  present a tag with an unknown tag number ({{unknown-tags}}).
+  in a similar way to how it would present a tag with an unknown tag
+  number ({{validity-checking}}).
 
+## Validity and Evolution {#validity-checking}
 
-## Handling Unknown Simple Values and Tag numbers {#unknown-tags}
+A decoder with validity checking will expend the effort to reliably
+detect data items with validity errors. For example, such a
+decoder needs to have an API that reports an error (and does not
+return data) for a CBOR data item that contains any of the validity
+errors listed in the previous subsection.
 
-A decoder that comes across a simple value ({{fpnocont}}) that it does
-not recognize, such as a value that was added to the IANA registry
-after the decoder was deployed or a value that the decoder chose not
-to implement, might issue a warning, might stop processing altogether,
-might handle the error by making the unknown value available to the
-application as such (as is expected of generic decoders), or take some
-other type of action.
+The set of tags defined in the tag registry ({{ianatags}}), as well as
+the set of simple values defined in the simple values registry
+({{ianasimple}}), can grow at any time beyond the set understood by a
+generic decoder.
+A validity-checking decoder can do one of two things when it
+encounters such a case that it does not recognize:
 
-A decoder that comes across a tag number ({{tags}}) that it does not
-recognize, such as a tag number that was added to the IANA registry after the
-decoder was deployed or a tag number that the decoder chose not to implement,
-might issue a warning, might stop processing altogether, might handle
-the error and present the unknown tag number together with the
-enclosed data item to the application (as is expected of generic
-decoders), or take some other type of action.
+* It can report an error (and not return data).  Note that this error
+  is not a validity error per se.  This kind of error is more likely
+  to be raised by a decoder that would be performing validity checking
+  if this were a known case.
+
+* It can emit the unknown item (type, value, and, for tags, the
+  decoded tagged data item) to the application calling the decoder,
+  with an indication that the decoder did not recognize that tag
+  number or simple value.
+
+The latter approach, which is also appropriate for decoders that do
+not support validity checking, provides forward compatibility with
+newly registered tags and simple values without the requirement to
+update the encoder at the same time as the calling application.  (For
+this, the API for the decoder needs to have a way to mark unknown
+items so that the calling application can handle them in a manner
+appropriate for the program.)
+
+Since some of the processing needed for validity checking may have an
+appreciable cost (in particular with duplicate detection for maps),
+support of validity checking is not a requirement placed on all CBOR
+decoders.
+
+Some encoders will rely on their applications to provide input data in
+such a way that valid CBOR results from the encoder.  A generic
+encoder also may want to provide a validity-checking mode where it
+reliably limits its output to valid CBOR, independent of whether or
+not its application is indeed providing API-conformant data.
 
 
 ## Numbers {#numbers}
@@ -1646,72 +1676,6 @@ In some CBOR-based protocols, the simple value ({{fpnocont}}) of
 Undefined might be used by an encoder as a substitute for a data item
 with an encoding problem, in order to allow the rest of the enclosing
 data items to be encoded without harm.
-
-## Validity Checking and Robustness {#validity-checking}
-
-Some areas of application of CBOR do not require deterministic encoding
-({{det-enc}}) but may require that different decoders reach the same
-(semantically equivalent) results, even in the presence of potentially
-malicious data.  This can be required if one application (such as a
-firewall or other protecting entity) makes a decision based on the
-data that another application, which independently decodes the data,
-relies on.
-
-Normally, it is the responsibility of the sender to avoid ambiguously
-decodable data.  However, the sender might be an attacker specially
-making up CBOR data such that it will be interpreted differently by
-different decoders in an attempt to exploit that as a vulnerability.
-Generic decoders used in applications where this might be a problem
-can help by providing a validity-checking mode in which it is also the
-responsibility of the generic decoder to reject invalid
-data. It is expected that firewalls and other security systems that
-decode CBOR will employ their decoders with validity checking applied.
-
-<!-- Move the below to 5.3, validity  -->
-
-A decoder with validity checking will expend the effort to reliably
-detect invalid data items ({{semantic-errors}}). For example, such a
-decoder needs to have an API that reports an error (and does not
-return data) for a CBOR data item that contains any of the following:
-
-* a map (major type 5) that has more than one entry with the same key
-
-* a tag that is used on a data item of the incorrect type
-
-* a data item that is incorrectly formatted for the type given to it,
-  such as invalid UTF-8 in a text string or data that (even if of the
-  correct type) cannot be interpreted with the specific tag number
-  that it has been tagged with
-
-A validity-checking decoder can do one of two things when it encounters a
-tag number or simple value that it does not recognize:
-
-* It can report an error (and not return data).
-
-* It can emit the unknown item (type, value, and, for tags, the
-  decoded tagged data item) to the application calling the decoder,
-  with an indication that the decoder did not recognize that tag
-  number or simple value.
-
-The latter approach, which is also appropriate for decoders that do
-not support validity checking, provides forward compatibility with
-newly registered tags and simple values without the requirement to
-update the encoder at the same time as the calling application.  (For
-this, the API for the decoder needs to have a way to mark unknown
-items so that the calling application can handle them in a manner
-appropriate for the program.)
-
-Since some of the processing needed for validity checking may have an
-appreciable cost (in particular with duplicate detection for maps),
-support of validity checking is not a requirement placed on all CBOR
-decoders.
-
-Some encoders will rely on their applications to provide input data in
-such a way that valid CBOR results.  A generic encoder also may want
-to provide a validity-checking mode where it reliably limits its
-output to valid CBOR, independent of whether or not its application is
-providing API-conformant data.
-
 
 # Converting Data between CBOR and JSON
 
@@ -1881,7 +1845,7 @@ CBOR has three major extension points:
   been allocated.  Implementations receiving an unknown simple data
   item may be able to process it as such, given that the structure of
   the value is indeed simple. The IANA registry in
-  {{simple-values-registry}} is the appropriate way to address the
+  {{ianasimple}} is the appropriate way to address the
   extensibility of this codepoint space.
 
 * the "tag" space (values in major type 6).  Again, only a small part
@@ -1896,7 +1860,6 @@ CBOR has three major extension points:
   unknown additional information value has no way to continue decoding,
   so allocating codepoints to this space is a major step.  There are
   also very few codepoints left.
-
 
 ## Curating the Additional Information Space {#curating}
 
@@ -2007,7 +1970,7 @@ an associated Constrained Application Protocol (CoAP) Content-Format
 entry.
 
 
-## Simple Values Registry
+## Simple Values Registry {#ianasimple}
 
 IANA has created the "Concise Binary Object Representation (CBOR)
 Simple Values" registry at {{?IANA.cbor-simple-values}}. The initial
@@ -2696,7 +2659,7 @@ significant differences.
 
 * Fixed a bug in the last paragraph of Section 3.6 ("0b000_11101" -> "0b000_11001")
 
-<!--  LocalWords:  UTC
+<!--  LocalWords:  UTC bigfloats
  -->
 
 # Well-formedness errors and examples

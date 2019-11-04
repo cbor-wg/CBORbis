@@ -869,6 +869,20 @@ see the registry described at {{ianatags}} for the complete list.
 |      55799 | multiple    | Self-described CBOR; see {{self-describe}}                    |
 {: #tagvalues title='Tag numbers defined in RFC 7049'}
 
+Conceptually, tags are interpreted in the generic data model, not at
+(de-)serialization time.  A small number of tags (specifically, tag
+number 25 and tag number 29) have been registered with semantics that
+do require processing at (de-)serialization time: The decoder needs to
+be aware and the encoder needs to be under control of the exact
+sequence in which data items are encoded into the CBOR data stream.
+This means these tags cannot be implemented on top of every generic
+CBOR encoder/decoder (which might not reflect the serialization order
+for entries in a map at the data model level and vice versa); their
+implementation therefore typically needs to be integrated into the
+generic encoder/decoder.  The definition of new tags with this
+property is NOT RECOMMENDED.
+
+
 ### Date and Time {#datetimesect}
 
 Protocols using tag numbers 0 and 1 extend the generic data model

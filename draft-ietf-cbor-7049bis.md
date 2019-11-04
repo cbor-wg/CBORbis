@@ -1275,8 +1275,6 @@ Although IEEE floats can represent both positive and negative zero as
 distinct values, the application might not distinguish these and might decide
 to represent all zero values with a positive sign, disallowing
 negative zero.
-Also, there are many representations for NaN. If NaN is an allowed
-value, it must always be represented as 0xf97e00.
 
 CBOR tags present additional considerations for deterministic
 encoding.  If a CBOR-based protocol were to provide the same semantics
@@ -1303,8 +1301,21 @@ example:
      values, or
   1. Encode all values as 64-bit floating point.
 
-  If NaN is an allowed value, the protocol needs to pick a single
-  representation, for example 0xf97e00.
+  Rule 1 straddles the boundaries between integers and floating point
+  values, and Rule 3 does not use preferred encoding, so Rule 2 may be
+  a good choice in many cases.
+
+  If NaN is an allowed value and there is no intent to support NaN
+  payloads or signaling NaNs, the protocol needs to pick a single
+  representation, for example 0xf97e00.  If that simple choice is not
+  possible, specific attention will be needed for NaN handling.
+
+  Subnormal numbers (nonzero numbers with the lowest possible exponent
+  of a given IEEE 754 number format) may be flushed to zero outputs or
+  be treated as zero inputs in some floating point implementations.  A
+  protocol's deterministic encoding may want to exclude them from
+  interchange, interchanging zero instead.
+
 * If a protocol includes a field that can express integers with an
   absolute value of
   2^64 or larger using tag numbers 2 or 3 ({{bignums}}), the protocol's deterministic encoding

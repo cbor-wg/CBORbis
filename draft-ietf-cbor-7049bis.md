@@ -1117,7 +1117,10 @@ string data items it contains.
   {{RFC2045}}. A text string that isn't a valid MIME message is
   invalid.  (For this tag, validity checking
   may be particularly onerous for a generic decoder and might
-  therefore not be offered.)
+  therefore not be offered.  Note that many MIME messages are general
+  binary data and can therefore not be represented in a text string;
+  {{?IANA.cbor-tags}} lists a registration for tag number 257 that is
+  similar to tag number 36 but is used with an enclosed byte string.)
 
 Note that tag numbers 33 and 34 differ from 21 and 22 in that the data is
 transported in base-encoded form for the former and in raw byte string

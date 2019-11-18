@@ -1793,8 +1793,9 @@ conversion:
   floating-point values.  The
   default range that is represented as integer is
   -2\*\*53+1..2\*\*53-1 (fully exploiting the range for exact integers
-  in the binary64 representation often used for decoding JSON {{?RFC7493}}),
-  implementations may choose -2\*\*32..2\*\*32-1 or -2\*\*64..2\*\*64-1 (fully
+  in the binary64 representation often used for decoding JSON {{?RFC7493}}).
+  A CBOR-based protocol, or a generic converter implementation,
+  may choose -2\*\*32..2\*\*32-1 or -2\*\*64..2\*\*64-1 (fully
   using the integer ranges available in CBOR with uint32_t or
   uint64_t, respectively) or even -2\*\*31..2\*\*31-1 or
   -2\*\*63..2\*\*63-1 (using popular ranges for two's complement

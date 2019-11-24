@@ -2826,7 +2826,7 @@ The encoding of the additional information in CBOR was inspired by the
 encoding of length information designed by Klaus Hartke for CoAP.
 
 This document also incorporates suggestions made by many people,
-notably Dan Frost, James Manger, Jeffrey Yaskin, Joe Hildebrand, Keith Moore, Laurence
+notably Dan Frost, James Manger, Jeffrey Yasskin, Joe Hildebrand, Keith Moore, Laurence
 Lundblade, Matthew Lepinski, Michael Richardson,
 Nico Williams, Peter Occil, Phillip Hallam-Baker, Ray Polk, Tim Bray,
 Tony Finch, Tony Hansen, and Yaron Sheffer.

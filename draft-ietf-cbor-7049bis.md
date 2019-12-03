@@ -2698,7 +2698,7 @@ in decoding a CBOR data item:
 
 * Too much data: There are input bytes left that were not consumed.
   This is only an error if the application assumed that the input
-  bytes would span exexactly one data item.  Where the application
+  bytes would span exactly one data item.  Where the application
   uses the self-delimiting nature of CBOR encoding to permit
   additional data after the data item, as is for example done in CBOR
   sequences {{?I-D.ietf-cbor-sequence}}, the CBOR decoder can simply

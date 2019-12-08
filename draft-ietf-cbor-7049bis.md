@@ -280,14 +280,14 @@ Data item:
   addressed specifically by using "encoded data item".
 
 Decoder:
-: A process that decodes a well-formed CBOR data item and makes it available to an
+: A process that decodes a well-formed encoded CBOR data item and makes it available to an
   application.  Formally speaking, a decoder contains a parser to
   break up the input using the syntax rules of CBOR, as well as a
   semantic processor to prepare the data in a form suitable to the
   application.
 
 Encoder:
-: A process that generates the representation format of a CBOR data
+: A process that generates the (well-formed) representation format of a CBOR data
   item from application information.
 
 Data Stream:
@@ -422,7 +422,7 @@ example, in the generic data model, a valid map MAY have both `0` and
 declares that floating-point and integer representations of integral
 values are equivalent, using both map keys `0` and `0.0` in a single
 map would be considered
-duplicates and so invalid, and an encoder could encode integral-valued
+duplicates, even while encoded as different major types, and so invalid; and an encoder could encode integral-valued
 floats as integers or vice versa, perhaps to save encoded bytes.
 
 # Specification of the CBOR Encoding {#encoding}
@@ -729,6 +729,7 @@ or text strings ("chunks") that have definite lengths, followed by the
 "break" stop code ({{break}}).  The data item represented by the
 indefinite-length string is the concatenation of the chunks (i.e., the
 empty byte or text string, respectively, if no chunk is present).
+(Note that zero-length chunks, while not particularly useful, are permitted.)
 
 If any item between the indefinite-length string indicator
 (0b010_11111 or 0b011_11111) and the "break" stop code is not a definite-length

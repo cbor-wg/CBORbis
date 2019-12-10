@@ -280,14 +280,14 @@ Data item:
   addressed specifically by using "encoded data item".
 
 Decoder:
-: A process that decodes a well-formed CBOR data item and makes it available to an
+: A process that decodes a well-formed encoded CBOR data item and makes it available to an
   application.  Formally speaking, a decoder contains a parser to
   break up the input using the syntax rules of CBOR, as well as a
   semantic processor to prepare the data in a form suitable to the
   application.
 
 Encoder:
-: A process that generates the representation format of a CBOR data
+: A process that generates the (well-formed) representation format of a CBOR data
   item from application information.
 
 Data Stream:
@@ -323,7 +323,7 @@ Where bit arithmetic or data types are explained, this document uses
 the notation familiar from the programming language C, except that
 "\*\*" denotes exponentiation.  Similar to the "0x" notation for
 hexadecimal numbers, numbers in binary notation are prefixed with
-"0b".  Underscores can be added to such a number solely for
+"0b".  Underscores can be added to a number solely for
 readability, so 0b00100001 (0x21) might be written 0b001_00001 to
 emphasize the desired interpretation of the bits in the byte; in this
 case, it is split into three bits and five bits.  Encoded CBOR data
@@ -422,14 +422,14 @@ example, in the generic data model, a valid map MAY have both `0` and
 declares that floating-point and integer representations of integral
 values are equivalent, using both map keys `0` and `0.0` in a single
 map would be considered
-duplicates and so invalid, and an encoder could encode integral-valued
+duplicates, even while encoded as different major types, and so invalid; and an encoder could encode integral-valued
 floats as integers or vice versa, perhaps to save encoded bytes.
 
 # Specification of the CBOR Encoding {#encoding}
 
 A CBOR data item ({{cbor-data-models}}) is encoded to or decoded from
 a byte string carrying a well-formed encoded data item as described in this section.  The encoding is
-summarized in {{jumptable}}.  An encoder MUST produce only well-formed
+summarized in {{jumptable}}, indexed by the initial byte.  An encoder MUST produce only well-formed
 encoded data items.  A decoder MUST NOT return a decoded data item when it
 encounters input that is not a well-formed encoded CBOR data item (this does
 not detract from the usefulness of diagnostic and recovery tools that
@@ -729,6 +729,7 @@ or text strings ("chunks") that have definite lengths, followed by the
 "break" stop code ({{break}}).  The data item represented by the
 indefinite-length string is the concatenation of the chunks (i.e., the
 empty byte or text string, respectively, if no chunk is present).
+(Note that zero-length chunks, while not particularly useful, are permitted.)
 
 If any item between the indefinite-length string indicator
 (0b010_11111 or 0b011_11111) and the "break" stop code is not a definite-length
@@ -884,11 +885,10 @@ implementation therefore typically needs to be integrated into the
 generic encoder/decoder.  The definition of new tags with this
 property is NOT RECOMMENDED.
 
-
-### Date and Time {#datetimesect}
-
 Protocols using tag numbers 0 and 1 extend the generic data model
-({{cbor-data-models}}) with data items representing points in time.
+({{cbor-data-models}}) with data items representing points in time;
+tag numbers 2 and 3, with arbitrarily sized integers; and tag numbers
+4 and 5, with floating point values of arbitrary size and precision.
 
 ### Standard Date/Time String {#stringdatetimesect}
 
@@ -1283,7 +1283,8 @@ tag 1 data items and raw numbers in a date/time position, treating the
 latter as if they were tagged), the deterministic format would not
 allow them.  In a protocol that requires tags in certain places to
 obtain specific semantics, the tag needs to appear in the
-deterministic format as well.
+deterministic format as well.  Deterministic encoding considerations
+also apply to the content of tags.
 
 Protocols that include floating, big integer, or other complex values
 need to define extra requirements on their deterministic encodings. For
@@ -1432,7 +1433,7 @@ CBOR data is valid: for example, the encoded text string `0x62c0ae`
 does not contain valid UTF-8 and so is not a valid CBOR item.  Also, specific tags may
 make semantic constraints that may be violated, such as a bignum tag
 enclosing another tag, or an instance of tag number 0 containing a byte
-string or a text string with contents that do not match {{RFC3339}}'s
+string, or containing a text string with contents that do not match {{RFC3339}}'s
 `date-time` production.  There is
 no requirement that generic encoders and decoders make unnatural
 choices for their application interface to enable the processing of
@@ -1998,6 +1999,9 @@ rules in {{-iana}}. IANA has also assigned a new MIME media type and
 an associated Constrained Application Protocol (CoAP) Content-Format
 entry.
 
+\[To be removed by RFC editor:]
+IANA is requested to update these registries to point to the present
+document instead of RFC 7049.
 
 ## Simple Values Registry {#ianasimple}
 
@@ -2351,7 +2355,7 @@ unsigned integers are in network byte order.)
 
 |       Byte | Structure/Semantics                                                    |
 |------------+------------------------------------------------------------------------|
-| 0x00..0x17 | Integer 0x00..0x17 (0..23)                                             |
+| 0x00..0x17 | Unsigned integer 0x00..0x17 (0..23)                                         |
 |       0x18 | Unsigned integer (one-byte uint8_t follows)                            |
 |       0x19 | Unsigned integer (two-byte uint16_t follows)                           |
 |       0x1a | Unsigned integer (four-byte uint32_t follows)                          |

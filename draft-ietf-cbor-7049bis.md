@@ -2765,6 +2765,7 @@ counted or should have been ended by a break stop code.
   ff ff ff ff ff 01 02 03
 * Definite length maps and arrays not closed with enough items: 81, 81
   81 81 81 81 81 81 81 81, 82 00, a1, a2 01 02, a1 00, a2 00 00 00
+* Tag number not followed by tag content: c0  
 * Indefinite length strings not closed by a break stop code: 5f 41 00, 7f 61 00
 * Indefinite length maps and arrays not closed by a break stop code:
   9f, 9f 01 02, bf, bf 01 02 01 02, 81 9f, 9f 80 00, 9f 9f 9f 9f 9f ff

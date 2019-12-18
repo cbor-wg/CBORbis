@@ -16,7 +16,7 @@ pi:
   subcompact: 'no'
   rfcedstyle: 'yes'
 # reduce number of gratuitous differences from v2 to v3:
-#  text-list-symbols: '*-o+'
+  text-list-symbols: '*-o+'
 title: Concise Binary Object Representation (CBOR)
 abbrev: CBOR
 area: Internet

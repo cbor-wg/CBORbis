@@ -368,7 +368,7 @@ Note that integer and floating-point values are distinct in this
 model, even if they have the same numeric value.
 
 Also note that serialization variants, such as the number of bytes of the
-encoded floating value, or the choice of one of the ways in which an
+encoded floating-point value, or the choice of one of the ways in which an
 integer, the length of a text or byte string, the number of elements
 in an array or pairs in a map, or a tag number, (collectively "the
 argument", see {{encoding}}) can be encoded, are not visible at the
@@ -807,7 +807,7 @@ are well-formed.)
 The 5-bit values of 25, 26, and 27 are for 16-bit, 32-bit, and 64-bit
 IEEE 754 binary floating-point values {{-fp}}.  These floating-point values
 are encoded in the additional bytes of the appropriate size.  (See
-{{half-precision}} for some information about 16-bit floating point.)
+{{half-precision}} for some information about 16-bit floating-point numbers.)
 
 ## Tagging of Items {#tags}
 
@@ -888,7 +888,7 @@ property is NOT RECOMMENDED.
 Protocols using tag numbers 0 and 1 extend the generic data model
 ({{cbor-data-models}}) with data items representing points in time;
 tag numbers 2 and 3, with arbitrarily sized integers; and tag numbers
-4 and 5, with floating point values of arbitrary size and precision.
+4 and 5, with floating-point values of arbitrary size and precision.
 
 ### Standard Date/Time String {#stringdatetimesect}
 
@@ -987,8 +987,8 @@ model.
 Decimal fractions combine an integer mantissa with a base-10 scaling
 factor.  They are most useful if an application needs the exact
 representation of a decimal fraction such as 1.1 because there is no
-exact representation for many decimal fractions in binary floating
-point.
+exact representation for many decimal fractions in binary
+floating-point representations.
 
 Bigfloats combine an integer mantissa with a base-2 scaling factor.
 They are binary floating-point values that can exceed the range or the
@@ -1243,7 +1243,7 @@ it satisfies the following restrictions:
   * 65536 to 4294967295 and -65537 to -4294967296 MUST be expressed
     only with an additional uint32_t.
 
-  Floating point values also MUST use the shortest form that preserves
+  floating-point values also MUST use the shortest form that preserves
   the value, e.g. 1.5 is encoded as 0xf93e00 and 1000000.5 as
   0xfa49742408.
 
@@ -1286,7 +1286,7 @@ obtain specific semantics, the tag needs to appear in the
 deterministic format as well.  Deterministic encoding considerations
 also apply to the content of tags.
 
-Protocols that include floating, big integer, or other complex values
+Protocols that include floating-point, big integer, or other complex values
 need to define extra requirements on their deterministic encodings. For
 example:
 
@@ -1296,13 +1296,13 @@ example:
   or 0xfb3ff0000000000000. Three sensible rules for this are:
   1. Encode integral values that fit in 64 bits as values from major
      types 0 and 1, and other values as the smallest of 16-, 32-, or
-     64-bit floating point that accurately represents the value,
-  1. Encode all values as the smallest of 16-, 32-, or 64-bit floating
-     point that accurately represents the value, even for integral
-     values, or
-  1. Encode all values as 64-bit floating point.
+     64-bit floating-point representations that accurately represents the value,
+  1. Encode all values as the smallest of 16-, 32-, or 64-bit
+     floating-point representations that accurately represents the
+     value, even for integral values, or
+  1. Encode all values as 64-bit floating-point representations.
 
-  Rule 1 straddles the boundaries between integers and floating point
+  Rule 1 straddles the boundaries between integers and floating-point
   values, and Rule 3 does not use preferred encoding, so Rule 2 may be
   a good choice in many cases.
 
@@ -1313,7 +1313,7 @@ example:
 
   Subnormal numbers (nonzero numbers with the lowest possible exponent
   of a given IEEE 754 number format) may be flushed to zero outputs or
-  be treated as zero inputs in some floating point implementations.  A
+  be treated as zero inputs in some floating-point implementations.  A
   protocol's deterministic encoding may want to exclude them from
   interchange, interchanging zero instead.
 
@@ -1567,7 +1567,7 @@ not its application is indeed providing API-conformant data.
 CBOR-based protocols should take into account that different language
 environments pose different restrictions on the range and precision of
 numbers that are representable.  For example, the JavaScript number
-system treats all numbers as floating point, which may result in
+system treats all numbers as floating-point values, which may result in
 silent loss of precision in decoding integers with more than 53
 significant bits.  A protocol that uses numbers should define its
 expectations on the handling of non-trivial numbers in decoders and
@@ -1929,8 +1929,8 @@ consider YAML {{YAML}}.)
 The diagnostic notation is loosely based on JSON as it is defined in
 RFC 8259, extending it where needed.
 
-The notation borrows the JSON syntax for numbers (integer and floating
-point), True (>true\<), False (>false\<), Null (>null\<), UTF-8
+The notation borrows the JSON syntax for numbers (integer and
+floating-point), True (>true\<), False (>false\<), Null (>null\<), UTF-8
 strings, arrays, and maps (maps are called objects in JSON; the
 diagnostic notation extends JSON here by allowing any data item in the
 key position).  Undefined is written >undefined\< as in JavaScript.
@@ -2769,7 +2769,7 @@ counted or should have been ended by a break stop code.
   ff ff ff ff ff 01 02 03
 * Definite length maps and arrays not closed with enough items: 81, 81
   81 81 81 81 81 81 81 81, 82 00, a1, a2 01 02, a1 00, a2 00 00 00
-* Tag number not followed by tag content: c0  
+* Tag number not followed by tag content: c0
 * Indefinite length strings not closed by a break stop code: 5f 41 00, 7f 61 00
 * Indefinite length maps and arrays not closed by a break stop code:
   9f, 9f 01 02, bf, bf 01 02 01 02, 81 9f, 9f 80 00, 9f 9f 9f 9f 9f ff

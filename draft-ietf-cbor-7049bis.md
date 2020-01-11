@@ -1206,7 +1206,7 @@ variation-tolerant; the distinction is only relevant if a constrained
 implementation of a CBOR decoder meets a variant encoder.
 
 The preferred serialization always uses the shortest form of
-representing the argument ({{encoding}})); it also uses the shortest
+representing the argument ({{encoding}}); it also uses the shortest
 floating-point encoding that preserves the value being encoded (see
 {{numbers}}).
 Definite length encoding is preferred whenever the length is known at

@@ -842,8 +842,8 @@ number and tag content to the application.
 A tag applies semantics to the data item it encloses.
 Thus, if tag A encloses tag B, which encloses data item C,
 tag A applies to the result of applying tag B on data item C.  That
-is, a tag is a data item consisting of a tag number and an enclosed value.  The
-content of the tag (the enclosed data item) is the data item (the value) that is being
+is, a tag is a data item consisting of a tag number and an enclosed
+value, the "tag content"; the tag content is the data item (the value) that is being
 tagged.
 
 IANA maintains a registry of tag numbers as described in {{ianatags}}.
@@ -904,7 +904,7 @@ Tag number 1 contains a numerical value counting the number of seconds
 from 1970-01-01T00:00Z in UTC time to the represented point in civil
 time.
 
-The enclosed item MUST be an unsigned or negative integer (major types 0
+The tag content data item MUST be an unsigned or negative integer (major types 0
 and 1), or a floating-point number (major type 7 with additional
 information 25, 26, or 27). Other contained types are invalid.
 
@@ -915,8 +915,7 @@ are interpreted according to POSIX {{TIME_T}}.
 are handled specially by POSIX time and this results in a 1 second
 discontinuity several times per decade.)
 Note that applications that require the expression of times beyond
-early 2106 cannot leave out support of 64-bit integers for the enclosed
-value.
+early 2106 cannot leave out support of 64-bit integers for the tag content.
 
 Negative values (major type 1 and negative floating-point numbers) are
 interpreted as determined by the application requirements as there is
@@ -930,7 +929,7 @@ within tag number 1 instead of integer values.  Note that this generally
 requires binary64 support, as binary16 and binary32 provide non-zero
 fractions of seconds only for a short period of time around
 early 1970.  An application that requires tag number 1 support may restrict
-the enclosed value to be an integer (or a floating-point value) only.
+the tag content to be an integer (or a floating-point value) only.
 
 
 ### Bignums {#bignums}
@@ -1134,7 +1133,7 @@ string data items it contains.
   therefore not be offered.  Note that many MIME messages are general
   binary data and can therefore not be represented in a text string;
   {{?IANA.cbor-tags}} lists a registration for tag number 257 that is
-  similar to tag number 36 but is used with an enclosed byte string.)
+  similar to tag number 36 but uses a byte string as its tag content.)
 
 Note that tag numbers 33 and 34 differ from 21 and 22 in that the data is
 transported in base-encoded form for the former and in raw byte string
@@ -1152,8 +1151,8 @@ in a file that does not have disambiguating metadata.  Here, it may
 help to have some distinguishing characteristics for the data itself.
 
 Tag number 55799 is defined for this purpose.  It does not impart any special
-semantics on the data item that it encloses; that is, the semantics of a
-data item enclosed in tag number 55799 is exactly identical to the semantics
+semantics on the data item that it encloses; that is, the semantics of
+the tag content data item enclosed in tag number 55799 is exactly identical to the semantics
 of the data item itself.
 
 The serialization of this tag's head is 0xd9d9f7, which does not appear to be in
@@ -1498,9 +1497,8 @@ Two additional kinds of validity errors are introduced by adding tags
 to the basic generic data model:
 
 Inadmissible type for tag content:
-: Tags ({{tags}}) specify what type of data item is supposed to be
-  enclosed by
-  the tag; for example, the tags for positive or negative bignums are
+: Tag numbers ({{tags}}) specify what type of data item is supposed to be
+  used as their tag content; for example, the tag numbers for positive or negative bignums are
   supposed to be put on byte strings. A decoder that decodes the
   tagged data item into a native representation (a native big integer
   in this example) is expected to check the type of the data item
@@ -1680,7 +1678,7 @@ positions.
 Two maps are equal if they have the same set of pairs regardless of
 their order; pairs are equal if both the key and value are equal.
 
-Tagged values are equal if both the tag number and the enclosed item are equal.
+Tagged values are equal if both the tag number and the tag content are equal.
 (Note that a generic decoder that provides processing for a specific
 tag may not be able to distinguish some semantically equivalent
 values, e.g. if leading zeroes occur in the content of tag 2/3
@@ -1774,8 +1772,8 @@ as a JSON null.
 * A byte string with an encoding hint (major type 6, tag number 21
   through 23) is encoded as described and becomes a JSON string.
 
-* For all other tags (major type 6, any other tag number), the enclosed
-  CBOR item is represented as a JSON value; the tag number is ignored.
+* For all other tags (major type 6, any other tag number), the tag
+  content is represented as a JSON value; the tag number is ignored.
 
 * Indefinite-length items are made definite before conversion.
 
@@ -1882,7 +1880,8 @@ CBOR has three major extension points:
   of the codepoint space has been allocated, and the space is abundant
   (although the early numbers are more efficient than the later ones).
   Implementations receiving an unknown tag number can choose to simply ignore
-  it or to process it as an unknown tag number wrapping the enclosed data
+  it or to process it as an unknown tag number wrapping the enclosed
+  tag content data
   item. The IANA registry in {{ianatags}} is the appropriate way to
   address the extensibility of this codepoint space.
 

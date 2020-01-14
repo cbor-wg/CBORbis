@@ -821,7 +821,7 @@ definition of a tag number usually restricts what kinds of nested data item
 or items are valid for tags using this tag number.
 
 For example, assume that a byte string of length 12 is marked with a
-tag of number 2 to indicate it is a positive bignum ({{bignums}}).  This would be
+tag of number 2 to indicate it is a positive "bignum" ({{bignums}}).  This would be
 marked as 0b110_00010 (major type 6, additional information 2 for the
 tag number) followed by 0b010_01100 (major type 2, additional information of
 12 for the length) followed by the 12 bytes of the bignum.
@@ -990,7 +990,7 @@ representation of a decimal fraction such as 1.1 because there is no
 exact representation for many decimal fractions in binary
 floating-point representations.
 
-Bigfloats combine an integer mantissa with a base-2 scaling factor.
+"Bigfloats" combine an integer mantissa with a base-2 scaling factor.
 They are binary floating-point values that can exceed the range or the
 precision of the three IEEE 754 formats supported by CBOR
 ({{fpnocont}}).  Bigfloats may also be used by constrained

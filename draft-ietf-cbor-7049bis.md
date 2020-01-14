@@ -362,7 +362,7 @@ In the basic (un-extended) generic data model, a data item is one of:
 * a mapping (mathematical function) from zero or more data items
   ("keys") each to a data item ("values"), ("map")
 * a tagged data item ("tag"), comprising a tag number (an integer in
-  the range 0..2\*\*64-1) and a tagged value (a data item)
+  the range 0..2\*\*64-1) and the tag content (a data item)
 
 Note that integer and floating-point values are distinct in this
 model, even if they have the same numeric value.
@@ -1153,7 +1153,7 @@ help to have some distinguishing characteristics for the data itself.
 Tag number 55799 is defined for this purpose.  It does not impart any special
 semantics on the data item that it encloses; that is, the semantics of
 the tag content enclosed in tag number 55799 is exactly identical to the semantics
-of the data item itself.
+of the tag content itself.
 
 The serialization of this tag's head is 0xd9d9f7, which does not appear to be in
 use as a distinguishing mark for any frequently used file types.  In
@@ -1880,7 +1880,7 @@ CBOR has three major extension points:
   of the codepoint space has been allocated, and the space is abundant
   (although the early numbers are more efficient than the later ones).
   Implementations receiving an unknown tag number can choose to simply ignore
-  it or to process it as an unknown tag number wrapping the enclosed
+  it (process just the enclosed tag content) or to process it as an unknown tag number wrapping the
   tag content. The IANA registry in {{ianatags}} is the appropriate way to
   address the extensibility of this codepoint space.
 

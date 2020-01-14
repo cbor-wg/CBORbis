@@ -841,9 +841,9 @@ number and tag content to the application.
 
 A tag applies semantics to the data item it encloses.
 Thus, if tag A encloses tag B, which encloses data item C,
-tag A applies to the result of applying tag B on data item C.  That
-is, a tag is a data item consisting of a tag number and an enclosed
-value, the "tag content"; the tag content is the data item (the value) that is being
+tag A applies to the result of applying tag B on data item C.
+A tag is a data item consisting of both a tag number and an enclosed
+value called the "tag content": the tag content is the data item that is being
 tagged.
 
 IANA maintains a registry of tag numbers as described in {{ianatags}}.
@@ -904,7 +904,7 @@ Tag number 1 contains a numerical value counting the number of seconds
 from 1970-01-01T00:00Z in UTC time to the represented point in civil
 time.
 
-The tag content data item MUST be an unsigned or negative integer (major types 0
+The tag content MUST be an unsigned or negative integer (major types 0
 and 1), or a floating-point number (major type 7 with additional
 information 25, 26, or 27). Other contained types are invalid.
 
@@ -1152,7 +1152,7 @@ help to have some distinguishing characteristics for the data itself.
 
 Tag number 55799 is defined for this purpose.  It does not impart any special
 semantics on the data item that it encloses; that is, the semantics of
-the tag content data item enclosed in tag number 55799 is exactly identical to the semantics
+the tag content enclosed in tag number 55799 is exactly identical to the semantics
 of the data item itself.
 
 The serialization of this tag's head is 0xd9d9f7, which does not appear to be in
@@ -1881,8 +1881,7 @@ CBOR has three major extension points:
   (although the early numbers are more efficient than the later ones).
   Implementations receiving an unknown tag number can choose to simply ignore
   it or to process it as an unknown tag number wrapping the enclosed
-  tag content data
-  item. The IANA registry in {{ianatags}} is the appropriate way to
+  tag content. The IANA registry in {{ianatags}} is the appropriate way to
   address the extensibility of this codepoint space.
 
 * the "additional information" space.  An implementation receiving an

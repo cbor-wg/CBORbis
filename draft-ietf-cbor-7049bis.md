@@ -936,7 +936,7 @@ the enclosed value to be an integer (or a floating-point value) only.
 ### Bignums {#bignums}
 
 Protocols using tag numbers 2 and 3 extend the generic data model
-({{cbor-data-models}}) with bignums representing arbitrarily sized
+({{cbor-data-models}}) with "bignums" representing arbitrarily sized
 integers. In the generic data model, bignum values are not equal to
 integers from the basic data model, but specific data models can
 define that equivalence, and preferred encoding never makes use of

@@ -589,7 +589,8 @@ for the argument, mt for the major type.
 |  5 | map                   | 2N data items (key/value pairs)  |
 |  6 | tag of number N       | 1 data item                      |
 |  7 | simple/float          | -                                |
-{: #major-type-table title="Overview over CBOR major types (definite length encoded)"}
+{: #major-type-table title="Overview over the definite-length use of
+CBOR major types (mt = major type, N = argument)"}
 
 
 ## Indefinite Lengths for Some Major Types {#indefinite}
@@ -757,6 +758,24 @@ For example, assume the sequence:
 After decoding, this results in a single byte string with seven bytes:
 0xaabbccddeeff99.
 
+### Summary of indefinite-length use of major types
+
+{{major-type-indef-table}} summarizes the major types defined by CBOR as
+used for indefinite length encoding (with additional information set
+to 31).  mt stands for the major type.
+
+| mt | Meaning           | enclosed up to "break" stop code |
+|  0 | (not well-formed) | -                                |
+|  1 | (not well-formed) | -                                |
+|  2 | byte string       | definite-length byte strings     |
+|  3 | text string       | definite-length text strings     |
+|  4 | array             | data items (elements)            |
+|  5 | map               | data items (key/value pairs)     |
+|  6 | (not well-formed) | -                                |
+|  7 | "break" stop code | -                                |
+{: #major-type-indef-table title="Overview over the indefinite-length use of
+CBOR major types (mt = major type, additional information = 31)"}
+
 
 ## Floating-Point Numbers and Values with No Content {#fpnocont}
 
@@ -812,13 +831,17 @@ are encoded in the additional bytes of the appropriate size.  (See
 ## Tagging of Items {#tags}
 
 In CBOR, a data item can be enclosed by a tag to give it
-additional semantics while retaining its structure. The tag is major
+additional semantics. The tag is major
 type 6, and represents an unsigned integer as indicated by the tag's
 argument ({{encoding}}); the (sole) enclosed
 data item is carried as content data.  If a tag requires structured
 data, this structure is encoded into the nested data item.  The
 definition of a tag number usually restricts what kinds of nested data item
 or items are valid for tags using this tag number.
+We use the term "tag" for the entire data item consisting of both a tag number and the enclosed
+value, calling the latter "tag content": the tag content is the data item that is being
+tagged.
+
 
 For example, assume that a byte string of length 12 is marked with a
 tag of number 2 to indicate it is a positive "bignum" ({{bignums}}).  This would be
@@ -835,16 +858,13 @@ dates. A secondary purpose is to provide conversion hints when it is
 foreseen that the CBOR data item needs to be translated into a
 different format, requiring hints about the content of items.
 Understanding the semantics of tags is
-optional for a decoder; it can just jump over the initial bytes of the
-tag (that encode the tag number) and interpret the tag content itself, presenting both tag
-number and tag content to the application.
+optional for a decoder; it can simply present both the tag number and
+the tag content to the application, without interpreting the additional
+semantics of the tag.
 
 A tag applies semantics to the data item it encloses.
-Thus, if tag A encloses tag B, which encloses data item C,
+Tags can nest:  If tag A encloses tag B, which encloses data item C,
 tag A applies to the result of applying tag B on data item C.
-A tag is a data item consisting of both a tag number and an enclosed
-value called the "tag content": the tag content is the data item that is being
-tagged.
 
 IANA maintains a registry of tag numbers as described in {{ianatags}}.
 {{tagvalues}} provides a list of tag numbers that were defined in {{RFC7049}}, with definitions in
@@ -938,22 +958,22 @@ Protocols using tag numbers 2 and 3 extend the generic data model
 ({{cbor-data-models}}) with "bignums" representing arbitrarily sized
 integers. In the generic data model, bignum values are not equal to
 integers from the basic data model, but specific data models can
-define that equivalence, and preferred encoding never makes use of
+define that equivalence, and preferred serialization ({{preferred}}) never makes use of
 bignums that also can be expressed as basic integers (see below).
 
 Bignums are encoded as a byte string data item, which is interpreted
 as an unsigned integer n in network byte order.  Contained items of
 other types are invalid.  For tag number 2, the
 value of the bignum is n.  For tag number 3, the value of the bignum is
--1 - n.  The preferred encoding of the byte string is to leave out any
-leading zeroes (note that this means the preferred encoding for n = 0
+-1 - n.  The preferred serialization of the byte string is to leave out any
+leading zeroes (note that this means the preferred serialization for n = 0
 is the empty byte string, but see below).
 Decoders that understand these tags MUST be able to decode
 bignums that do have leading zeroes.
-The preferred encoding of an integer that can be represented using
+The preferred serialization of an integer that can be represented using
 major type 0 or 1 is to encode it this way instead of as a bignum
 (which means that the empty string never occurs in a bignum when using
-preferred encoding).
+preferred serialization).
 Note that this means the non-preferred choice of a bignum
 representation instead of a basic integer for encoding a number is not
 intended to have application semantics (just as the choice of a longer
@@ -1085,14 +1105,17 @@ contained in the data item, except for those contained in a nested
 data item tagged with an expected conversion.
 
 These three tag numbers suggest conversions to three of the base data
-encodings defined in {{RFC4648}}.  For base64url encoding (tag number 21),
+encodings defined in {{RFC4648}}.   Tag number 21 suggests conversion
+to base64url encoding (Section 5 of RFC 4648), where
 padding is not used (see Section 3.2 of RFC 4648); that is, all
 trailing equals signs ("=") are removed from the encoded string.
-For base64 encoding (tag number 22), padding is used as defined in RFC 4648.
+Tag number 22 suggests conversion to classical base64 encoding (Section 4 of RFC 4648), with padding as defined in RFC 4648.
 For both base64url and base64, padding bits are set to zero (see
 Section 3.5 of RFC 4648), and encoding
 is performed without the inclusion of any line breaks, whitespace, or
-other additional characters.  Note that, for all three tag numbers, the
+other additional characters.  Tag number 23 suggests conversion to
+base16 (hex) encoding, with uppercase alphabetics (see Section 8 of RFC 4648).
+Note that, for all three tag numbers, the
 encoding of the empty byte string is the empty text string.
 
 
@@ -1108,7 +1131,8 @@ string data items it contains.
 * Tag number 32 is for URIs, as defined in {{RFC3986}}.  If the text string
   doesn't match the `URI-reference` production, the string is invalid.
 
-* Tag numbers 33 and 34 are for base64url- and base64-encoded text strings,
+* Tag numbers 33 and 34 are for base64url- and base64-encoded text
+  strings, respectively,
   as defined in {{RFC4648}}.  If any of:
   * the encoded text string contains non-alphabet characters or only 1
     character in the last block of 4, or
@@ -1178,7 +1202,7 @@ put the burden of enforcing this preference on either encoder or decoder.
 
 Some constrained decoders may be limited in their ability to decode
 non-preferred serializations:  For example, if only integers below
-1_000_000_000 are expected in an application, the decoder may leave
+1_000_000_000 (one billion) are expected in an application, the decoder may leave
 out the code that would be needed to decode 64-bit arguments in
 integers.  An encoder that always
 uses preferred serialization ("preferred encoder") interoperates with this decoder for the
@@ -1206,8 +1230,16 @@ implementation of a CBOR decoder meets a variant encoder.
 
 The preferred serialization always uses the shortest form of
 representing the argument ({{encoding}}); it also uses the shortest
-floating-point encoding that preserves the value being encoded (see
-{{numbers}}).
+floating-point encoding that preserves the value being encoded.
+
+The preferred serialization for a floating-point value is the shortest
+floating-point encoding that preserves its value, e.g., 0xf94580 for
+the number 5.5, and 0xfa45ad9c00 for the number 5555.5.  For NaN
+values, a shorter encoding is preferred if zero-padding the shorter
+significand towards the right reconstitutes the original NaN value
+(for many applications, the single NaN encoding 0xf97e00 will
+suffice).
+
 Definite length encoding is preferred whenever the length is known at
 the time the serialization of the item starts.
 
@@ -1242,9 +1274,14 @@ it satisfies the following restrictions:
   * 65536 to 4294967295 and -65537 to -4294967296 MUST be expressed
     only with an additional uint32_t.
 
-  floating-point values also MUST use the shortest form that preserves
+  Floating-point values also MUST use the shortest form that preserves
   the value, e.g. 1.5 is encoded as 0xf93e00 and 1000000.5 as
   0xfa49742408.
+  (One implementation of this is to have all floats start as a 64-bit
+  float, then do a test conversion to a 32-bit float; if the result is
+  the same numeric value, use the shorter form and repeat the process
+  with a test conversion to a 16-bit float.  This also works to select
+  16-bit float for positive and negative Infinity as well.)
 
 * Indefinite-length items MUST NOT appear. They can be encoded as
   definite-length items instead.
@@ -1264,45 +1301,54 @@ it satisfies the following restrictions:
 
 ### Additional Deterministic Encoding Considerations
 
-If a protocol allows for IEEE floats, then additional deterministic encoding
-rules might need to be added.  One example rule might be to have all
-floats start as a 64-bit float, then do a test conversion to a 32-bit
-float; if the result is the same numeric value, use the shorter value
-and repeat the process with a test conversion to a 16-bit float. (This
-rule selects 16-bit float for positive and negative Infinity as well.)
-Although IEEE floats can represent both positive and negative zero as
-distinct values, the application might not distinguish these and might decide
-to represent all zero values with a positive sign, disallowing
-negative zero.
+Protocols that include floating-point, big integer, or other complex values
+need to define extra requirements on their deterministic encodings.
 
 CBOR tags present additional considerations for deterministic
 encoding.  If a CBOR-based protocol were to provide the same semantics
 for the presence and absence of a specific tag (e.g., by allowing both
 tag 1 data items and raw numbers in a date/time position, treating the
 latter as if they were tagged), the deterministic format would not
-allow them.  In a protocol that requires tags in certain places to
+allow the presence of the tag, based on the "shortest form" principle.
+For examle, a protocol might give encoders the choice of representing a URL as
+either a text string or, using {{encodedtext}}, tag number 32 containing a
+text string. This protocol's deterministic encoding needs to either
+require that the tag is present or require that it is absent, not
+allow either one.
+
+In a protocol that does require tags in certain places to
 obtain specific semantics, the tag needs to appear in the
 deterministic format as well.  Deterministic encoding considerations
 also apply to the content of tags.
 
-Protocols that include floating-point, big integer, or other complex values
-need to define extra requirements on their deterministic encodings. For
-example:
+Deterministic encoding considerations for numeric values include:
+
+* If a protocol allows for floating-point values, then additional deterministic encoding
+  rules might need to be added.
+  Although IEEE floating-point values can represent both positive and negative zero as
+  distinct values, the application might not distinguish these and might
+  decide to represent all zero values with a positive sign, disallowing
+  negative zero.
+  (The application may also want to restrict the precision of floating
+  point values in such a way that there is never a need to represent
+  64-bit — or even 32-bit — floats.)
 
 * If a protocol includes a field that can express floating-point values
-  ({{fpnocont}}), the protocol's deterministic encoding needs to specify
+  ({{fpnocont}}), with a specific data model that declares integer and
+  floating-point values to be interchangeable, the protocol's
+  deterministic encoding needs to specify
   whether the integer 1.0 is encoded as 0x01, 0xf93c00, 0xfa3f800000,
-  or 0xfb3ff0000000000000. Three sensible rules for this are:
+  or 0xfb3ff0000000000000. Example rules for this are:
   1. Encode integral values that fit in 64 bits as values from major
-     types 0 and 1, and other values as the smallest of 16-, 32-, or
-     64-bit floating-point representations that accurately represents the value,
-  1. Encode all values as the smallest of 16-, 32-, or 64-bit
-     floating-point representations that accurately represents the
+     types 0 and 1, and other values as the preferred (smallest of 16-, 32-, or
+     64-bit) floating-point representation that accurately represents the value,
+  1. Encode all values as the preferred
+     floating-point representation that accurately represents the
      value, even for integral values, or
   1. Encode all values as 64-bit floating-point representations.
 
   Rule 1 straddles the boundaries between integers and floating-point
-  values, and Rule 3 does not use preferred encoding, so Rule 2 may be
+  values, and Rule 3 does not use preferred serialization, so Rule 2 may be
   a good choice in many cases.
 
   If NaN is an allowed value and there is no intent to support NaN
@@ -1320,12 +1366,8 @@ example:
   absolute value of
   2^64 or larger using tag numbers 2 or 3 ({{bignums}}), the protocol's deterministic encoding
   needs to specify whether small integers are expressed using the tag
-  or major types 0 and 1.
-* A protocol might give encoders the choice of representing a URL as
-  either a text string or, using {{encodedtext}}, tag number 32 containing a
-  text string. This protocol's deterministic encoding needs to either
-  require that the tag is present or require that it's absent, not
-  allow either one.
+  or major types 0 and 1.  Preferred serialization uses the latter
+  choice, which is therefore recommended.
 
 ### Length-first map key ordering
 
@@ -1392,7 +1434,7 @@ required by the protocols in which it is used. This lack of
 restrictions allows CBOR to be used in extremely constrained
 environments.
 
-This section discusses some considerations in creating CBOR-based
+The rest of this section discusses some considerations in creating CBOR-based
 protocols.  With few exceptions, it is advisory only and explicitly excludes any language
 from BCP 14 other than words that could be interpreted as "MAY" in
 the sense of BCP 14.  The exceptions aim at facilitating
@@ -1564,7 +1606,7 @@ not its application is indeed providing API-conformant data.
 
 CBOR-based protocols should take into account that different language
 environments pose different restrictions on the range and precision of
-numbers that are representable.  For example, the JavaScript number
+numbers that are representable.  For example, the basic JavaScript number
 system treats all numbers as floating-point values, which may result in
 silent loss of precision in decoding integers with more than 53
 significant bits.  A protocol that uses numbers should define its
@@ -1582,28 +1624,22 @@ specific integer encodings that are longer than necessary for the
 application, such as to save the need to implement 64-bit integers.
 There is an expectation that encoders will use the most compact
 integer representation that can represent a given value.  However, a
-compact application should accept values that use a longer-than-needed
+compact application that does not require deterministic encoding
+should accept values that use a longer-than-needed
 encoding (such as encoding "0" as 0b000_11001 followed by two bytes of
 0x00) as long as the application can decode an integer of the given
 size.
-
-The preferred encoding for a floating-point value is the shortest
-floating-point encoding that preserves its value, e.g., 0xf94580 for
-the number 5.5, and 0xfa45ad9c00 for the number 5555.5, unless the
-CBOR-based protocol specifically excludes the use of the shorter
-floating-point encodings.  For NaN values, a shorter encoding is
-preferred if zero-padding the shorter significand towards the right
-reconstitutes the original NaN value (for many applications, the
-single NaN encoding 0xf97e00 will suffice).
+Similar considerations apply to floating-point values; decoding both
+preferred serializations and longer-than-needed ones is recommended.
 
 
 ## Specifying Keys for Maps {#map-keys}
 
 The encoding and decoding applications need to agree on what types of
 keys are going to be used in maps.  In applications that need to
-interwork with JSON-based applications, keys probably should be
-limited to UTF-8 strings only; otherwise, there has to be a specified
-mapping from the other CBOR types to Unicode characters, and this
+interwork with JSON-based applications,
+limiting keys to text strings only simplifies conversion; otherwise, there has to be a specified
+mapping from the other CBOR types to text strings, and this
 often leads to implementation errors.  In applications where keys are
 numeric in nature and numeric ordering of keys is important to the
 application, directly using the numbers for the keys is useful.
@@ -1636,13 +1672,13 @@ decoders that enforce validity ({{validity-checking}}).
 The CBOR data model for maps does not allow ascribing semantics to the
 order of the key/value pairs in the map representation.  Thus, a
 CBOR-based protocol MUST NOT specify that changing the key/value pair
-order in a map would change the semantics, except to specify that some,
+order in a map would change the semantics, except to specify that some
 orders are disallowed, for example where they would not meet the
 requirements of a deterministic
 encoding ({{det-enc}}).
 (Any secondary effects of map ordering such as on timing, cache usage,
 and other potential side channels are not considered part of the
-semantics but may be enough reason on its own for a protocol to require a
+semantics but may be enough reason on their own for a protocol to require a
 deterministic encoding format.)
 
 Applications for constrained devices that have maps where a small
@@ -1985,7 +2021,7 @@ indicator is not shown in {{examples}}.  (Note that the encoding
 indicator "_" is thus an abbreviation of the full form "_7", which is
 not used.)
 
-As a special case, byte and text strings of indefinite length can be
+Byte and text strings of indefinite length can be
 notated in the form (_ h'0123', h'4567') and (_ "foo", "bar").
 
 
@@ -2093,6 +2129,8 @@ Change controller:
 
 
 ## CoAP Content-Format
+
+The CoAP Content-Format for CBOR is defined in {{?IANA.core-parameters}}:
 
 Media Type: application/cbor
 

@@ -319,6 +319,9 @@ Stream decoder:
   items in the sequence available to an application as they are
   received.
 
+Terms and concepts for floating-point values such as Infinity, NaN
+(not a number), negative zero, and subnormal are defined in [IEEE754].
+
 Where bit arithmetic or data types are explained, this document uses
 the notation familiar from the programming language C, except that
 "\*\*" denotes exponentiation.  Similar to the "0x" notation for
@@ -1067,7 +1070,7 @@ is a choice between representing a specific number as an integer and
 as a decimal fraction or bigfloat (such as when the exponent is small
 and non-negative), there is a quality-of-implementation expectation
 that the integer representation is used directly.
-
+<!-- FIX ME -->
 
 ### Content Hints
 
@@ -1302,16 +1305,13 @@ it satisfies the following restrictions:
 
 ### Additional Deterministic Encoding Considerations
 
-Protocols that include floating-point, big integer, or other complex values
-need to define extra requirements on their deterministic encodings.
-
 CBOR tags present additional considerations for deterministic
 encoding.  If a CBOR-based protocol were to provide the same semantics
 for the presence and absence of a specific tag (e.g., by allowing both
 tag 1 data items and raw numbers in a date/time position, treating the
 latter as if they were tagged), the deterministic format would not
 allow the presence of the tag, based on the "shortest form" principle.
-For examle, a protocol might give encoders the choice of representing a URL as
+For example, a protocol might give encoders the choice of representing a URL as
 either a text string or, using {{encodedtext}}, tag number 32 containing a
 text string. This protocol's deterministic encoding needs to either
 require that the tag is present or require that it is absent, not
@@ -1322,20 +1322,28 @@ obtain specific semantics, the tag needs to appear in the
 deterministic format as well.  Deterministic encoding considerations
 also apply to the content of tags.
 
-Deterministic encoding considerations for numeric values include:
+If a protocol includes a field that can express integers with an
+absolute value of 2^64 or larger using tag numbers 2 or 3
+({{bignums}}), the protocol's deterministic encoding needs to specify
+whether smaller integers are also expressed using these tags or using
+major types 0 and 1.  Preferred serialization uses the latter choice,
+which is therefore recommended.
 
-* If a protocol allows for floating-point values, then additional deterministic encoding
-  rules might need to be added.
-  Although IEEE floating-point values can represent both positive and negative zero as
+Protocols that include floating-point values, whether represented
+using basic floating-point values ({{fpnocont}}) or using tags (or
+both), may need to define extra requirements on their deterministic
+encodings, such as:
+
+* Although IEEE floating-point values can represent both positive and negative zero as
   distinct values, the application might not distinguish these and might
   decide to represent all zero values with a positive sign, disallowing
   negative zero.
   (The application may also want to restrict the precision of floating
   point values in such a way that there is never a need to represent
-  64-bit — or even 32-bit — floats.)
+  64-bit — or even 32-bit — floating-point values.)
 
-* If a protocol includes a field that can express floating-point values
-  ({{fpnocont}}), with a specific data model that declares integer and
+* If a protocol includes a field that can express floating-point values,
+  with a specific data model that declares integer and
   floating-point values to be interchangeable, the protocol's
   deterministic encoding needs to specify
   whether the integer 1.0 is encoded as 0x01, 0xf93c00, 0xfa3f800000,
@@ -1352,23 +1360,18 @@ Deterministic encoding considerations for numeric values include:
   values, and Rule 3 does not use preferred serialization, so Rule 2 may be
   a good choice in many cases.
 
-  If NaN is an allowed value and there is no intent to support NaN
+* If NaN is an allowed value and there is no intent to support NaN
   payloads or signaling NaNs, the protocol needs to pick a single
   representation, for example 0xf97e00.  If that simple choice is not
   possible, specific attention will be needed for NaN handling.
 
-  Subnormal numbers (nonzero numbers with the lowest possible exponent
+* Subnormal numbers (nonzero numbers with the lowest possible exponent
   of a given IEEE 754 number format) may be flushed to zero outputs or
-  be treated as zero inputs in some floating-point implementations.  A
-  protocol's deterministic encoding may want to exclude them from
-  interchange, interchanging zero instead.
-
-* If a protocol includes a field that can express integers with an
-  absolute value of
-  2^64 or larger using tag numbers 2 or 3 ({{bignums}}), the protocol's deterministic encoding
-  needs to specify whether small integers are expressed using the tag
-  or major types 0 and 1.  Preferred serialization uses the latter
-  choice, which is therefore recommended.
+  be treated as zero inputs in some floating-point implementations.
+  A protocol's deterministic encoding may want to specifically
+  accommodate such implementations while creating an onus on other
+  implementations, by excluding subnormal numbers from interchange,
+  interchanging zero instead.
 
 ### Length-first map key ordering
 

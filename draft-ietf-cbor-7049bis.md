@@ -841,6 +841,10 @@ data item is carried as content data.  If a tag requires structured
 data, this structure is encoded into the nested data item.  The
 definition of a tag number usually restricts what kinds of nested data item
 or items are valid for tags using this tag number.
+We use the term "tag" for the entire data item consisting of both a tag number and the enclosed
+value, calling the latter "tag content": the tag content is the data item that is being
+tagged.
+
 
 For example, assume that a byte string of length 12 is marked with a
 tag of number 2 to indicate it is a positive "bignum" ({{bignums}}).  This would be

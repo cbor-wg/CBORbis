@@ -1310,7 +1310,7 @@ for the presence and absence of a specific tag (e.g., by allowing both
 tag 1 data items and raw numbers in a date/time position, treating the
 latter as if they were tagged), the deterministic format would not
 allow the presence of the tag, based on the "shortest form" principle.
-For examle, a protocol might give encoders the choice of representing a URL as
+For example, a protocol might give encoders the choice of representing a URL as
 either a text string or, using {{encodedtext}}, tag number 32 containing a
 text string. This protocol's deterministic encoding needs to either
 require that the tag is present or require that it is absent, not

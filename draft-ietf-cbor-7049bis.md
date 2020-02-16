@@ -123,7 +123,7 @@ informative:
       date: 2018
   SIPHASH: DOI.10.1007_978-3-642-34931-7_28
   RFC8618: cdns
-
+  I-D.ietf-cbor-sequence: cbor-sequence
 --- abstract
 
 The Concise Binary Object Representation (CBOR) is a data format whose design
@@ -542,7 +542,7 @@ Major type 3:
 
 Major type 4:
 : an array of data items.  In other formats, arrays are also called lists, sequences, or
-  tuples (a "CBOR sequence" is something slightly different, though {{?I-D.ietf-cbor-sequence}}).
+  tuples (a "CBOR sequence" is something slightly different, though {{-cbor-sequence}}).
   The argument is the number of data items in the
   array.  Items in an
   array do not need to all be of the same type.  For example, an array
@@ -1321,7 +1321,7 @@ for the presence and absence of a specific tag (e.g., by allowing both
 tag 1 data items and raw numbers in a date/time position, treating the
 latter as if they were tagged), the deterministic format would not
 allow the presence of the tag, based on the "shortest form" principle.
-For examle, a protocol might give encoders the choice of representing a URL as
+For example, a protocol might give encoders the choice of representing a URL as
 either a text string or, using {{encodedtext}}, tag number 32 containing a
 text string. This protocol's deterministic encoding needs to either
 require that the tag is present or require that it is absent, not
@@ -2125,15 +2125,15 @@ Additional information:
   Macintosh file type code(s): n/a
 
 Person & email address to contact for further information:
-  Carsten Bormann
-  cabo@tzi.org
+  IETF CBOR Working Group <cbor@ietf.org> or
+  IETF Applications and Real-Time Area <art@ietf.org>
 
 Intended usage: COMMON
 
 Restrictions on usage: none
 
 Author:
-  Carsten Bormann <cabo@tzi.org>
+  IETF CBOR Working Group <cbor@ietf.org>
 
 Change controller:
   The IESG <iesg@ietf.org>
@@ -2753,7 +2753,7 @@ in decoding a CBOR data item:
   bytes would span exactly one data item.  Where the application
   uses the self-delimiting nature of CBOR encoding to permit
   additional data after the data item, as is for example done in CBOR
-  sequences {{?I-D.ietf-cbor-sequence}}, the CBOR decoder can simply
+  sequences {{-cbor-sequence}}, the CBOR decoder can simply
   indicate what part of the input has not been consumed.
 
 * Too little data: The input data available would need additional

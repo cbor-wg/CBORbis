@@ -1648,8 +1648,8 @@ preferred serializations and longer-than-needed ones is recommended.
 
 The encoding and decoding applications need to agree on what types of
 keys are going to be used in maps.  In applications that need to
-interwork with JSON-based applications,
-limiting keys to text strings only simplifies conversion; otherwise, there has to be a specified
+interwork with JSON-based applications, conversion is simplified by
+limiting keys to text strings only; otherwise, there has to be a specified
 mapping from the other CBOR types to text strings, and this
 often leads to implementation errors.  In applications where keys are
 numeric in nature and numeric ordering of keys is important to the
@@ -1677,8 +1677,28 @@ a map.  The resulting rule in the protocol MUST respect the CBOR
 data model: it cannot prescribe a specific handling of the entries
 with the identical keys, except that it might have a rule that having
 identical keys in a map indicates a malformed map and that the decoder
-has to stop with an error. Duplicate keys are also not accepted by CBOR
-decoders that enforce validity ({{validity-checking}}).
+has to stop with an error.
+Processing maps that exhibit entries with duplicate keys, a generic
+decoder might:
+
+* not accept maps duplicate keys (that is, enforce validity for maps,
+  see also {{validity-checking}}).  These generic decoders are
+  universally useful.  An application may still need to do perform its
+  own duplicate checking based on application rules (for instance if
+  the application equates integers and floating point values in map
+  key positions for specific maps).
+* pass all map entries to the application, including ones with
+  duplicate keys.  This requires the application to handle (check
+  against) duplicate keys, even if the application rules are identical
+  to the generic data model rules.
+* lose some entries with duplicate keys, e.g. by only delivering the
+  final (or first) entry out of the entries with the same key.  With
+  such a generic decoder, applications cannot validate key uniqueness
+  on their own; they may not be able to use such a generic decoder if
+  they do need to validate key uniqueness.  These generic decoders can
+  only be used in situations where the encoder can be relied upon to
+  always provide valid maps; this is not possible if the encoder can
+  be under control of an attacker.
 
 The CBOR data model for maps does not allow ascribing semantics to the
 order of the key/value pairs in the map representation.  Thus, a

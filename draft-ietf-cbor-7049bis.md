@@ -1693,12 +1693,20 @@ decoder might:
   to the generic data model rules.
 * lose some entries with duplicate keys, e.g. by only delivering the
   final (or first) entry out of the entries with the same key.  With
-  such a generic decoder, applications cannot validate key uniqueness
-  on their own; they may not be able to use such a generic decoder if
-  they do need to validate key uniqueness.  These generic decoders can
-  only be used in situations where the encoder can be relied upon to
-  always provide valid maps; this is not possible if the encoder can
-  be under control of an attacker.
+  such a generic decoder, applications may get different results for a
+  specific key on different runs and with different generic decoders
+  as which value is returned is based on generic decoder
+  implementation and the actual order of keys in the map.  In
+  particular, applications cannot validate key uniqueness on their own
+  as they do not necessarily see all entries; they may not be able to
+  use such a generic decoder if they do need to validate key
+  uniqueness.  These generic decoders can only be used in situations
+  where the data source and transfer can be relied upon to always
+  provide valid maps; this is not possible if the encoder can be under
+  control of an attacker.
+
+Generic decoders need to document which of these three approaches they
+implement.
 
 The CBOR data model for maps does not allow ascribing semantics to the
 order of the key/value pairs in the map representation.  Thus, a

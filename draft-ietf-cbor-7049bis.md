@@ -1064,12 +1064,7 @@ C5             -- Tag 5
 Decimal fractions and bigfloats provide no representation of Infinity,
 -Infinity, or NaN; if these are needed in place of a decimal fraction
 or bigfloat, the IEEE 754 half-precision representations from
-{{fpnocont}} can be used.  For constrained applications, where there
-is a choice between representing a specific number as an integer and
-as a decimal fraction or bigfloat (such as when the exponent is small
-and non-negative), there is a quality-of-implementation expectation
-that the integer representation is used directly.
-<!-- FIX ME -->
+{{fpnocont}} can be used.
 
 ### Content Hints
 
@@ -1372,6 +1367,16 @@ encodings, such as:
   implementations, by excluding subnormal numbers from interchange,
   interchanging zero instead.
 
+* The same number can be represented by different decimal fractions,
+  by different bigfloats, and by different forms under other tags that
+  may be defined to express numeric values. Depending on the
+  implementation, it may not always be practical to determine whether
+  any of these forms (or forms in the basic generic data model) are
+  equivalent.  An application protocol that presents choices of this
+  kind for the representation format of numbers needs to be explicit
+  in how the formats are to be chosen for deterministic encoding.
+
+
 ### Length-first map key ordering
 
 The core deterministic encoding requirements sort map keys in a different
@@ -1635,6 +1640,11 @@ size.
 Similar considerations apply to floating-point values; decoding both
 preferred serializations and longer-than-needed ones is recommended.
 
+CBOR-based protocols for constrained applications that provide a
+choice between representing a specific number as an integer and
+as a decimal fraction or bigfloat (such as when the exponent is small
+and non-negative), might express a quality-of-implementation expectation
+that the integer representation is used directly.
 
 ## Specifying Keys for Maps {#map-keys}
 

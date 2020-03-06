@@ -1702,8 +1702,7 @@ decoder might:
   use such a generic decoder if they do need to validate key
   uniqueness.  These generic decoders can only be used in situations
   where the data source and transfer can be relied upon to always
-  provide valid maps; this is not possible if the data can be under
-  control of an attacker.
+  provide valid maps; this is not possible if the data source and transfer can be attacked.
 
 Generic decoders need to document which of these three approaches they
 implement.

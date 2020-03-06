@@ -123,7 +123,7 @@ informative:
       date: 2018
   SIPHASH: DOI.10.1007_978-3-642-34931-7_28
   RFC8618: cdns
-
+  I-D.ietf-cbor-sequence: cbor-sequence
 --- abstract
 
 The Concise Binary Object Representation (CBOR) is a data format whose design
@@ -153,6 +153,7 @@ addressed, but changes to this document will ensure backward
 compatibility for popular deployed codebases. This document will be
 targeted at becoming an Internet Standard.
 
+\[RFC editor: please remove this note.]
 
 --- middle
 
@@ -224,7 +225,8 @@ are:
    is secondary to code compactness for the encoder and decoder.
 
     * "Reasonable" here is bounded by JSON as an upper bound in size,
-      and by implementation complexity maintaining a lower bound.
+      and by the implementation complexity limiting how much effort
+      can go into achieving that compactness.
       Using either general compression schemes or extensive
       bit-fiddling violates the complexity goals.
 
@@ -305,7 +307,7 @@ Well-formed:
 
 Valid:
 : A data item that is well-formed and also follows the semantic
-  restrictions that apply to CBOR data items.
+  restrictions that apply to CBOR data items ({{semantic-errors}}).
 
 Expected:
 : Besides its normal English meaning, the term "expected" is used to
@@ -335,6 +337,12 @@ are first interpreted as numbers as in C and are then interpreted as
 byte strings in network byte order, including any leading zero bytes
 expressed in the notation.
 
+Words may be *italicized* for emphasis; in the plain text form of this
+specification this is indicated by surrounding words with underscore
+characters.  Verbatim text (e.g., names from a programming language)
+may be set in `monospace` type; in plain text this is approximated
+somewhat ambiguously by surrounding the text in double quotes (which
+also retain their usual meaning).
 
 # CBOR Data Models
 
@@ -356,7 +364,7 @@ In the basic (un-extended) generic data model, a data item is one of:
 
 * an integer in the range -2\*\*64..2\*\*64-1 inclusive
 * a simple value, identified by a number
-  between 0 and 255, but distinct from that number
+  between 0 and 255, but distinct from that number itself
 * a floating-point value, distinct from an integer, out of the set
   representable by IEEE 754 binary64 (including non-finites) {{-fp}}
 * a sequence of zero or more bytes ("byte string")
@@ -536,8 +544,9 @@ Major type 3:
   "u", "0", "0", "0", and "a").
 
 Major type 4:
-: an array of data items.  Arrays are also called lists, sequences, or
-  tuples.  The argument is the number of data items in the
+: an array of data items.  In other formats, arrays are also called lists, sequences, or
+  tuples (a "CBOR sequence" is something slightly different, though {{-cbor-sequence}}).
+  The argument is the number of data items in the
   array.  Items in an
   array do not need to all be of the same type.  For example, an array
   that contains 10 items of any type would have an initial byte of
@@ -562,7 +571,8 @@ Major type 5:
   decoding; see also {{map-keys}}.
 
 Major type 6:
-: a tagged data item ("tag") whose tag number is the argument and
+: a tagged data item ("tag") whose tag number, an integer in the range
+  0..2**64-1 inclusive, is the argument and
   whose enclosed data item ("tag content") is the single encoded data item that follows the head.
   See {{tags}}.
 
@@ -602,8 +612,9 @@ Four CBOR items (arrays, maps, byte strings, and text strings) can be
 encoded with an indefinite length using additional information
 value 31.  This is useful if the encoding of the item needs to begin
 before the number of items inside the array or map, or the total
-length of the string, is known.  (The application of this is often
-referred to as "streaming" within a data item.)
+length of the string, is known.  (The ability to start sending a data
+item before all of it is known is often
+referred to as "streaming" within that data item.)
 
 Indefinite-length arrays and maps are dealt with differently than
 indefinite-length byte strings and text strings.
@@ -742,10 +753,10 @@ string item of the same major type, the string is not well-formed.
 If any definite-length text string inside an indefinite-length text
 string is invalid, the indefinite-length text string is invalid.  Note
 that this implies that the bytes of a single UTF-8 character cannot be
-spread between chunks: a new chunk can only be started at a character
-boundary.
+split up between chunks: a new chunk of a text string can only be
+started at a character boundary.
 
-For example, assume the sequence:
+For example, assume an encoded data item consisting of the bytes:
 
 0b010_11111 0b010_00100 0xaabbccdd 0b010_00011 0xeeff99 0b111_11111
 
@@ -878,21 +889,21 @@ see the registry described at {{ianatags}} for the complete list.
 | Tag Number | Data Item   | Semantics                                                     |
 |------------+-------------+---------------------------------------------------------------|
 |          0 | text string | Standard date/time string; see {{stringdatetimesect}}         |
-|          1 | multiple    | Epoch-based date/time; see {{epochdatetimesect}}              |
+|          1 | integer or float | Epoch-based date/time; see {{epochdatetimesect}}              |
 |          2 | byte string | Positive bignum; see {{bignums}}                              |
 |          3 | byte string | Negative bignum; see {{bignums}}                              |
 |          4 | array       | Decimal fraction; see {{fractions}}                           |
 |          5 | array       | Bigfloat; see {{fractions}}                                   |
-|         21 | multiple    | Expected conversion to base64url encoding; see {{convexpect}} |
-|         22 | multiple    | Expected conversion to base64 encoding; see {{convexpect}}    |
-|         23 | multiple    | Expected conversion to base16 encoding; see {{convexpect}}    |
+|         21 | (any)       | Expected conversion to base64url encoding; see {{convexpect}} |
+|         22 | (any)       | Expected conversion to base64 encoding; see {{convexpect}}    |
+|         23 | (any)       | Expected conversion to base16 encoding; see {{convexpect}}    |
 |         24 | byte string | Encoded CBOR data item; see {{embedded-di}}                   |
 |         32 | text string | URI; see {{encodedtext}}                                      |
 |         33 | text string | base64url; see {{encodedtext}}                                |
 |         34 | text string | base64; see {{encodedtext}}                                   |
 |         35 | text string | Regular expression; see {{encodedtext}}                       |
 |         36 | text string | MIME message; see {{encodedtext}}                             |
-|      55799 | multiple    | Self-described CBOR; see {{self-describe}}                    |
+|      55799 | (any)       | Self-described CBOR; see {{self-describe}}                    |
 {: #tagvalues title='Tag numbers defined in RFC 7049'}
 
 Conceptually, tags are interpreted in the generic data model, not at
@@ -1025,7 +1036,7 @@ Decimal fractions (tag number 4) use base-10 exponents; the value of a
 decimal fraction data item is m\*(10\*\*e).  Bigfloats (tag number 5) use
 base-2 exponents; the value of a bigfloat data item is m\*(2\*\*e).
 The exponent e MUST be represented in an integer of major type 0 or 1,
-while the mantissa also can be a bignum ({{bignums}}).  Contained
+while the mantissa can also be a bignum ({{bignums}}).  Contained
 items with other structures are invalid.
 
 An example of a decimal fraction is that the number 273.15 could be
@@ -1251,7 +1262,7 @@ they mean by a "deterministic format" and what encoders and decoders are
 expected to do. This section defines a set of restrictions that can
 serve as the base of such a deterministic format.
 
-### Core Deterministic Encoding Requirements
+### Core Deterministic Encoding Requirements {#core-det}
 
 A CBOR encoding satisfies the "core deterministic encoding requirements" if
 it satisfies the following restrictions:
@@ -1356,7 +1367,7 @@ encodings, such as:
 
 * If NaN is an allowed value and there is no intent to support NaN
   payloads or signaling NaNs, the protocol needs to pick a single
-  representation, for example 0xf97e00.  If that simple choice is not
+  representation, typically 0xf97e00.  If that simple choice is not
   possible, specific attention will be needed for NaN handling.
 
 * Subnormal numbers (nonzero numbers with the lowest possible exponent
@@ -1377,9 +1388,9 @@ encodings, such as:
   in how the formats are to be chosen for deterministic encoding.
 
 
-### Length-first map key ordering
+### Length-first Map Key Ordering
 
-The core deterministic encoding requirements sort map keys in a different
+The core deterministic encoding requirements ({{core-det}}) sort map keys in a different
 order from the one suggested by Section 3.9 of {{RFC7049}} (called
 "Canonical CBOR" there). Protocols that need to
 be compatible with {{RFC7049}}'s order can instead be specified in
@@ -1605,7 +1616,7 @@ decoders.
 
 Some encoders will rely on their applications to provide input data in
 such a way that valid CBOR results from the encoder.  A generic
-encoder also may want to provide a validity-checking mode where it
+encoder may also want to provide a validity-checking mode where it
 reliably limits its output to valid CBOR, independent of whether or
 not its application is indeed providing API-conformant data.
 
@@ -1679,7 +1690,7 @@ a map.  The resulting rule in the protocol MUST respect the CBOR
 data model: it cannot prescribe a specific handling of the entries
 with the identical keys, except that it might have a rule that having
 identical keys in a map indicates a malformed map and that the decoder
-has to stop with an error. Duplicate keys are also prohibited by CBOR
+has to stop with an error. Duplicate keys are also not accepted by CBOR
 decoders that enforce validity ({{validity-checking}}).
 
 The CBOR data model for maps does not allow ascribing semantics to the
@@ -1935,8 +1946,8 @@ CBOR has three major extension points:
 
 * the "additional information" space.  An implementation receiving an
   unknown additional information value has no way to continue decoding,
-  so allocating codepoints to this space is a major step.  There are
-  also very few codepoints left.
+  so allocating codepoints to this space is a major step.    There are
+  also very few codepoints left.  See also {{curating}}.
 
 ## Curating the Additional Information Space {#curating}
 
@@ -1956,7 +1967,7 @@ information values 28 and 29 should be viewed as candidates for
 the protocol.  Additional information value 30 is then the only
 additional information value available for general allocation, and
 there should be a very good reason for allocating it before assigning
-it through an update of this protocol.
+it through an update of the present specification.
 
 
 # Diagnostic Notation {#diagnostic-notation}
@@ -2016,7 +2027,8 @@ encoded as a half-, single-, or double-precision float.
 The convention for encoding indicators is that anything starting with
 an underscore and all following characters that are alphanumeric or
 underscore, is an encoding indicator, and can be ignored by anyone not
-interested in this information.  Encoding indicators are always
+interested in this information.  For example, `_` or `_3`.
+Encoding indicators are always
 optional.
 
 A single underscore can be written after the opening brace of a map or
@@ -2126,15 +2138,15 @@ Additional information:
   Macintosh file type code(s): n/a
 
 Person & email address to contact for further information:
-  Carsten Bormann
-  cabo@tzi.org
+  IETF CBOR Working Group <cbor@ietf.org> or
+  IETF Applications and Real-Time Area <art@ietf.org>
 
 Intended usage: COMMON
 
 Restrictions on usage: none
 
 Author:
-  Carsten Bormann <cabo@tzi.org>
+  IETF CBOR Working Group <cbor@ietf.org>
 
 Change controller:
   The IESG <iesg@ietf.org>
@@ -2754,14 +2766,14 @@ in decoding a CBOR data item:
   bytes would span exactly one data item.  Where the application
   uses the self-delimiting nature of CBOR encoding to permit
   additional data after the data item, as is for example done in CBOR
-  sequences {{?I-D.ietf-cbor-sequence}}, the CBOR decoder can simply
+  sequences {{-cbor-sequence}}, the CBOR decoder can simply
   indicate what part of the input has not been consumed.
 
 * Too little data: The input data available would need additional
   bytes added at their end for a complete CBOR data item.  This may
   indicate the input is truncated; it is also a common error when
   trying to decode random data as CBOR.  For some
-  applications however, this may not be actually be an error, as the
+  applications however, this may not actually be an error, as the
   application may not be certain it has all the data yet and can
   obtain or wait for additional input bytes.  Some of
   these applications may have an upper limit for how much additional

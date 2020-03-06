@@ -1678,20 +1678,20 @@ data model: it cannot prescribe a specific handling of the entries
 with the identical keys, except that it might have a rule that having
 identical keys in a map indicates a malformed map and that the decoder
 has to stop with an error.
-Processing maps that exhibit entries with duplicate keys, a generic
-decoder might:
+When processing maps that exhibit entries with duplicate keys, a generic
+decoder might do one of the following:
 
-* not accept maps duplicate keys (that is, enforce validity for maps,
+* Not accept maps duplicate keys (that is, enforce validity for maps,
   see also {{validity-checking}}).  These generic decoders are
   universally useful.  An application may still need to do perform its
   own duplicate checking based on application rules (for instance if
   the application equates integers and floating point values in map
   key positions for specific maps).
-* pass all map entries to the application, including ones with
+* Pass all map entries to the application, including ones with
   duplicate keys.  This requires the application to handle (check
   against) duplicate keys, even if the application rules are identical
   to the generic data model rules.
-* lose some entries with duplicate keys, e.g. by only delivering the
+* Lose some entries with duplicate keys, e.g. by only delivering the
   final (or first) entry out of the entries with the same key.  With
   such a generic decoder, applications may get different results for a
   specific key on different runs and with different generic decoders

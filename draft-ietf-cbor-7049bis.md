@@ -321,6 +321,9 @@ Stream decoder:
   items in the sequence available to an application as they are
   received.
 
+Terms and concepts for floating-point values such as Infinity, NaN
+(not a number), negative zero, and subnormal are defined in [IEEE754].
+
 Where bit arithmetic or data types are explained, this document uses
 the notation familiar from the programming language C, except that
 "\*\*" denotes exponentiation.  Similar to the "0x" notation for
@@ -1072,12 +1075,7 @@ C5             -- Tag 5
 Decimal fractions and bigfloats provide no representation of Infinity,
 -Infinity, or NaN; if these are needed in place of a decimal fraction
 or bigfloat, the IEEE 754 half-precision representations from
-{{fpnocont}} can be used.  For constrained applications, where there
-is a choice between representing a specific number as an integer and
-as a decimal fraction or bigfloat (such as when the exponent is small
-and non-negative), there is a quality-of-implementation expectation
-that the integer representation is used directly.
-
+{{fpnocont}} can be used.
 
 ### Content Hints
 
@@ -1312,9 +1310,6 @@ it satisfies the following restrictions:
 
 ### Additional Deterministic Encoding Considerations
 
-Protocols that include floating-point, big integer, or other complex values
-need to define extra requirements on their deterministic encodings.
-
 CBOR tags present additional considerations for deterministic
 encoding.  If a CBOR-based protocol were to provide the same semantics
 for the presence and absence of a specific tag (e.g., by allowing both
@@ -1332,20 +1327,28 @@ obtain specific semantics, the tag needs to appear in the
 deterministic format as well.  Deterministic encoding considerations
 also apply to the content of tags.
 
-Deterministic encoding considerations for numeric values include:
+If a protocol includes a field that can express integers with an
+absolute value of 2^64 or larger using tag numbers 2 or 3
+({{bignums}}), the protocol's deterministic encoding needs to specify
+whether smaller integers are also expressed using these tags or using
+major types 0 and 1.  Preferred serialization uses the latter choice,
+which is therefore recommended.
 
-* If a protocol allows for floating-point values, then additional deterministic encoding
-  rules might need to be added.
-  Although IEEE floating-point values can represent both positive and negative zero as
+Protocols that include floating-point values, whether represented
+using basic floating-point values ({{fpnocont}}) or using tags (or
+both), may need to define extra requirements on their deterministic
+encodings, such as:
+
+* Although IEEE floating-point values can represent both positive and negative zero as
   distinct values, the application might not distinguish these and might
   decide to represent all zero values with a positive sign, disallowing
   negative zero.
   (The application may also want to restrict the precision of floating
   point values in such a way that there is never a need to represent
-  64-bit — or even 32-bit — floats.)
+  64-bit — or even 32-bit — floating-point values.)
 
-* If a protocol includes a field that can express floating-point values
-  ({{fpnocont}}), with a specific data model that declares integer and
+* If a protocol includes a field that can express floating-point values,
+  with a specific data model that declares integer and
   floating-point values to be interchangeable, the protocol's
   deterministic encoding needs to specify
   whether the integer 1.0 is encoded as 0x01, 0xf93c00, 0xfa3f800000,
@@ -1362,23 +1365,28 @@ Deterministic encoding considerations for numeric values include:
   values, and Rule 3 does not use preferred serialization, so Rule 2 may be
   a good choice in many cases.
 
-  If NaN is an allowed value and there is no intent to support NaN
+* If NaN is an allowed value and there is no intent to support NaN
   payloads or signaling NaNs, the protocol needs to pick a single
   representation, typically 0xf97e00.  If that simple choice is not
   possible, specific attention will be needed for NaN handling.
 
-  Subnormal numbers (nonzero numbers with the lowest possible exponent
+* Subnormal numbers (nonzero numbers with the lowest possible exponent
   of a given IEEE 754 number format) may be flushed to zero outputs or
-  be treated as zero inputs in some floating-point implementations.  A
-  protocol's deterministic encoding may want to exclude them from
-  the protocol format, interchanging zero instead.
+  be treated as zero inputs in some floating-point implementations.
+  A protocol's deterministic encoding may want to specifically
+  accommodate such implementations while creating an onus on other
+  implementations, by excluding subnormal numbers from interchange,
+  interchanging zero instead.
 
-* If a protocol includes a field that can express integers with an
-  absolute value of
-  2^64 or larger using tag numbers 2 or 3 ({{bignums}}), the protocol's deterministic encoding
-  needs to specify whether small integers are expressed using the tag
-  or major types 0 and 1.  Preferred serialization uses the latter
-  choice, which is therefore recommended.
+* The same number can be represented by different decimal fractions,
+  by different bigfloats, and by different forms under other tags that
+  may be defined to express numeric values. Depending on the
+  implementation, it may not always be practical to determine whether
+  any of these forms (or forms in the basic generic data model) are
+  equivalent.  An application protocol that presents choices of this
+  kind for the representation format of numbers needs to be explicit
+  in how the formats are to be chosen for deterministic encoding.
+
 
 ### Length-first Map Key Ordering
 
@@ -1643,6 +1651,11 @@ size.
 Similar considerations apply to floating-point values; decoding both
 preferred serializations and longer-than-needed ones is recommended.
 
+CBOR-based protocols for constrained applications that provide a
+choice between representing a specific number as an integer and
+as a decimal fraction or bigfloat (such as when the exponent is small
+and non-negative), might express a quality-of-implementation expectation
+that the integer representation is used directly.
 
 ## Specifying Keys for Maps {#map-keys}
 

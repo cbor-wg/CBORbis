@@ -123,8 +123,11 @@ informative:
         - name: Andrew Ho
       date: 2018
   SIPHASH: DOI.10.1007_978-3-642-34931-7_28
+  RFC8610: cddl
   RFC8618: cdns
-  I-D.ietf-cbor-sequence: cbor-sequence
+  RFC8742: cbor-sequence
+  RFC8746: array-tags
+
 --- abstract
 
 The Concise Binary Object Representation (CBOR) is a data format whose design
@@ -630,7 +633,7 @@ If the "break" stop code appears anywhere where a data item is expected, other t
 an indefinite-length string, array, or map — for example directly inside
 a definite-length array or map — the enclosing item is not well-formed.
 
-### Indefinite-Length Arrays and Maps
+### Indefinite-Length Arrays and Maps {#indef}
 
 Indefinite-length arrays and maps are represented using their major
 type with the additional information value of 31, followed by an
@@ -2080,6 +2083,8 @@ Unassigned simple values are given as "simple()" with the appropriate
 integer in the parentheses. For example, "simple(42)" indicates major
 type 7, value 42.
 
+A number of useful extensions to the diagnostic notation defined here are
+provided in Appendix G of {{-cddl}}, "Extended Diagnostic Notation" (EDN).
 
 ## Encoding Indicators {#encoding-indicators}
 
@@ -2814,20 +2819,70 @@ The following is a list of known changes from RFC 7049. This list
 is non-authoritative. It is meant to help reviewers see the
 significant differences.
 
-* Updated reference for \[RFC4627\] to {{-json}} in many places
+* Made some use of new RFCXML functionality {{?RFC7991}}
 
-* Updated reference for \[CNN-TERMS\] to {{RFC7228}}
+* Updated references, e.g. for \[RFC4627\] to {{-json}} in many
+  places, for \[CNN-TERMS\] to {{RFC7228}}; added missing reference to
+  {{IEEE754}} and updated to {{ECMA262}}
 
-* Added a comment to the last example in Section 2.2.1 (added "Second value")
+* Fixed errata: in the example in Section 2.4.2 ("29" -> "49"), and in
+  the last paragraph of Section 3.6 ("0b000_11101" -> "0b000_11001")
 
-* Fixed a bug in the example in Section 2.4.2 ("29" -> "49")
+* Added a comment to the last example in {{indef}} (added "Second value")
 
-* Fixed a bug in the last paragraph of Section 3.6 ("0b000_11101" -> "0b000_11001")
+* Applied numerous small editorial changes
+
+* Added a few tables for illustration
+
+* More stringently used terminology for well-formed and valid data,
+  avoiding less well-defined alternative terms such as "syntax error",
+  "decoding error" and "strict mode" outside examples
+
+* Streamlined terminology to talk about tags, tag numbers, and tag
+  content
+
+* Clarified the restrictions on tag content, in general and
+  specifically for tag 1
+
+* Added text about the CBOR data model and its small variations (basic
+  generic, extended generic, specific)
+
+* More clearly separated integers from floating-point values; provided
+  a suggestion (based on I-JSON {{?RFC7493}}) for handling these types
+  when converting JSON to CBOR
+
+* Added term "preferred serialization" and defined it for various
+  kinds of data items
+
+* Added comment about tags with semantics that depend on serialization
+  order
+
+* Defined "deterministic encoding", making use of "preferred
+  serialization", and simplified the suggested map ordering for the
+  "Core Deterministic Encoding Requirements", easing implementation,
+  while keeping RFC 7049 map ordering as an alternative "length-first
+  map key ordering"; now avoiding the terms "canonical" and
+  "canonicalization"
+
+* Clarified map validity (handling of duplicate keys) and explained
+  the domain of applicability of certain implementation choices
+
+* Updated IANA considerations
+
+* Added security considerations
+
+* Clarified handling of non-well-formed simple values in text and
+  pseudocode
+
+* Added {{errors}}, well-formedness errors and examples
+
+* Removed UBJSON from {{comparison-app}}, as that format has
+  completely changed since RFC 7049; added reference to {{RFC8618}}
 
 <!--  LocalWords:  UTC bigfloats
  -->
 
-# Well-formedness errors and examples
+# Well-formedness errors and examples {#errors}
 
 There are three basic kinds of well-formedness errors that can occur
 in decoding a CBOR data item:

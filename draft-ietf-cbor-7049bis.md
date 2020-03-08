@@ -15,6 +15,7 @@ pi:
   compact: 'no'
   subcompact: 'no'
   rfcedstyle: 'yes'
+  comments: 'yes'
 # reduce number of gratuitous differences from v2 to v3:
   text-list-symbols: '*-o+'
 title: Concise Binary Object Representation (CBOR)
@@ -2109,7 +2110,7 @@ Required.
 IANA has created the "Concise Binary Object Representation (CBOR)
 Tags" registry at {{?IANA.cbor-tags}}.
 The tags that were defined in {{RFC7049}} are described in detail in {{tags}},
-but other tags have already been defined.
+and other tags have already been defined.
 
 New entries in the range 0 to 23 are assigned by Standards Action.
 New entries in the range 24 to 255 are assigned by Specification
@@ -2134,7 +2135,8 @@ In addition, First Come First Served requests should include:
 
 ## Media Type ("MIME Type")
 
-The Internet media type {{RFC6838}} for a single encoded CBOR data item is application/cbor.
+The Internet media type {{RFC6838}} for a single encoded CBOR data
+item is application/cbor, as defined in {{?IANA.media-types}}:
 
 Type name: application
 
@@ -2158,26 +2160,25 @@ Applications that use this media type:
 : None yet, but it is expected that this format will be deployed
   in protocols and applications.
 
-~~~~
+
 Additional information:
-  Magic number(s): n/a
-  File extension(s): .cbor
-  Macintosh file type code(s): n/a
+:  * Magic number(s): n/a
+   * File extension(s): .cbor
+   * Macintosh file type code(s): n/a
 
 Person & email address to contact for further information:
-  IETF CBOR Working Group <cbor@ietf.org> or
-  IETF Applications and Real-Time Area <art@ietf.org>
+:  IETF CBOR Working Group <cbor@ietf.org> or
+   IETF Applications and Real-Time Area <art@ietf.org>
 
 Intended usage: COMMON
 
 Restrictions on usage: none
 
 Author:
-  IETF CBOR Working Group <cbor@ietf.org>
+:  IETF CBOR Working Group <cbor@ietf.org>
 
 Change controller:
-  The IESG <iesg@ietf.org>
-~~~~
+:  The IESG <iesg@ietf.org>
 
 
 ## CoAP Content-Format
@@ -2195,6 +2196,10 @@ Reference: \[RFCthis]
 
 ## The +cbor Structured Syntax Suffix Registration
 
+The Structured Syntax Suffix {{RFC6838}} for media types based on a
+single encoded CBOR data item is +cbor, as defined in {{?IANA.media-type-structured-suffix}}:
+
+
 Name:  Concise Binary Object Representation (CBOR)
 
 +suffix: +cbor
@@ -2205,39 +2210,42 @@ Encoding Considerations: CBOR is a binary format.
 
 Interoperability Considerations: n/a
 
-~~~~
+
 Fragment Identifier Considerations:
-  The syntax and semantics of fragment identifiers specified for
+: The syntax and semantics of fragment identifiers specified for
   +cbor SHOULD be as specified for "application/cbor".  (At
   publication of this document, there is no fragment identification
   syntax defined for "application/cbor".)
 
-  The syntax and semantics for fragment identifiers for a specific
+: The syntax and semantics for fragment identifiers for a specific
   "xxx/yyy+cbor" SHOULD be processed as follows:
 
-  For cases defined in +cbor, where the fragment identifier resolves
-  per the +cbor rules, then process as specified in +cbor.
+  * For cases defined in +cbor, where the fragment identifier resolves
+    per the +cbor rules, then process as specified in +cbor.
 
-  For cases defined in +cbor, where the fragment identifier does
-  not resolve per the +cbor rules, then process as specified in
-  "xxx/yyy+cbor".
+  * For cases defined in +cbor, where the fragment identifier does
+    not resolve per the +cbor rules, then process as specified in
+    "xxx/yyy+cbor".
 
-  For cases not defined in +cbor, then process as specified in
-  "xxx/yyy+cbor".
-~~~~
+  * For cases not defined in +cbor, then process as specified in
+    "xxx/yyy+cbor".
 
 Security Considerations:
 : See {{securitycons}} of this document
 
-~~~~
 Contact:
-  Apps Area Working Group (apps-discuss@ietf.org)
+:  IETF CBOR Working Group <cbor@ietf.org> or
+   IETF Applications and Real-Time Area <art@ietf.org>
 
 Author/Change Controller:
-  The Apps Area Working Group.
-  The IESG has change control over this registration.
-~~~~
+:  The IESG <iesg@ietf.org>[^RFC6838note]
 
+[^RFC6838note]: Editors' note: RFC 6838 has a template field
+    Author/Change controller, the descriptive text of which makes
+    clear that this is the change controller, not the author.  Go
+    figure.  There is no separate author entry as in the media types
+    registry.  (RFC editor: Please remove this note before
+    publication.)
 
 # Security Considerations {#securitycons}
 

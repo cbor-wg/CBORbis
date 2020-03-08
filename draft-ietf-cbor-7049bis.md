@@ -845,24 +845,51 @@ are encoded in the additional bytes of the appropriate size.  (See
 
 ## Tagging of Items {#tags}
 
-In CBOR, a data item can be enclosed by a tag to give it
-additional semantics. The tag is major
-type 6, and represents an unsigned integer as indicated by the tag's
-argument ({{encoding}}); the (sole) enclosed
-data item is carried as content data.  If a tag requires structured
-data, this structure is encoded into the nested data item.  The
-definition of a tag number usually restricts what kinds of nested data item
-or items are valid for tags using this tag number.
-We use the term "tag" for the entire data item consisting of both a tag number and the enclosed
-value, calling the latter "tag content": the tag content is the data item that is being
-tagged.
-
+In CBOR, a data item can be enclosed by a tag to give it some
+additional semantics, as uniquely identified by a "tag number".
+The tag is major type 6, its argument ({{encoding}}) indicates the tag
+number, and it contains a single enclosed data item, the
+"tag content".
+(If a tag requires further structure to its content, this structure is
+provided by the enclosed data item.)
+We use the term "tag" for the entire data item consisting of both a
+tag number and the tag content: the tag content is the data item that
+is being tagged.
 
 For example, assume that a byte string of length 12 is marked with a
-tag of number 2 to indicate it is a positive "bignum" ({{bignums}}).  This would be
-marked as 0b110_00010 (major type 6, additional information 2 for the
-tag number) followed by 0b010_01100 (major type 2, additional information of
-12 for the length) followed by the 12 bytes of the bignum.
+tag of number 2 to indicate it is a positive "bignum" ({{bignums}}).
+The encoded data item would start with a byte 0b110_00010 (major type
+6, additional information 2 for the tag number) followed by the
+encoded tag content: 0b010_01100 (major type 2, additional information
+of 12 for the length) followed by the 12 bytes of the bignum.
+
+The definition of a tag number describes the additional semantics
+conveyed for tags with this tag number in the extended generic data
+model.  These semantics may include equivalence of some tagged data
+items with other data items, including some that can already be
+represented in the basic generic data model.  For instance, 0xc24101,
+a bignum the tag content of which is the byte string with the single
+byte 0x01, is equivalent to an integer 1, which could also be encoded
+for instance as 0x01, 0x1801, or 0x190001.
+The tag definition may include the definition of a preferred
+serialization ({{preferred}}) that is recommended for generic
+encoders; this may prefer basic generic data model representations
+over ones that employ a tag.
+
+The tag definition usually restricts what kinds of nested data item or
+items are valid for such tags.
+Tag definitions may restrict their content to a very specific syntactic
+structure, as the tags defined in this document do, or they may aim at
+a more semantically defined definition of their content, as for
+instance tags 40 and 1040 do {{?rfc8746}}: These accept a number of
+different ways of representing arrays.
+
+As a matter of convention, many tags do not accept null or undefined
+values as tag content; instead, the expectation is that a null or
+undefined value can be used in place of the entire tag;
+{{epochdatetimesect}} provides some further considerations for one
+specific tag about the handling of this convention in application
+protocols and in mapping to platform types.
 
 Decoders do not need to understand tags of every tag number, and tags may be of
 little value in applications where the implementation creating a
@@ -966,14 +993,23 @@ fractions of seconds only for a short period of time around
 early 1970.  An application that requires tag number 1 support may restrict
 the tag content to be an integer (or a floating-point value) only.
 
+Note that platform types for date/time may include null or undefined
+values, which may also be desirable at an application protocol level.
+While emitting tag number 1 values with non-finite tag content values
+(e.g., with NaN for undefined date/time values or with Infinite for an
+expiry date that is not set) may seem an obvious way to handle this,
+using untagged null or undefined is often a better solution.
+Application protocol designers are encouraged to consider these cases
+and include clear guidelines for handling them.
 
 ### Bignums {#bignums}
 
 Protocols using tag numbers 2 and 3 extend the generic data model
 ({{cbor-data-models}}) with "bignums" representing arbitrarily sized
-integers. In the generic data model, bignum values are not equal to
-integers from the basic data model, but specific data models can
-define that equivalence, and preferred serialization ({{preferred}}) never makes use of
+integers. In the basic generic data model, bignum values are not equal
+to integers from the same model, but the extended generic data model
+created by this tag definition defines equivalence based on numeric
+value, and preferred serialization ({{preferred}}) never makes use of
 bignums that also can be expressed as basic integers (see below).
 
 Bignums are encoded as a byte string data item, which is interpreted

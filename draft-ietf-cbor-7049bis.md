@@ -2109,7 +2109,7 @@ Required.
 IANA has created the "Concise Binary Object Representation (CBOR)
 Tags" registry at {{?IANA.cbor-tags}}.
 The tags that were defined in {{RFC7049}} are described in detail in {{tags}},
-but other tags have already been defined.
+and other tags have already been defined.
 
 New entries in the range 0 to 23 are assigned by Standards Action.
 New entries in the range 24 to 255 are assigned by Specification

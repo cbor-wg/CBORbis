@@ -950,6 +950,14 @@ implementation therefore typically needs to be integrated into the
 generic encoder/decoder.  The definition of new tags with this
 property is NOT RECOMMENDED.
 
+
+Note that IANA has allocated tag number 65535 as a convenience for implementers
+that want a single integer to indicate either a specific tag that is
+present or the absence of a tag
+\[insert-reference-to-draft-here].
+This tag is therefore not intended to occur in actual CBOR data items;
+implementations may want to flag such an occurrence as an error.
+
 Protocols using tag numbers 0 and 1 extend the generic data model
 ({{cbor-data-models}}) with data items representing points in time;
 tag numbers 2 and 3, with arbitrarily sized integers; and tag numbers

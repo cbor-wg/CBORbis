@@ -884,7 +884,7 @@ items are valid for such tags.
 Tag definitions may restrict their content to a very specific syntactic
 structure, as the tags defined in this document do, or they may aim at
 a more semantically defined definition of their content, as for
-instance tags 40 and 1040 do {{?rfc8746}}: These accept a number of
+instance tags 40 and 1040 do {{RFC8746}}: These accept a number of
 different ways of representing arrays.
 
 As a matter of convention, many tags do not accept null or undefined
@@ -2821,8 +2821,8 @@ significant differences.
 
 * Made some use of new RFCXML functionality {{?RFC7991}}
 
-* Updated references, e.g. for \[RFC4627\] to {{-json}} in many
-  places, for \[CNN-TERMS\] to {{RFC7228}}; added missing reference to
+* Updated references, e.g. for RFC4627 to {{-json}} in many
+  places, for CNN-TERMS to {{RFC7228}}; added missing reference to
   {{IEEE754}} and updated to {{ECMA262}}
 
 * Fixed errata: in the example in Section 2.4.2 ("29" -> "49"), and in

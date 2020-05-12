@@ -2339,9 +2339,10 @@ resources that are commensurate to the resources spent by the defender
 on input validation.  Processing for arbitrary-precision numbers may
 exceed linear effort.  Also, some hash-table implementations that are
 used by decoders to build in-memory representations of maps can be
-attacked to spend quadratic effort, unless a secret key is employed
-(see Section 7 of {{SIPHASH}}).  Such superlinear efforts can be
-employed by an attacker to exhaust resources at or before the input
+attacked to spend quadratic effort, unless a secret key
+(see Section 7 of {{SIPHASH}}) or some other mitigation is employed.
+Such superlinear efforts can be
+exploited by an attacker to exhaust resources at or before the input
 validator; they therefore need to be avoided in a CBOR decoder
 implementation.  Note that tag number definitions and their implementations
 can add security considerations of this kind; this should then be

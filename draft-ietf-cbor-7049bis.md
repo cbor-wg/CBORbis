@@ -2172,6 +2172,11 @@ In addition, First Come First Served requests should include:
   optional; the URL can point to something like an Internet-Draft or a
   web page.
 
+Applicants exercising the First Come First Served range and making
+a suggestion for a tag number that is not representable in 32 bits
+(i.e., larger than 4294967295)
+should be aware that this could reduce interoperability with
+implementations that do not support 64-bit numbers.
 
 
 ## Media Type ("MIME Type")

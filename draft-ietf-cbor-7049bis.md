@@ -951,11 +951,12 @@ generic encoder/decoder.  The definition of new tags with this
 property is NOT RECOMMENDED.
 
 
-Note that IANA has allocated tag number 65535 as a convenience for implementers
+Note that IANA has allocated tag numbers 65535, 4294967295, and
+18446744073709551615 (binary all-ones in 16-bit, 32-bit, and 64-bit),
+as a convenience for implementers
 that want a single integer to indicate either a specific tag that is
-present or the absence of a tag
-\[insert-reference-to-draft-here].
-This tag is therefore not intended to occur in actual CBOR data items;
+present or the absence of a tag (see Section 10 of {{?I-D.bormann-cbor-notable-tags}}).
+These tags are therefore not intended to occur in actual CBOR data items;
 implementations may want to flag such an occurrence as an error.
 
 Protocols using tag numbers 0 and 1 extend the generic data model

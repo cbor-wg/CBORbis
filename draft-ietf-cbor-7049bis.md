@@ -839,7 +839,8 @@ An encoder MUST NOT issue two-byte sequences that start with 0xf8
 less than 0x20 (32 decimal).  Such sequences are not well-formed.
 (This implies that an encoder cannot encode false, true, null, or
 undefined in two-byte sequences, only the one-byte variants of these
-are well-formed.)
+are well-formed; more generally speaking, each simple value only has a
+single representation variant).
 
 The 5-bit values of 25, 26, and 27 are for 16-bit, 32-bit, and 64-bit
 IEEE 754 binary floating-point values {{-fp}}.  These floating-point values

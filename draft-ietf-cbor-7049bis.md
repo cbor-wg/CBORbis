@@ -950,6 +950,15 @@ implementation therefore typically needs to be integrated into the
 generic encoder/decoder.  The definition of new tags with this
 property is NOT RECOMMENDED.
 
+IANA allocated tag numbers 65535, 4294967295, and
+18446744073709551615 (binary all-ones in 16-bit, 32-bit, and 64-bit).
+These can be used as a convenience for implementers
+that want a single integer to indicate either that a specific tag is
+present, or the absence of a tag.
+That allocation is described in Section 10 of {{?I-D.bormann-cbor-notable-tags}}.
+These tags are not intended to occur in actual CBOR data items;
+implementations may flag such an occurrence as an error.
+
 Protocols using tag numbers 0 and 1 extend the generic data model
 ({{cbor-data-models}}) with data items representing points in time;
 tag numbers 2 and 3, with arbitrarily sized integers; and tag numbers

@@ -1595,7 +1595,8 @@ Duplicate keys in a map:
   generic decoder that gets a CBOR map item that has duplicate keys
   will decode to a map with only one instance of that key, or it might
   stop processing altogether.  On the other hand, a "streaming
-  decoder" may not even be able to notice ({{map-keys}}).
+  decoder" may not even be able to notice.  See {{map-keys}} for more
+  discussion of keys in maps.
 
 Invalid UTF-8 string:
 : A decoder might or might not want to verify that the sequence of

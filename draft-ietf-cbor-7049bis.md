@@ -2016,8 +2016,9 @@ CBOR has three major extension points:
 * the "tag" space (values in major type 6).  Again, only a small part
   of the codepoint space has been allocated, and the space is abundant
   (although the early numbers are more efficient than the later ones).
-  Implementations receiving an unknown tag number can choose to simply ignore
-  it (process just the enclosed tag content) or to process it as an unknown tag number wrapping the
+  Implementations receiving an unknown tag number can choose to
+  process just the enclosed tag content or, preferably, to
+  process the tag as an unknown tag number wrapping the
   tag content. The IANA registry in {{ianatags}} is the appropriate way to
   address the extensibility of this codepoint space.
 

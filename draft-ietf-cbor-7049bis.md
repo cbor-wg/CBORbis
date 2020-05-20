@@ -298,7 +298,8 @@ Encoder:
 
 Data Stream:
 : A sequence of zero or more data items, not further assembled into a
-  larger containing data item.  The independent data items that make
+  larger containing data item (see {{-cbor-sequence}} for one application).
+  The independent data items that make
   up a data stream are sometimes also referred to as "top-level data
   items".
 
@@ -943,7 +944,7 @@ Conceptually, tags are interpreted in the generic data model, not at
 number 25 and tag number 29) have been registered with semantics that
 may require processing at (de-)serialization time: The decoder needs to
 be aware and the encoder needs to be in control of the exact
-sequence in which data items are encoded into the CBOR data stream.
+sequence in which data items are encoded into the CBOR data item.
 This means these tags cannot be implemented on top of every generic
 CBOR encoder/decoder (which might not reflect the serialization order
 for entries in a map at the data model level and vice versa); their
@@ -2765,7 +2766,7 @@ on a constrained device.
 Few (if any) IETF protocols have adopted one of the several variants
 of Packed Encoding Rules (PER).  There could be many reasons for this,
 but one that is commonly stated is that PER makes use of the schema
-even for parsing the surface structure of the data stream, requiring
+even for parsing the surface structure of the data item, requiring
 significant tool support.  There are different versions of the ASN.1
 schema language in use, which has also hampered adoption.
 

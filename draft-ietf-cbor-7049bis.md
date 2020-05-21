@@ -268,7 +268,7 @@ are:
 
 
 
-## Terminology
+## Terminology {#terminology}
 
 {::boilerplate bcp14}
 
@@ -538,7 +538,7 @@ Major type 3:
 : a text string ({{cbor-data-models}}), encoded as UTF-8
   ({{RFC3629}}). The number of bytes in the string is equal to the
   argument.  A string containing an invalid UTF-8 sequence is
-  well-formed but invalid. This type is provided for
+  well-formed but invalid ({{terminology}}). This type is provided for
   systems that need to interpret or display human-readable text, and
   allows the differentiation between unstructured bytes and text that
   has a specified repertoire and encoding.  In contrast to formats
@@ -1565,7 +1565,7 @@ and tags unknown to the encoder.
 
 ## Validity of Items {#semantic-errors}
 
-A well-formed but invalid CBOR data item presents a problem with
+A well-formed but invalid CBOR data item ({{terminology}}) presents a problem with
 interpreting the data encoded in it in the CBOR data model.  A
 CBOR-based protocol could be specified in several layers, in which the
 lower layers don't process the semantics of some of the CBOR data they

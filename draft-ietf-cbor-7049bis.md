@@ -757,9 +757,9 @@ string item of the same major type, the string is not well-formed.
 
 If any definite-length text string inside an indefinite-length text
 string is invalid, the indefinite-length text string is invalid.  Note
-that this implies that the bytes of a single UTF-8 character cannot be
-split up between chunks: a new chunk of a text string can only be
-started at a character boundary.
+that this implies that the UTF-8 bytes of a single Unicode code point
+(scalar value) cannot be spread between chunks: a new chunk of a text
+string can only be started at a code point boundary.
 
 For example, assume an encoded data item consisting of the bytes:
 

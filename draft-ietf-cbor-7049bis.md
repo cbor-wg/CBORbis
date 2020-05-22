@@ -383,12 +383,12 @@ In the basic (un-extended) generic data model, a data item is one of:
 Note that integer and floating-point values are distinct in this
 model, even if they have the same numeric value.
 
-Also note that serialization variants, such as the number of bytes of the
-encoded floating-point value, or the choice of one of the ways in which an
+Also note that serialization variants are not visible at the
+generic data model level, including the number of bytes of the
+encoded floating-point value or the choice of one of the ways in which an
 integer, the length of a text or byte string, the number of elements
 in an array or pairs in a map, or a tag number, (collectively "the
-argument", see {{encoding}}) can be encoded, are not visible at the
-generic data model level.
+argument", see {{encoding}}) can be encoded.
 
 ## Extended Generic Data Models
 

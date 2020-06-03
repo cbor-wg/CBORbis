@@ -2001,7 +2001,7 @@ protocol is designed to tolerate and embrace implementations that
 start using more codepoints than initially allocated.
 
 Sizing the codepoint space may be difficult because the range required
-may be hard to predict.  An attempt should be made to make the
+may be hard to predict.  Protocol designs should attempt to make the
 codepoint space large enough so that it can slowly be filled over the
 intended lifetime of the protocol.
 
@@ -2010,14 +2010,19 @@ CBOR has three major extension points:
 * the "simple" space (values in major type 7).  Of the 24 efficient
   (and 224 slightly less efficient) values, only a small number have
   been allocated.  Implementations receiving an unknown simple data
-  item may be able to process it as such, given that the structure of
+  item may easily be able to process it as such, given that the structure of
   the value is indeed simple. The IANA registry in
   {{ianasimple}} is the appropriate way to address the
   extensibility of this codepoint space.
 
-* the "tag" space (values in major type 6).  Again, only a small part
-  of the codepoint space has been allocated, and the space is abundant
-  (although the early numbers are more efficient than the later ones).
+* the "tag" space (values in major type 6).  The total codepoint space
+  is abundant; only a tiny part of it has
+  been allocated.  However, not all of these codepoints are equally
+  efficient: the first 24 only consume a single ("1+0") byte and as of
+  mid 2020 half of them have already been allocated; the next 232 only
+  consume two ("1+1") bytes with nearly a quarter allocated at the
+  time of writing; these subspaces
+  need some curation to last for a few more decades.
   Implementations receiving an unknown tag number can choose to
   process just the enclosed tag content or, preferably, to
   process the tag as an unknown tag number wrapping the
@@ -2026,7 +2031,8 @@ CBOR has three major extension points:
 
 * the "additional information" space.  An implementation receiving an
   unknown additional information value has no way to continue decoding,
-  so allocating codepoints to this space is a major step.    There are
+  so allocating codepoints to this space is a major step beyond just
+  exercising an extension point.  There are
   also very few codepoints left.  See also {{curating}}.
 
 ## Curating the Additional Information Space {#curating}
@@ -2166,9 +2172,11 @@ Tags" registry at {{?IANA.cbor-tags}}.
 The tags that were defined in {{RFC7049}} are described in detail in {{tags}},
 and other tags have already been defined.
 
-New entries in the range 0 to 23 are assigned by Standards Action.
-New entries in the range 24 to 255 are assigned by Specification
-Required.  New entries in the range 256 to 18446744073709551615 are
+New entries in the range 0 to 23 ("1+0") are assigned by Standards Action.
+New entries in the ranges 24 to 255 ("1+1") and 256 to 32767 (lower
+half of "1+2") are assigned by Specification
+Required.  New entries in the range 32768 to 18446744073709551615
+(upper half of "1+2", "1+4", and "1+8") are
 assigned by First Come First Served. The template for registration
 requests is:
 
@@ -2898,7 +2906,7 @@ significant differences.
 * Removed UBJSON from {{comparison-app}}, as that format has
   completely changed since RFC 7049; added reference to {{RFC8618}}
 
-<!--  LocalWords:  UTC bigfloats
+<!--  LocalWords:  UTC bigfloats codepoint curation
  -->
 
 # Well-formedness errors and examples {#errors}

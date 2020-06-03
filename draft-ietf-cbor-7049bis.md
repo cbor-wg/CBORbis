@@ -1184,9 +1184,7 @@ encoding of the empty byte string is the empty text string.
 Some text strings hold data that have formats widely used on the
 Internet, and sometimes those formats can be validated and presented
 to the application in appropriate form by the decoder. There are tags
-for some of these formats. As with tag numbers 21 to 23, if these tags are
-applied to an item other than a text string, they apply to all text
-string data items it contains.
+for some of these formats.
 
 * Tag number 32 is for URIs, as defined in {{RFC3986}}.  If the text string
   doesn't match the `URI-reference` production, the string is invalid.
@@ -1195,7 +1193,9 @@ string data items it contains.
   strings, respectively,
   as defined in {{RFC4648}}.  If any of:
   * the encoded text string contains non-alphabet characters or only 1
-    character in the last block of 4, or
+    alphabet character in the last block of 4 (where alphabet is
+    defined by Section 5 of {{RFC4648}} for tag number 33 and Section
+    4 of {{RFC4648}} for tag number 34), or
   * the padding bits in a 2- or 3-character block are not 0, or
   * the base64 encoding has the wrong number of padding characters, or
   * the base64url encoding has padding characters,

@@ -1537,7 +1537,7 @@ applications but not others.
 ## Generic Encoders and Decoders {#generic}
 
 A generic CBOR decoder can decode all well-formed encoded CBOR data items and
-present the data item to an application.  See {{pseudocode}}.
+present the data items to an application.  See {{pseudocode}}.
 (The diagnostic notation, {{diagnostic-notation}}, may be used to
 present well-formed CBOR values to humans.)
 
@@ -1547,7 +1547,7 @@ data item, including simple values and tags unknown to the encoder.
 
 Even though CBOR attempts to minimize these cases, not all well-formed
 CBOR data is valid: for example, the encoded text string `0x62c0ae`
-does not contain valid UTF-8 (which requires always using the shortest
+does not contain valid UTF-8 (because {{RFC3629}} requires always using the shortest
 form) and so is not a valid CBOR item.
 Also, specific tags may
 make semantic constraints that may be violated, for instance by a bignum tag

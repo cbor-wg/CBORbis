@@ -1234,7 +1234,9 @@ context information is not available, such as when CBOR data is stored
 in a file that does not have disambiguating metadata.  Here, it may
 help to have some distinguishing characteristics for the data itself.
 
-Tag number 55799 is defined for this purpose.  It does not impart any special
+Tag number 55799 is defined for this purpose, specifically for use at
+the start of a stored encoded CBOR data item as specified by an application.
+It does not impart any special
 semantics on the data item that it encloses; that is, the semantics of
 the tag content enclosed in tag number 55799 is exactly identical to the semantics
 of the tag content itself.

@@ -2018,11 +2018,10 @@ CBOR has three major extension points:
 * the "tag" space (values in major type 6).  The total codepoint space
   is abundant; only a tiny part of it has
   been allocated.  However, not all of these codepoints are equally
-  efficient: the first 24 only consume a single ("1+0") byte and as of
-  mid 2020 half of them have already been allocated; the next 232 only
-  consume two ("1+1") bytes with nearly a quarter allocated at the
-  time of writing; these subspaces
-  need some curation to last for a few more decades.
+  efficient: the first 24 only consume a single ("1+0") byte, and 
+  half of them have already been allocated. The next 232 values only
+  consume two ("1+1") bytes, with nearly a quarter already allocated.
+  These subspaces need some curation to last for a few more decades.
   Implementations receiving an unknown tag number can choose to
   process just the enclosed tag content or, preferably, to
   process the tag as an unknown tag number wrapping the
@@ -2031,7 +2030,7 @@ CBOR has three major extension points:
 
 * the "additional information" space.  An implementation receiving an
   unknown additional information value has no way to continue decoding,
-  so allocating codepoints to this space is a major step beyond just
+  so allocating codepoints in this space is a major step beyond just
   exercising an extension point.  There are
   also very few codepoints left.  See also {{curating}}.
 

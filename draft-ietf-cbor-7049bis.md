@@ -1538,14 +1538,22 @@ applications but not others.
 
 ## Generic Encoders and Decoders {#generic}
 
-A generic CBOR decoder can decode all well-formed CBOR data and
-present them to an application.  See {{pseudocode}}.
+A generic CBOR decoder can decode all well-formed encoded CBOR data items and
+present the data items to an application.  See {{pseudocode}}.
+(The diagnostic notation, {{diagnostic-notation}}, may be used to
+present well-formed CBOR values to humans.)
+
+Generic CBOR encoders provide an application interface that allows the
+application to specify any well-formed value to be encoded as a CBOR
+data item, including simple values and tags unknown to the encoder.
 
 Even though CBOR attempts to minimize these cases, not all well-formed
 CBOR data is valid: for example, the encoded text string `0x62c0ae`
-does not contain valid UTF-8 and so is not a valid CBOR item.  Also, specific tags may
-make semantic constraints that may be violated, such as a bignum tag
-enclosing another tag, or an instance of tag number 0 containing a byte
+does not contain valid UTF-8 (because {{RFC3629}} requires always using the shortest
+form) and so is not a valid CBOR item.
+Also, specific tags may
+make semantic constraints that may be violated, for instance by a bignum tag
+enclosing another tag, or by an instance of tag number 0 containing a byte
 string, or containing a text string with contents that do not match {{RFC3339}}'s
 `date-time` production.  There is
 no requirement that generic encoders and decoders make unnatural
@@ -1554,15 +1562,6 @@ invalid data.  Generic encoders and decoders are expected to forward
 simple values and tags even if their specific codepoints are not
 registered at the time the encoder/decoder is written
 ({{validity-checking}}).
-
-Generic decoders provide ways to present well-formed CBOR values, both
-valid and invalid, to an application.  The diagnostic notation
-({{diagnostic-notation}}) may be used to present well-formed CBOR
-values to humans.
-
-Generic encoders provide an application interface that allows the
-application to specify any well-formed value, including simple values
-and tags unknown to the encoder.
 
 
 ## Validity of Items {#semantic-errors}

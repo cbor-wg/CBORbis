@@ -1139,9 +1139,9 @@ data model.
 Sometimes it is beneficial to carry an embedded CBOR data item that is
 not meant to be decoded immediately at the time the enclosing data
 item is being decoded.  Tag number 24 (CBOR data item) can be used to tag the
-embedded byte string as a data item encoded in CBOR format.  Contained
+embedded byte string as a single data item encoded in CBOR format.  Contained
 items that aren't byte strings are invalid.  A contained byte string
-is valid if it encodes a well-formed CBOR item; validity checking of
+is valid if it encodes a well-formed CBOR data item; validity checking of
 the decoded CBOR item is not required for tag validity (but could be
 offered by a generic decoder as a special option).
 
@@ -2019,7 +2019,7 @@ CBOR has three major extension points:
 * the "tag" space (values in major type 6).  The total codepoint space
   is abundant; only a tiny part of it has
   been allocated.  However, not all of these codepoints are equally
-  efficient: the first 24 only consume a single ("1+0") byte, and 
+  efficient: the first 24 only consume a single ("1+0") byte, and
   half of them have already been allocated. The next 232 values only
   consume two ("1+1") bytes, with nearly a quarter already allocated.
   These subspaces need some curation to last for a few more decades.

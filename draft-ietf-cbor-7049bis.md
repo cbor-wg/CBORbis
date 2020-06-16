@@ -2977,8 +2977,8 @@ UBJSON specification had completely changed since 2013; this example
 therefore also was removed.  Further errata reports (4409, 4963, 4964)
 complained that the map key sorting rules for canonical encoding were
 onerous; these led to a reconsideration of the canonical encoding
-suggestions and replacement by the deterministic encoding suggestions,
-see below.  An editorial suggestion in errata report 4294 was also
+suggestions and replacement by the deterministic encoding suggestions
+(described below).  An editorial suggestion in errata report 4294 was also
 implemented (improved symmetry by adding "Second value" to a comment
 to the last example in {{indef}}).
 

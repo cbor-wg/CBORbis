@@ -2843,9 +2843,9 @@ shown.
 As discussed in the introduction,
 this document is a revised edition of RFC 7049, with editorial improvements,
 added detail, and fixed errata.
-This revision formally obsoletes RFC 7049, while keeping full compatibility
+This document formally obsoletes RFC 7049, while keeping full compatibility
 of the interchange format from RFC 7049.
-It does not create a new version of the format.
+This document does not create a new version of the format.
 
 # Well-formedness errors and examples {#errors}
 

@@ -144,7 +144,7 @@ This revision formally obsoletes RFC 7049, while keeping full compatibility
 of the interchange format from RFC 7049.
 It does not create a new version of the format.
 
---- note_Contributing
+--- to_be_removed_note_Contributing
 
 This document is being worked on in the CBOR Working Group.
 Please contribute on the mailing list there, or in the GitHub
@@ -156,8 +156,6 @@ The charter for the CBOR Working Group says that the WG will update RFC
 addressed, but changes to this document will ensure backward
 compatibility for popular deployed codebases. This document will be
 targeted at becoming an Internet Standard.
-
-\[RFC editor: please remove this note.]
 
 --- middle
 
@@ -1441,7 +1439,7 @@ encodings, such as:
   in how the formats are to be chosen for deterministic encoding.
 
 
-### Length-first Map Key Ordering
+### Length-first Map Key Ordering {#length-first}
 
 The core deterministic encoding requirements ({{core-det}}) sort map keys in a different
 order from the one suggested by Section 3.9 of {{RFC7049}} (called
@@ -2842,72 +2840,12 @@ shown.
 
 # Changes from RFC 7049
 
-The following is a list of known changes from RFC 7049. This list
-is non-authoritative. It is meant to help reviewers see the
-significant differences.
-
-* Made some use of new RFCXML functionality {{?RFC7991}}
-
-* Updated references, e.g. for RFC4627 to {{-json}} in many
-  places, for CNN-TERMS to {{RFC7228}}; added missing reference to
-  {{IEEE754}} and updated to {{ECMA262}}
-
-* Fixed errata: in the example in Section 2.4.2 ("29" -> "49"), and in
-  the last paragraph of Section 3.6 ("0b000_11101" -> "0b000_11001")
-
-* Added a comment to the last example in {{indef}} (added "Second value")
-
-* Applied numerous small editorial changes
-
-* Added a few tables for illustration
-
-* More stringently used terminology for well-formed and valid data,
-  avoiding less well-defined alternative terms such as "syntax error",
-  "decoding error" and "strict mode" outside examples
-
-* Streamlined terminology to talk about tags, tag numbers, and tag
-  content
-
-* Clarified the restrictions on tag content, in general and
-  specifically for tag 1
-
-* Added text about the CBOR data model and its small variations (basic
-  generic, extended generic, specific)
-
-* More clearly separated integers from floating-point values; provided
-  a suggestion (based on I-JSON {{?RFC7493}}) for handling these types
-  when converting JSON to CBOR
-
-* Added term "preferred serialization" and defined it for various
-  kinds of data items
-
-* Added comment about tags with semantics that depend on serialization
-  order
-
-* Defined "deterministic encoding", making use of "preferred
-  serialization", and simplified the suggested map ordering for the
-  "Core Deterministic Encoding Requirements", easing implementation,
-  while keeping RFC 7049 map ordering as an alternative "length-first
-  map key ordering"; now avoiding the terms "canonical" and
-  "canonicalization"
-
-* Clarified map validity (handling of duplicate keys) and explained
-  the domain of applicability of certain implementation choices
-
-* Updated IANA considerations
-
-* Added security considerations
-
-* Clarified handling of non-well-formed simple values in text and
-  pseudocode
-
-* Added {{errors}}, well-formedness errors and examples
-
-* Removed UBJSON from {{comparison-app}}, as that format has
-  completely changed since RFC 7049; added reference to {{RFC8618}}
-
-<!--  LocalWords:  UTC bigfloats codepoint curation
- -->
+As discussed in the introduction,
+this document is a revised edition of RFC 7049, with editorial improvements,
+added detail, and fixed errata.
+This revision formally obsoletes RFC 7049, while keeping full compatibility
+of the interchange format from RFC 7049.
+It does not create a new version of the format.
 
 # Well-formedness errors and examples {#errors}
 
@@ -3023,6 +2961,133 @@ Subkind 5:
 * Major type 0, 1, 6 with additional information 31: 1f, 3f, df
 
 
+## Errata processing, clerical changes
+
+The two verified errata on RFC 7049, EID 3764 and EID 3770, concerned
+two encoding examples in the text that have been corrected
+({{bignums}}: "29" -> "49", {{numbers}}: "0b000_11101" ->
+"0b000_11001").  Also, RFC 7049 contained an example using the simple
+type value 24 (EID 5917), which is not well-formed; this example has
+been removed.  Errata report 5763 pointed to an accident in the
+wording of the definition of tags; this was resolved during a re-write
+of {{tags}}.  Errata report 5434 pointed out that the UBJSON example
+in {{comparison-app}} no longer complied with the version of UBJSON
+current at the time of submitting the report.  It turned out that the
+UBJSON specification had completely changed since 2013; this example
+therefore also was removed.  Further errata reports (4409, 4963, 4964)
+complained that the map key sorting rules for canonical encoding were
+onerous; these led to a reconsideration of the canonical encoding
+suggestions and replacement by the deterministic encoding suggestions,
+see below.  An editorial suggestion in errata report 4294 was also
+implemented (improved symmetry by adding "Second value" to a comment
+to the last example in {{indef}}).
+
+Other more clerical changes include:
+
+* use of new RFCXML functionality {{?RFC7991}};
+
+* explain some more of the notation used;
+
+* updated references, e.g. for RFC4627 to {{-json}} in many places,
+  for CNN-TERMS to {{RFC7228}}; added missing reference to {{IEEE754}}
+  (importing required definitions) and updated to {{ECMA262}}; added a
+  reference to {{RFC8618}} that further illustrates the discussion in
+  {{comparison-app}};
+
+* the discussion of diagnostic notation mentions the "Extended
+  Diagnostic Notation" (EDN) defined in {{-cddl}},
+
+* the addition of this appendix.
+
+
+## Changes in IANA considerations
+
+The IANA considerations were generally updated (clerical changes,
+e.g., now pointing to the CBOR working group as the author of the
+specification).  References to the respective IANA registries have
+been added to the informative references.
+
+Tags in the space from 256 to 32767 (lower half of
+"1+2") are no longer assigned by First Come First Served; this range
+is now Specification Required.
+
+
+## Changes in suggestions and other informational components
+
+In revising the document, beyond processing errata reports, the WG
+could use nearly seven years of experience with the use of CBOR in a
+diverse set of applications.  This led to a number of editorial
+changes, including adding tables for illustration, but also to
+emphasizing some aspects and de-emphasizing others.
+
+A significant addition in this revision is {{cbor-data-models}}, which
+discusses the CBOR data model and its small variations involved in the
+processing of CBOR.  Introducing terms for those (basic generic,
+extended generic, specific) enables more concise language in other
+places of the document, but also helps in clarifying expectations on
+implementations and on the extensibility features of the format.
+
+RFC 7049, as a format derived from the JSON ecosystem, was influenced
+by the JSON number system that was in turn inherited from JavaScript
+at the time.  JSON does not provide distinct integers and floating
+point values (and the latter are decimal in the format).  CBOR
+provides binary representations of numbers, which do differ between
+integers and floating point values.  Experience from implementation
+and use now suggested that the separation between these two number
+domains should be more clearly drawn in the document; language that
+suggested an integer could seamlessly stand in for a floating point
+value was removed.  Also, a suggestion (based on I-JSON {{?RFC7493}})
+was added for handling these types when converting JSON to CBOR.
+
+For a single value in the data model, CBOR often provides multiple
+encoding options.  The revision adds a new section
+{{serialization-considerations}}, which first introduces the term
+"preferred serialization" ({{preferred}}) and defines it for various
+kinds of data items.  On the basis of this terminology, the section
+goes on to discuss how a CBOR-based protocol can define "deterministic
+encoding" ({{det-enc}}), which now avoids the RFC 7049 terms
+"canonical" and "canonicalization".  The suggestion of "Core
+Deterministic Encoding Requirements" {{core-det}} enables generic
+support for such protocol-defined encoding requirements.  The present
+revision further eases the implementation of deterministic encoding by
+simplifying the map ordering suggested in RFC 7049 to simple
+lexicographic ordering of encoded keys.  A description of the older
+suggestion is kept as an alternative, now termed "length-first map key
+ordering" ({{length-first}}).
+
+The terminology for well-formed and valid data was sharpened and more
+stringently used, avoiding less well-defined alternative terms such as
+"syntax error", "decoding error" and "strict mode" outside examples.
+Also, a third level of requirements beyond CBOR-level validity that an
+application has on its input data is now explicitly called out.
+Well-formed (processable at all), valid (checked by a
+validity-checking generic decoder), and expected input (as checked by
+the application) are treated as a hierarchy of layers of
+acceptability.
+
+The handling of non-well-formed simple values was clarified in text
+and pseudocode.  {{errors}} was added to discuss well-formedness
+errors and provide examples for them.
+
+The discussion of validity has been sharpened in two areas.  Map
+validity (handling of duplicate keys) was clarified and the domain of
+applicability of certain implementation choices explained.  Also,
+while streamlining the terminology for tags, tag numbers, and tag
+content, discussion was added on tag validity, and the restrictions
+pwere clarified on tag content, in general and specifically for tag 1.
+
+An implementation note (and note for future tag definitions) was added
+to {{tags}} about defining tags with semantics that depend on
+serialization order.
+
+Terminology was introduced in {{encoding}} for "argument" and "head",
+simplifying further discussion.
+
+The security considerations were mostly rewritten and significantly
+expanded; in multiple other places, the document is now more explicit
+that a decoder cannot simply condone well-formedness errors.
+
+
 # Acknowledgements
 {: numbered="no"}
 
@@ -3049,3 +3114,6 @@ notably Dan Frost, James Manger, Jeffrey Yasskin, Joe Hildebrand, Keith Moore, L
 Lundblade, Matthew Lepinski, Michael Richardson,
 Nico Williams, Peter Occil, Phillip Hallam-Baker, Ray Polk, Tim Bray,
 Tony Finch, Tony Hansen, and Yaron Sheffer.
+
+<!--  LocalWords:  UTC bigfloats codepoint curation
+ -->

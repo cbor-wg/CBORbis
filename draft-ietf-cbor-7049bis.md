@@ -644,7 +644,7 @@ arrays and maps look identical to other arrays and maps except for
 beginning with the additional information value of 31 and ending with the
 "break" stop code.
 
-If the break stop code appears after a key in a map, in place of that
+If the "break" stop code appears after a key in a map, in place of that
 key's value, the map is not well-formed.
 
 There is no restriction against nesting indefinite-length
@@ -2599,7 +2599,7 @@ The pseudocode has the following prerequisites:
 
 Note that `well_formed` returns the major type for well-formed
 definite length items, but 0 for an indefinite length item (or -1 for
-a break stop code, only if `breakable` is set).  This is used in
+a "break" stop code, only if `breakable` is set).  This is used in
 `well_formed_indefinite` to ascertain that indefinite length strings
 only contain definite length strings as chunks.
 
@@ -2949,7 +2949,7 @@ fail(), in order:
   incorrectly encoded simple type)
 * incorrect substructure of indefinite length byte/text string (may
   only contain definite length strings of the same major type)
-* break stop code (mt=7, ai=31) occurs in a value position of a map or
+* "break" stop code (mt=7, ai=31) occurs in a value position of a map or
   except at a position directly in an indefinite length item where
   also another enclosed data item could occur
 * additional information 31 used with major type 0, 1, or 6
@@ -2973,7 +2973,7 @@ large size).
 
 A premature end of the input can occur in a head or within the enclosed
 data, which may be bare strings or enclosed data items that are either
-counted or should have been ended by a break stop code.
+counted or should have been ended by a "break" stop code.
 
 * End of input in a head: 18, 19, 1a, 1b, 19 01, 1a 01 02, 1b 01 02 03
   04 05 06 07, 38, 58, 78, 98, 9a 01 ff 00, b8, d8, f8, f9 00, fa 00
@@ -2984,8 +2984,8 @@ counted or should have been ended by a break stop code.
 * Definite length maps and arrays not closed with enough items: 81, 81
   81 81 81 81 81 81 81 81, 82 00, a1, a2 01 02, a1 00, a2 00 00 00
 * Tag number not followed by tag content: c0
-* Indefinite length strings not closed by a break stop code: 5f 41 00, 7f 61 00
-* Indefinite length maps and arrays not closed by a break stop code:
+* Indefinite length strings not closed by a "break" stop code: 5f 41 00, 7f 61 00
+* Indefinite length maps and arrays not closed by a "break" stop code:
   9f, 9f 01 02, bf, bf 01 02 01 02, 81 9f, 9f 80 00, 9f 9f 9f 9f 9f ff
   ff ff ff, 9f 81 9f 81 9f 9f ff ff ff
 

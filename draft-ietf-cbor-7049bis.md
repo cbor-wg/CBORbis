@@ -2838,15 +2838,6 @@ shown.
 | CBOR        | 82 01 82 02 03                                                                                        | 9f 01 82 02 03 ff                            |
 {: #concise title='Examples for Different Levels of Conciseness' cols='l 40l 40l'}
 
-# Changes from RFC 7049
-
-As discussed in the introduction,
-this document is a revised edition of RFC 7049, with editorial improvements,
-added detail, and fixed errata.
-This document formally obsoletes RFC 7049, while keeping full compatibility
-of the interchange format from RFC 7049.
-This document does not create a new version of the format.
-
 # Well-formedness errors and examples {#errors}
 
 There are three basic kinds of well-formedness errors that can occur
@@ -2961,6 +2952,15 @@ Subkind 5:
 * Major type 0, 1, 6 with additional information 31: 1f, 3f, df
 
 
+# Changes from RFC 7049
+
+As discussed in the introduction,
+this document is a revised edition of RFC 7049, with editorial improvements,
+added detail, and fixed errata.
+This document formally obsoletes RFC 7049, while keeping full compatibility
+of the interchange format from RFC 7049.
+This document does not create a new version of the format.
+
 ## Errata processing, clerical changes
 
 The two verified errata on RFC 7049, EID 3764 and EID 3770, concerned
@@ -2995,7 +2995,7 @@ Other more clerical changes include:
   {{comparison-app}};
 
 * the discussion of diagnostic notation mentions the "Extended
-  Diagnostic Notation" (EDN) defined in {{-cddl}},
+  Diagnostic Notation" (EDN) defined in {{-cddl}};
 
 * the addition of this appendix.
 

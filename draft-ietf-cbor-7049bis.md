@@ -752,6 +752,13 @@ empty byte or text string, respectively, if no chunk is present).
 If any item between the indefinite-length string indicator
 (0b010_11111 or 0b011_11111) and the "break" stop code is not a definite-length
 string item of the same major type, the string is not well-formed.
+(Note that a decision has been made not to allow nesting
+indefinite-length strings as chunks into indefinite-length strings.
+This would require decoder implementations to keep a stack, or at
+least a count, of nesting levels.  It is also unnecessary on the
+encoder side, as the inner indefinite-length string would consist of
+chunks, which can simply be put right into the outer indefinite-length
+string.)
 
 If any definite-length text string inside an indefinite-length text
 string is invalid, the indefinite-length text string is invalid.  Note
@@ -2596,13 +2603,13 @@ The pseudocode has the following prerequisites:
 * All variables are unsigned integers of sufficient range.
 
 Note that `well_formed` returns the major type for well-formed
-definite length items, but 0 for an indefinite length item (or -1 for
+definite length items, but 99 for an indefinite length item (or -1 for
 a "break" stop code, only if `breakable` is set).  This is used in
 `well_formed_indefinite` to ascertain that indefinite length strings
 only contain definite length strings as chunks.
 
 ~~~~
-well_formed (breakable = false) {
+well_formed(breakable = false) {
   // process initial bytes
   ib = uint(take(1));
   mt = ib >> 5;
@@ -2625,14 +2632,14 @@ well_formed (breakable = false) {
     case 6: well_formed(); break;     // 1 embedded data item
     case 7: if (ai == 24 && val < 32) fail(); // bad simple
   }
-  return mt;                    // finite data item
+  return mt;                    // definite-length data item
 }
 
 well_formed_indefinite(mt, breakable) {
   switch (mt) {
     case 2: case 3:
       while ((it = well_formed(true)) != -1)
-        if (it != mt)           // need finite-length chunk
+        if (it != mt)           // need definite-length chunk
           fail();               //    of same type
       break;
     case 4: while (well_formed(true) != -1); break;
@@ -2643,7 +2650,7 @@ well_formed_indefinite(mt, breakable) {
       else fail();              // no enclosing indefinite
     default: fail();            // wrong mt
   }
-  return 0;                     // no break out
+  return 99;                    // indefinite-length data item
 }
 ~~~~
 {: #pseudo title='Pseudocode for Well-Formedness Check'}

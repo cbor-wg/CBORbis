@@ -752,13 +752,14 @@ empty byte or text string, respectively, if no chunk is present).
 If any item between the indefinite-length string indicator
 (0b010_11111 or 0b011_11111) and the "break" stop code is not a definite-length
 string item of the same major type, the string is not well-formed.
-(Note that a decision has been made not to allow nesting
+
+The design does not allow nesting
 indefinite-length strings as chunks into indefinite-length strings.
-This would require decoder implementations to keep a stack, or at
-least a count, of nesting levels.  It is also unnecessary on the
-encoder side, as the inner indefinite-length string would consist of
-chunks, which can simply be put right into the outer indefinite-length
-string.)
+If it was allowed, it would require decoder implementations to keep a stack, or at
+least a count, of nesting levels.  It is unnecessary on the
+encoder side because the inner indefinite-length string would consist of
+chunks, and these could instead be put directly into the outer indefinite-length
+string.
 
 If any definite-length text string inside an indefinite-length text
 string is invalid, the indefinite-length text string is invalid.  Note

@@ -2107,34 +2107,43 @@ provided in Appendix G of {{-cddl}}, "Extended Diagnostic Notation" (EDN).
 
 Sometimes it is useful to indicate in the diagnostic notation which of
 several alternative representations were actually used; for example, a
-data item written >1.5\< by a diagnostic decoder might have been
+data item written >`1.5`\< by a diagnostic decoder might have been
 encoded as a half-, single-, or double-precision float.
 
 The convention for encoding indicators is that anything starting with
 an underscore and all following characters that are alphanumeric or
 underscore, is an encoding indicator, and can be ignored by anyone not
 interested in this information.  For example, `_` or `_3`.
-Encoding indicators are always
-optional.
+Encoding indicators never change the semantics of the encoded data.
 
 A single underscore can be written after the opening brace of a map or
 the opening bracket of an array to indicate that the data item was
-represented in indefinite-length format.  For example, \[_ 1, 2]
+represented in indefinite-length format.  For example, `[_ 1, 2]`
 contains an indicator that an indefinite-length representation was
-used to represent the data item \[1, 2].
+used to represent the data item `[1, 2]`.
 
 An underscore followed by a decimal digit n indicates that the
 preceding item (or, for arrays and maps, the item starting with the
 preceding bracket or brace) was encoded with an additional information
-value of 24+n.  For example, 1.5\_1 is a half-precision floating-point
-number, while 1.5\_3 is encoded as double precision.  This encoding
+value of 24+n.  For example, `1.5_1` is a half-precision floating-point
+number, while `1.5_3` is encoded as double precision.  This encoding
 indicator is not shown in {{examples}}.  (Note that the encoding
-indicator "_" is thus an abbreviation of the full form "_7", which is
+indicator "`_`" is thus an abbreviation of the full form "`_7`", which is
 not used.)
 
-Byte and text strings of indefinite length can be
-notated in the form (_ h'0123', h'4567') and (_ "foo", "bar").
+The IEEE 754 representation of NaN carries a "payload" of up to 54 bits,
+not all of which may be zero, so we allow an encoding indicator to specify
+the exact hex representation. Thus the standard half-precision NaN may be
+represented as `NaN`, `NaN_1`, or `NaN_1_x7E00`, while a single-precision
+NaN with an all-ones payload is represented as `NaN_2_x7FFFFFFF`. Items
+like `NaN_1_x0000` or `NaN_1_x7C00` do not encode NaN in the hex
+representation and so are not valid diagnostic notation.
 
+Byte and text strings of indefinite length can be
+notated in the form `(_b h'0123', h'4567')` and `(_t "foo", "bar")`.
+Where there is at least one item between the parenthesis to disambiguate
+bytes from text, the letter indicator can be omitted eg
+`(_ h'0123', h'4567')` and `(_ "foo", "bar")`.
 
 # IANA Considerations {#ianacons}
 

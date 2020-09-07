@@ -837,7 +837,7 @@ An encoder MUST NOT issue two-byte sequences that start with 0xf8
 (major type = 7, additional information = 24) and continue with a byte
 less than 0x20 (32 decimal).  Such sequences are not well-formed.
 (This implies that an encoder cannot encode false, true, null, or
-undefined in two-byte sequences, only the one-byte variants of these
+undefined in two-byte sequences, and that only the one-byte variants of these
 are well-formed; more generally speaking, each simple value only has a
 single representation variant).
 
@@ -943,7 +943,7 @@ number 25 and tag number 29) have been registered with semantics that
 may require processing at (de-)serialization time: The decoder needs to
 be aware and the encoder needs to be in control of the exact
 sequence in which data items are encoded into the CBOR data item.
-This means these tags cannot be implemented on top of every generic
+This means these tags cannot be implemented on top of an arbitrary generic
 CBOR encoder/decoder (which might not reflect the serialization order
 for entries in a map at the data model level and vice versa); their
 implementation therefore typically needs to be integrated into the
@@ -1089,8 +1089,8 @@ while the mantissa can also be a bignum ({{bignums}}).  Contained
 items with other structures are invalid.
 
 An example of a decimal fraction is that the number 273.15 could be
-represented as 0b110_00100 (major type of 6 for the tag, additional
-information of 4 for the number of tag), followed by 0b100_00010 (major
+represented as 0b110_00100 (major type of 6 for tag, additional
+information of 4 for the tag number), followed by 0b100_00010 (major
 type of 4 for the array, additional information of 2 for the length of
 the array), followed by 0b001_00001 (major type of 1 for the first
 integer, additional information of 1 for the value of -2), followed by
@@ -1106,8 +1106,8 @@ C4             -- Tag 4
 ~~~~
 
 An example of a bigfloat is that the number 1.5 could be represented
-as 0b110_00101 (major type of 6 for the tag, additional information of
-5 for the number of tag), followed by 0b100_00010 (major type of 4 for
+as 0b110_00101 (major type of 6 for tag, additional information of
+5 for the tag number), followed by 0b100_00010 (major type of 4 for
 the array, additional information of 2 for the length of the array),
 followed by 0b001_00000 (major type of 1 for the first integer,
 additional information of 0 for the value of -1), followed by
@@ -1123,7 +1123,7 @@ C5             -- Tag 5
 
 Decimal fractions and bigfloats provide no representation of Infinity,
 -Infinity, or NaN; if these are needed in place of a decimal fraction
-or bigfloat, the IEEE 754 half-precision representations from
+or bigfloat, the IEEE 754 representations from
 {{fpnocont}} can be used.
 
 ### Content Hints
@@ -1169,9 +1169,9 @@ padding is not used (see Section 3.2 of RFC 4648); that is, all
 trailing equals signs ("=") are removed from the encoded string.
 Tag number 22 suggests conversion to classical base64 encoding (Section 4 of RFC 4648), with padding as defined in RFC 4648.
 For both base64url and base64, padding bits are set to zero (see
-Section 3.5 of RFC 4648), and encoding
-is performed without the inclusion of any line breaks, whitespace, or
-other additional characters.  Tag number 23 suggests conversion to
+Section 3.5 of RFC 4648), and the conversion to alternate encoding
+is performed on the contents of the byte string (that is, without the inclusion of any line breaks, whitespace, or
+other additional characters).  Tag number 23 suggests conversion to
 base16 (hex) encoding, with uppercase alphabetics (see Section 8 of RFC 4648).
 Note that, for all three tag numbers, the
 encoding of the empty byte string is the empty text string.
@@ -1402,7 +1402,7 @@ encodings, such as:
   with a specific data model that declares integer and
   floating-point values to be interchangeable, the protocol's
   deterministic encoding needs to specify
-  whether the integer 1.0 is encoded as 0x01, 0xf93c00, 0xfa3f800000,
+  whether (for example )the integer 1.0 is encoded as 0x01, 0xf93c00, 0xfa3f800000,
   or 0xfb3ff0000000000000. Example rules for this are:
   1. Encode integral values that fit in 64 bits as values from major
      types 0 and 1, and other values as the preferred (smallest of 16-, 32-, or
@@ -1822,7 +1822,7 @@ tag may not be able to distinguish some semantically equivalent
 values, e.g. if leading zeroes occur in the content of tag 2/3
 ({{bignums}}).)
 Simple values are equal if they simply have the same value.
-Nothing else is equal in the generic data model, a simple value 2 is
+Nothing else is equal in the generic data model; a simple value 2 is
 not equivalent to an integer 2 and an array is never equivalent to a map.
 
 As discussed in {{specific-data-models}}, specific data models can
@@ -1908,7 +1908,7 @@ as a JSON null.
   the JSON decoder.)
 
 * A byte string with an encoding hint (major type 6, tag number 21
-  through 23) is encoded as described and becomes a JSON string.
+  through 23) is encoded as described by the hint and becomes a JSON string.
 
 * For all other tags (major type 6, any other tag number), the tag
   content is represented as a JSON value; the tag number is ignored.
@@ -2559,12 +2559,12 @@ unsigned integers are in network byte order.)
 |       0xc5 | Bigfloat (data item "array" follows; see {{fractions}})                |
 | 0xc6..0xd4 | (tag)                                                                  |
 | 0xd5..0xd7 | Expected Conversion (data item follows; see {{convexpect}})            |
-| 0xd8..0xdb | (more tags, 1/2/4/8 bytes and then a data item follow)                 |
+| 0xd8..0xdb | (more tags; 1/2/4/8 bytes of tag number and then a data item follow)          |
 | 0xe0..0xf3 | (simple value)                                                         |
 |       0xf4 | False                                                                  |
 |       0xf5 | True                                                                   |
 |       0xf6 | Null                                                                   |
-|       0xf7 | Undefined                                                              |
+|       0xf7 | Undefined value                                                        |
 |       0xf8 | (simple value, one byte follows)                                       |
 |       0xf9 | Half-Precision Float (two-byte IEEE 754)                               |
 |       0xfa | Single-Precision Float (four-byte IEEE 754)                            |
@@ -2855,7 +2855,7 @@ in decoding a CBOR data item:
   bytes added at their end for a complete CBOR data item.  This may
   indicate the input is truncated; it is also a common error when
   trying to decode random data as CBOR.  For some
-  applications however, this may not actually be an error, as the
+  applications, however, this may not actually be an error, as the
   application may not be certain it has all the data yet and can
   obtain or wait for additional input bytes.  Some of
   these applications may have an upper limit for how much additional
@@ -3074,7 +3074,7 @@ validity (handling of duplicate keys) was clarified and the domain of
 applicability of certain implementation choices explained.  Also,
 while streamlining the terminology for tags, tag numbers, and tag
 content, discussion was added on tag validity, and the restrictions
-pwere clarified on tag content, in general and specifically for tag 1.
+were clarified on tag content, in general and specifically for tag 1.
 
 An implementation note (and note for future tag definitions) was added
 to {{tags}} about defining tags with semantics that depend on

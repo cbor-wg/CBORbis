@@ -755,7 +755,7 @@ string item of the same major type, the string is not well-formed.
 
 The design does not allow nesting
 indefinite-length strings as chunks into indefinite-length strings.
-If it was allowed, it would require decoder implementations to keep a stack, or at
+If it were allowed, it would require decoder implementations to keep a stack, or at
 least a count, of nesting levels.  It is unnecessary on the
 encoder side because the inner indefinite-length string would consist of
 chunks, and these could instead be put directly into the outer indefinite-length

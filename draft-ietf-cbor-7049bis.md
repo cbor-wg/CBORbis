@@ -1177,9 +1177,9 @@ padding is not used (see Section 3.2 of RFC 4648); that is, all
 trailing equals signs ("=") are removed from the encoded string.
 Tag number 22 suggests conversion to classical base64 encoding (Section 4 of RFC 4648), with padding as defined in RFC 4648.
 For both base64url and base64, padding bits are set to zero (see
-Section 3.5 of RFC 4648), and encoding
-is performed without the inclusion of any line breaks, whitespace, or
-other additional characters.  Tag number 23 suggests conversion to
+Section 3.5 of RFC 4648), and the conversion to alternate encoding
+is performed on the contents of the byte string (that is, without adding any line breaks, whitespace, or
+other additional characters).  Tag number 23 suggests conversion to
 base16 (hex) encoding, with uppercase alphabetics (see Section 8 of RFC 4648).
 Note that, for all three tag numbers, the
 encoding of the empty byte string is the empty text string.

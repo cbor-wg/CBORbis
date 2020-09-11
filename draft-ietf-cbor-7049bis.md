@@ -836,7 +836,7 @@ the values assigned and available for simple types.
 |      20 | False           |
 |      21 | True            |
 |      22 | Null            |
-|      23 | Undefined value |
+|      23 | Undefined       |
 |  24..31 | (Reserved)      |
 | 32..255 | (Unassigned)    |
 {: #fpnoconttbl2 title='Simple Values'}

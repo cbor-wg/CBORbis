@@ -3120,8 +3120,9 @@ encoding of length information designed by Klaus Hartke for CoAP.
 This document also incorporates suggestions made by many people,
 notably Dan Frost, James Manger, Jeffrey Yasskin, Joe Hildebrand, Keith Moore, Laurence
 Lundblade, Matthew Lepinski, Michael Richardson,
-Nico Williams, Peter Occil, Phillip Hallam-Baker, Ray Polk, Tim Bray,
+Nico Williams, Peter Occil, Phillip Hallam-Baker, Ray Polk, Stuart Cheshire, Tim Bray,
 Tony Finch, Tony Hansen, and Yaron Sheffer.
+Benjamin Kaduk provided an extensive review during IESG processing.
 
 <!--  LocalWords:  UTC bigfloats codepoint curation
  -->

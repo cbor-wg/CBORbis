@@ -346,7 +346,7 @@ the notation familiar from the programming language C {{C}}, except that
 "\*\*" denotes exponentiation.  Examples and pseudocode
 assume that signed integers use two's complement representation and
 that right shifts of signed integers perform sign extension; these
-assumptions are also specified in Sections 6.8.1 and 7.6.7 of the 2020
+assumptions are also specified in Sections 6.8.2 and 7.6.7 of the 2020
 version of C++, successor of {{Cplusplus17}}.
 
 Similar to the "0x" notation for

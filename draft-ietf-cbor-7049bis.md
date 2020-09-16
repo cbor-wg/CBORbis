@@ -553,7 +553,7 @@ Major type 4:
   array.  Items in an
   array do not need to all be of the same type.  For example, an array
   that contains 10 items of any type would have an initial byte of
-  0b100_01010 (major type of 4, additional information of 10 for the
+  0b100_01010 (major type 4, additional information 10 for the
   length) followed by the 10 remaining items.
 
 Major type 5:
@@ -563,7 +563,7 @@ Major type 5:
   immediately followed by a value.  The argument is the number
   of *pairs* of data items in the map.  For
   example, a map that contains 9 pairs would have an initial byte of
-  0b101_01001 (major type of 5, additional information of 9 for the
+  0b101_01001 (major type 5, additional information 9 for the
   number of pairs) followed by the 18 remaining items. The first item
   is the first key, the second item is the first value, the third item
   is the second key, and so on.  Because items in a map come in pairs,
@@ -842,7 +842,7 @@ the values assigned and available for simple types.
 {: #fpnoconttbl2 title='Simple Values'}
 
 An encoder MUST NOT issue two-byte sequences that start with 0xf8
-(major type = 7, additional information = 24) and continue with a byte
+(major type 7, additional information 24) and continue with a byte
 less than 0x20 (32 decimal).  Such sequences are not well-formed.
 (This implies that an encoder cannot encode false, true, null, or
 undefined in two-byte sequences, and that only the one-byte variants of these
@@ -1097,13 +1097,13 @@ while the mantissa can also be a bignum ({{bignums}}).  Contained
 items with other structures are invalid.
 
 An example of a decimal fraction is that the number 273.15 could be
-represented as 0b110_00100 (major type of 6 for tag, additional
-information of 4 for the tag number), followed by 0b100_00010 (major
-type of 4 for the array, additional information of 2 for the length of
-the array), followed by 0b001_00001 (major type of 1 for the first
-integer, additional information of 1 for the value of -2), followed by
-0b000_11001 (major type of 0 for the second integer, additional
-information of 25 for a two-byte value), followed by
+represented as 0b110_00100 (major type 6 for tag, additional
+information 4 for the tag number), followed by 0b100_00010 (major
+type 4 for the array, additional information 2 for the length of
+the array), followed by 0b001_00001 (major type 1 for the first
+integer, additional information 1 for the value of -2), followed by
+0b000_11001 (major type 0 for the second integer, additional
+information 25 for a two-byte value), followed by
 0b0110101010110011 (27315 in two bytes).  In hexadecimal:
 
 ~~~~
@@ -1114,13 +1114,13 @@ C4             -- Tag 4
 ~~~~
 
 An example of a bigfloat is that the number 1.5 could be represented
-as 0b110_00101 (major type of 6 for tag, additional information of
-5 for the tag number), followed by 0b100_00010 (major type of 4 for
-the array, additional information of 2 for the length of the array),
-followed by 0b001_00000 (major type of 1 for the first integer,
-additional information of 0 for the value of -1), followed by
-0b000_00011 (major type of 0 for the second integer, additional
-information of 3 for the value of 3).  In hexadecimal:
+as 0b110_00101 (major type 6 for tag, additional information
+5 for the tag number), followed by 0b100_00010 (major type 4 for
+the array, additional information 2 for the length of the array),
+followed by 0b001_00000 (major type 1 for the first integer,
+additional information 0 for the value of -1), followed by
+0b000_00011 (major type 0 for the second integer, additional
+information 3 for the value of 3).  In hexadecimal:
 
 ~~~~
 C5             -- Tag 5

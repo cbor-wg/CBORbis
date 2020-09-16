@@ -45,16 +45,30 @@ normative:
     date: 2018-06
     seriesinfo:
       ECMA: Standard ECMA-262, 9th Edition
+  C:
+    title: Information technology — Programming languages — C
+    author:
+      org: International Organization for Standardization
+    date: 2018-06
+    seriesinfo:
+      ISO/IEC: 9899:2018, Fourth Edition
+  Cplusplus17:
+    title: Programming languages — C++
+    author:
+      org: International Organization for Standardization
+    date: 2017-12
+    seriesinfo:
+      ISO/IEC: 14882:2017, Fifth Edition
   TIME_T:
-    target: http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap04.html#tag_04_15
-    title: 'Vol. 1: Base Definitions, Issue 7'
+    target: http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap04.html#tag_04_16
+    title: 'Open Group Standard: Vol. 1: Base Definitions, Issue 7'
     author:
     - org: The Open Group Base Specifications
-    date: 2013
+    date: 2018
     seriesinfo:
-      Section 4.15: "'Seconds Since the Epoch'"
+      Section 4.16: "'Seconds Since the Epoch'"
       IEEE Std: '1003.1'
-      '2013': Edition
+      '2018': Edition
   IEEE754:
     -: fp
     title: IEEE Standard for Floating-Point Arithmetic
@@ -328,8 +342,14 @@ Terms and concepts for floating-point values such as Infinity, NaN
 (not a number), negative zero, and subnormal are defined in [IEEE754].
 
 Where bit arithmetic or data types are explained, this document uses
-the notation familiar from the programming language C, except that
-"\*\*" denotes exponentiation.  Similar to the "0x" notation for
+the notation familiar from the programming language C {{C}}, except that
+"\*\*" denotes exponentiation.  Examples and pseudocode
+assume that signed integers use two's complement representation and
+that right shifts of signed integers perform sign extension; these
+assumptions are also specified in Sections 6.8.1 and 7.6.7 of the 2020
+version of C++, successor of {{Cplusplus17}}.
+
+Similar to the "0x" notation for
 hexadecimal numbers, numbers in binary notation are prefixed with
 "0b".  Underscores can be added to a number solely for
 readability, so 0b00100001 (0x21) might be written 0b001_00001 to
@@ -2674,7 +2694,7 @@ the number (for example, by 63 for 64-bit numbers).
 ~~~~
 void encode_sint(int64_t n) {
   uint64t ui = n >> 63;    // extend sign to whole length
-  mt = ui & 0x20;          // extract major type
+  unsigned mt = ui & 0x20; // extract (shifted) major type
   ui ^= n;                 // complement negatives
   if (ui < 24)
     *p++ = mt + ui;
@@ -2685,6 +2705,9 @@ void encode_sint(int64_t n) {
        ...
 ~~~~
 {: #branchless title='Pseudocode for Encoding a Signed Integer'}
+
+See {{terminology}} for some specific assumptions about the profile of
+the C language used in these pieces of code.
 
 
 # Half-Precision {#half-precision}
@@ -2703,9 +2726,9 @@ order (as would be done by the pseudocode in {{pseudocode}}).
 #include <math.h>
 
 double decode_half(unsigned char *halfp) {
-  int half = (halfp[0] << 8) + halfp[1];
-  int exp = (half >> 10) & 0x1f;
-  int mant = half & 0x3ff;
+  unsigned half = (halfp[0] << 8) + halfp[1];
+  unsigned exp = (half >> 10) & 0x1f;
+  unsigned mant = half & 0x3ff;
   double val;
   if (exp == 0) val = ldexp(mant, -24);
   else if (exp != 31) val = ldexp(mant + 1024, exp - 25);

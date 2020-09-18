@@ -371,7 +371,7 @@ also retain their usual meaning).
 
 CBOR is explicit about its generic data model, which defines the set
 of all data items that can be represented in CBOR.  Its basic generic
-data model is extensible by the registration of simple type values and
+data model is extensible by the registration of (numeric) values of a simple type and
 tags.  Applications can then subset the resulting extended generic
 data model to build their specific data models.
 
@@ -3004,8 +3004,8 @@ This document does not create a new version of the format.
 The two verified errata on RFC 7049, EID 3764 and EID 3770, concerned
 two encoding examples in the text that have been corrected
 ({{bignums}}: "29" -> "49", {{numbers}}: "0b000_11101" ->
-"0b000_11001").  Also, RFC 7049 contained an example using the simple
-type value 24 (EID 5917), which is not well-formed; this example has
+"0b000_11001").  Also, RFC 7049 contained an example using the (numeric) value of a simple type
+24 (EID 5917), which is not well-formed; this example has
 been removed.  Errata report 5763 pointed to an accident in the
 wording of the definition of tags; this was resolved during a re-write
 of {{tags}}.  Errata report 5434 pointed out that the UBJSON example

@@ -985,7 +985,7 @@ that want a single integer data structure to indicate either that a specific tag
 present, or the absence of a tag.
 That allocation is described in Section 10 of {{?I-D.bormann-cbor-notable-tags}}.
 These tags are not intended to occur in actual CBOR data items;
-implementations may flag such an occurrence as an error.
+implementations MAY flag such an occurrence as an error.
 
 Protocols using tag numbers 0 and 1 extend the generic data model
 ({{cbor-data-models}}) with data items representing points in time;

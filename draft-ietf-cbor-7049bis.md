@@ -829,7 +829,7 @@ Major type 7 is for two types of data: floating-point numbers and
 additional information in the initial byte has its own separate
 meaning, as defined in {{fpnoconttbl}}.  Like the major types for
 integers, items of this major type do not carry content data; all the
-information is in the initial bytes.
+information is in the initial bytes (the head).
 
 | 5-Bit Value | Semantics                                                 |
 |-------------|-----------------------------------------------------------|

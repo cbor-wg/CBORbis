@@ -1038,7 +1038,7 @@ values, which may also be desirable at an application protocol level.
 While emitting tag number 1 values with non-finite tag content values
 (e.g., with NaN for undefined date/time values or with Infinite for an
 expiry date that is not set) may seem an obvious way to handle this,
-using untagged null or undefined is often a better solution.
+using untagged null or undefined avoids the use of non-finites and results in a shorter encoding.
 Application protocol designers are encouraged to consider these cases
 and include clear guidelines for handling them.
 

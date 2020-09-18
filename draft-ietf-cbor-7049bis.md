@@ -87,7 +87,7 @@ normative:
   RFC8126: iana
 informative:
   ASN.1:
-    title: 'Information Technology -- ASN.1 encoding rules: Specification of Basic
+    title: 'Information Technology — ASN.1 encoding rules: Specification of Basic
       Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding
       Rules (DER)'
     author:
@@ -2215,7 +2215,7 @@ In addition, First Come First Served requests should include:
 
 * Point of contact
 
-* Description of semantics (URL) -- This description is
+* Description of semantics (URL) — This description is
   optional; the URL can point to something like an Internet-Draft or a
   web page.
 

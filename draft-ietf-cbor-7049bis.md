@@ -966,7 +966,7 @@ see the registry described at {{ianatags}} for the complete list.
 {: #tagvalues title='Tag numbers defined in RFC 7049'}
 
 Conceptually, tags are interpreted in the generic data model, not at
-(de-)serialization time.  A small number of tags (specifically, tag
+(de-)serialization time.  A small number of tags (at this time, tag
 number 25 and tag number 29) have been registered with semantics that
 may require processing at (de-)serialization time: The decoder needs to
 be aware and the encoder needs to be in control of the exact

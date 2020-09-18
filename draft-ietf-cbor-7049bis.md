@@ -1387,6 +1387,13 @@ it satisfies the following restrictions:
   1. \[-1], encoded as 0x8120.
   1. false, encoded as 0xf4.
 
+  (Implementation note: the self-delimiting nature of the CBOR
+  encoding means that there are no two well-formed CBOR encoded data
+  items where one is a prefix of the other.
+  The bytewise lexicographic comparison of deterministic encodings of
+  different map keys therefore always ends in a position where the
+  byte differs between the keys, before the end of a key is reached.)
+
 ### Additional Deterministic Encoding Considerations
 
 CBOR tags present additional considerations for deterministic
@@ -1517,7 +1524,7 @@ will have a shared view of what should be in a CBOR data item.  For
 example, an agreed-to format might be "the item is an array whose
 first value is a UTF-8 string, second value is an integer, and
 subsequent values are zero or more floating-point numbers" or "the
-item is a map that has byte strings for keys and contains at least one
+item is a map that has byte strings for keys and contains a
 pair whose key is 0xab01".
 
 CBOR-based protocols MUST specify how their decoders handle

@@ -2437,6 +2437,14 @@ they support and what validity checking they can provide for each of
 them as well as for basic CBOR validity (UTF-8 checking, duplicate map
 key checking).
 
+{{bignums}} notes that using the non-preferred choice of a bignum
+representation instead of a basic integer for encoding a number is not intended
+to have application semantics, but it can have such semantics if an application
+receiving CBOR data is using a decoder in the generic data model. This
+disparity causes a security issue if the two sets of semantics differ. Thus,
+applications using CBOR need to specify the data model that they are using for
+each use of CBOR data.
+
 --- back
 
 # Examples {#examples}

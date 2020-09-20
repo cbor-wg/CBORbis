@@ -1680,7 +1680,9 @@ generic decoder.
 A validity-checking decoder can do one of two things when it
 encounters such a case that it does not recognize:
 
-* It can report an error (and not return data).  Note that this error
+* It can report an error (and not return data).
+  Note that reporting such an error can cause ossification, and is
+  thus not encouraged. This error
   is not a validity error per se.  This kind of error is more likely
   to be raised by a decoder that would be performing validity checking
   if this were a known case.

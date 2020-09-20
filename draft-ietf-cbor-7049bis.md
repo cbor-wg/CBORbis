@@ -2379,6 +2379,14 @@ non-preferred serialization. When a single data item is consumed both by such a
 constrained decoder and a full decoder, it can lead to security issues that can
 be exploited by an attacker who can inject or manipulate content.
 
+As discussed throughout this document, there are many values that can be
+considered "equivalent" in some circumstances and "not equivalent" in others. As
+just one example, the numeric value for the number "one" might be expressed as
+an integer or a bignum. A system interpreting CBOR input might accept either
+form for the number "one", or might reject one (or both) forms. Such acceptance
+or rejection can have security implications in the program that is using the
+interpreted input.
+
 Hostile input may be constructed to overrun buffers, overflow or
 underflow integer arithmetic, or cause other decoding disruption.  CBOR
 data items might have lengths or sizes that are intentionally

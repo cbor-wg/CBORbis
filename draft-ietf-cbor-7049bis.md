@@ -71,13 +71,15 @@ normative:
       '2018': Edition
   IEEE754:
     -: fp
+    target: https://ieeexplore.ieee.org/document/8766229
     title: IEEE Standard for Floating-Point Arithmetic
     author:
       -
         org: IEEE
     seriesinfo:
-      IEEE Std: 754-2008
-    date: 2019
+      IEEE Std: 754-2019
+      DOI: 10.1109/IEEESTD.2019.8766229
+    date: false
   RFC3629:
   RFC3339:
   RFC4287:

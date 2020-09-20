@@ -138,10 +138,14 @@ informative:
       author:
         - name: Andrew Ho
       date: 2018
-  SIPHASH_BASE: DOI.10.1007_978-3-642-34931-7_28
+  SIPHASH_LNCS: DOI.10.1007_978-3-642-34931-7_28
   SIPHASH_OPEN:
       target: https://131002.net/siphash/siphash.pdf
       title: "SipHash: a fast short-input PRF"
+      author:
+        - name: Jean-Philippe Aumasson
+        - name: Daniel J. Bernstein
+      date: false # 2012
   RFC8610: cddl
   RFC8618: cdns
   RFC8742: cbor-sequence
@@ -2425,7 +2429,7 @@ on input validation.  Processing for arbitrary-precision numbers may
 exceed linear effort.  Also, some hash-table implementations that are
 used by decoders to build in-memory representations of maps can be
 attacked to spend quadratic effort, unless a secret key
-(see Section 7 of {{SIPHASH_BASE}}, also {{SIPHASH_OPEN}}) or some other mitigation is employed.
+(see Section 7 of {{SIPHASH_LNCS}}, also {{SIPHASH_OPEN}}) or some other mitigation is employed.
 Such superlinear efforts can be
 exploited by an attacker to exhaust resources at or before the input
 validator; they therefore need to be avoided in a CBOR decoder

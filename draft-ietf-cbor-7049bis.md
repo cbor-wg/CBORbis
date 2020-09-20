@@ -2466,6 +2466,9 @@ disparity causes a security issue if the two sets of semantics differ. Thus,
 applications using CBOR need to specify the data model that they are using for
 each use of CBOR data.
 
+Security considerations for the use of base64 from {{RFC4648}}, and the use
+of UTF-8 from {{RFC3629}}, are relevant to CBOR as well.
+
 --- back
 
 # Examples {#examples}

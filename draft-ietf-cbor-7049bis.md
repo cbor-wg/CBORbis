@@ -77,7 +77,7 @@ normative:
         org: IEEE
     seriesinfo:
       IEEE Std: 754-2008
-    date: false
+    date: 2019
   RFC3629:
   RFC3339:
   RFC4287:
@@ -339,7 +339,7 @@ Stream decoder:
   received.
 
 Terms and concepts for floating-point values such as Infinity, NaN
-(not a number), negative zero, and subnormal are defined in [IEEE754].
+(not a number), negative zero, and subnormal are defined in {{IEEE754}}.
 
 Where bit arithmetic or data types are explained, this document uses
 the notation familiar from the programming language C {{C}}, except that
@@ -1983,7 +1983,10 @@ conversion:
 
 * Numbers with fractional parts are represented as floating-point
   values, performing the decimal-to-binary conversion based on the
-  precision provided by IEEE 754 binary64.  Then, when encoding in
+  precision provided by IEEE 754 binary64.
+  The mathematical value of the JSON number is converted to binary64
+	using the roundTiesToEven procedure in Section 4.3.1 of {{IEEE754}}.
+  Then, when encoding in
   CBOR, the preferred serialization uses the shortest floating-point
   representation exactly representing this conversion result; for
   instance, 1.5 is represented in a 16-bit floating-point value (not

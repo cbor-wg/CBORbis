@@ -2255,7 +2255,7 @@ Required parameters: n/a
 Optional parameters: n/a
 
 Encoding considerations:
-: binary
+: Binary
 
 Security considerations:
 : See {{securitycons}} of this document
@@ -2265,8 +2265,7 @@ Interoperability considerations: n/a
 Published specification: This document
 
 Applications that use this media type:
-: None yet, but it is expected that this format will be deployed
-  in protocols and applications.
+: Many
 
 
 Additional information:

@@ -5,7 +5,7 @@ cat: std
 # number: '7049'
 obsoletes: 7049
 docname: draft-ietf-cbor-7049bis-latest
-# consensus: 'yes'
+consensus: 'yes'
 # submissiontype: IETF
 pi:
   toc: 'yes'
@@ -1985,7 +1985,7 @@ conversion:
   values, performing the decimal-to-binary conversion based on the
   precision provided by IEEE 754 binary64.
   The mathematical value of the JSON number is converted to binary64
-	using the roundTiesToEven procedure in Section 4.3.1 of {{IEEE754}}.
+  using the roundTiesToEven procedure in Section 4.3.1 of {{IEEE754}}.
   Then, when encoding in
   CBOR, the preferred serialization uses the shortest floating-point
   representation exactly representing this conversion result; for

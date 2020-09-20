@@ -2290,7 +2290,7 @@ Change controller:
 
 ## CoAP Content-Format
 
-The CoAP Content-Format for CBOR is defined in {{?IANA.core-parameters}}:
+The CoAP Content-Format for CBOR is registered in {{?IANA.core-parameters}}:
 
 Media Type: application/cbor
 

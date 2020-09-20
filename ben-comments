@@ -104,10 +104,11 @@ No.  Such a document coming from the CBOR WG in the future could be useful.
 > value" only twice (and "simple type" a few other times); are we happy
 > with the consistency of usage?
 
-The two occurrences really mean “(numeric) value of a simple type”; we will
-spell this out in both cases.
+We simplified to the common expression in the first case and reworded
+the second; we used the opportunity to increase the consistency of the
+terminology some more.
 
-##### 8cfa5af
+##### 8cfa5af, 
 
 > Please also note my comments on the IANA considerations in the
 > per-section comments; at least the first couple are fairly

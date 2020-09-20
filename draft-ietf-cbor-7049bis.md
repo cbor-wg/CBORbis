@@ -380,7 +380,7 @@ also retain their usual meaning).
 
 CBOR is explicit about its generic data model, which defines the set
 of all data items that can be represented in CBOR.  Its basic generic
-data model is extensible by the registration of (numeric) values of a simple type and
+data model is extensible by the registration of "simple values" and
 tags.  Applications can then subset the resulting extended generic
 data model to build their specific data models.
 
@@ -433,7 +433,7 @@ been) defined via the IANA registries created for CBOR.  Even if such
 an extension is unknown to a generic encoder or decoder, data items
 using that extension can be passed to or from the application by
 representing them at the interface to the application within the basic
-generic data model, i.e., as generic values of a simple type or
+generic data model, i.e., as generic simple values or
 generic tags.
 
 In other words, the basic generic data model is stable as defined in
@@ -857,7 +857,7 @@ represent the simple value. (To minimize confusion, only the values 32
 to 255 are used.)  This maintains the structure of the initial bytes:
 as for the other major types, the length of these always depends on
 the additional information in the first byte. {{fpnoconttbl2}} lists
-the values assigned and available for simple types.
+the numeric values assigned and available for simple values.
 
 |   Value | Semantics       |
 |---------|-----------------|
@@ -3011,7 +3011,7 @@ Subkind 1:
 
 Subkind 2:
 
-* Reserved two-byte encodings of simple types: f8 00, f8 01, f8 18, f8 1f
+* Reserved two-byte encodings of simple values: f8 00, f8 01, f8 18, f8 1f
 
 Subkind 3:
 
@@ -3049,8 +3049,8 @@ This document does not create a new version of the format.
 The two verified errata on RFC 7049, EID 3764 and EID 3770, concerned
 two encoding examples in the text that have been corrected
 ({{bignums}}: "29" -> "49", {{numbers}}: "0b000_11101" ->
-"0b000_11001").  Also, RFC 7049 contained an example using the (numeric) value of a simple type
-24 (EID 5917), which is not well-formed; this example has
+"0b000_11001").  Also, RFC 7049 contained an example using the numeric
+value 24 for a simple value (EID 5917), which is not well-formed; this example has
 been removed.  Errata report 5763 pointed to an accident in the
 wording of the definition of tags; this was resolved during a re-write
 of {{tags}}.  Errata report 5434 pointed out that the UBJSON example

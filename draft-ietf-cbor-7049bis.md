@@ -2492,7 +2492,7 @@ representing "water"), and "\ud800\udd51" is a UTF-8 string in
 diagnostic notation with a single character U+10151 (GREEK ACROPHONIC
 ATTIC FIFTY STATERS).  (Note that all these single-character strings
 could also be represented in native UTF-8 in diagnostic notation, just
-not in an ASCII-only specification like the present one.)  In the
+not in an ASCII-only specification.)  In the
 diagnostic notation provided for bignums, their intended numeric value
 is shown as a decimal number (such as 18446744073709551616) instead of
 showing a tagged byte string (such as 2(h'010000000000000000')).

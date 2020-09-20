@@ -1872,7 +1872,7 @@ generic decoder may deliver a decoded map to an application that needs
 to be checked for duplicate map keys by that application
 (alternatively, the decoder may provide a programming interface to
 perform this service for the application).  Specific data models
-cannot distinguish values for map keys that are equal for this purpose
+are not able to distinguish values for map keys that are equal for this purpose
 at the generic data model level.
 
 ## Undefined Values {#undefined-values}

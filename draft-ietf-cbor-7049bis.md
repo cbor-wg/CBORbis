@@ -2952,8 +2952,7 @@ kind are identified in the pseudocode by specific instances of calling
 fail(), in order:
 
 * a reserved value is used for additional information (28, 29, 30)
-* major type 7, additional information 24, value < 32 (incorrect or
-  incorrectly encoded simple type)
+* major type 7, additional information 24, value < 32 (incorrect)
 * incorrect substructure of indefinite length byte/text string (may
   only contain definite length strings of the same major type)
 * "break" stop code (mt=7, ai=31) occurs in a value position of a map or

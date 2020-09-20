@@ -1560,6 +1560,9 @@ decoders can present partial information about a top-level data item
 to an application, such as the nested data items that could already be
 decoded, or even parts of a byte string that hasn't completely arrived
 yet.
+Such an application also MUST have matching streaming security mechanism, where
+the desired protection is available for incremental data presented to the
+application.
 
 Note that some applications and protocols will not want to use
 indefinite-length encoding.  Using indefinite-length encoding allows

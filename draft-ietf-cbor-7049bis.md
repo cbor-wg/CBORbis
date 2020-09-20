@@ -2373,6 +2373,12 @@ firewall, has come over a secure channel such as TLS, is encrypted or
 signed,
 or has come from some other source that is presumed trusted.
 
+{{preferred}} gives examples of limitations in interoperability when using a
+constrained CBOR decoder with input from a CBOR encoder that uses a
+non-preferred serialization. When a single data item is consumed both by such a
+constrained decoder and a full decoder, it can lead to security issues that can
+be exploited by an attacker who can inject or manipulate content.
+
 Hostile input may be constructed to overrun buffers, overflow or
 underflow integer arithmetic, or cause other decoding disruption.  CBOR
 data items might have lengths or sizes that are intentionally

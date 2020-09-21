@@ -387,7 +387,7 @@ be complete, but it would be dangerous to declare they are exhaustive.
 > that joint to rust shut.
 
 We will add a sentence after the first sentence in the bullet point:
-   Note that reporting such an error can cause ossification, and is
+   Note that treating this case as an error can cause ossification, and is
    thus not encouraged.
 
 ##### 1d9f981

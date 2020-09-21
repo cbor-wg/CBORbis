@@ -2434,7 +2434,10 @@ with the application protocol that is serialized in CBOR.
 The input check itself may consume resources.  This is usually linear
 in the size of the input, which means that an attacker has to spend
 resources that are commensurate to the resources spent by the defender
-on input validation.  Processing for arbitrary-precision numbers may
+on input validation.
+However, an attacker might be able to craft inputs that will take longer for a
+target decoder to process then for the attacker to produce.
+Processing for arbitrary-precision numbers may
 exceed linear effort.  Also, some hash-table implementations that are
 used by decoders to build in-memory representations of maps can be
 attacked to spend quadratic effort, unless a secret key

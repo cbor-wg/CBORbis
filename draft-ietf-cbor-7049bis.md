@@ -5,7 +5,7 @@ cat: std
 # number: '7049'
 obsoletes: 7049
 docname: draft-ietf-cbor-7049bis-latest
-# consensus: 'yes'
+consensus: 'yes'
 # submissiontype: IETF
 pi:
   toc: 'yes'
@@ -63,12 +63,14 @@ normative:
       '2018': Edition
   IEEE754:
     -: fp
+    target: https://ieeexplore.ieee.org/document/8766229
     title: IEEE Standard for Floating-Point Arithmetic
     author:
       -
         org: IEEE
     seriesinfo:
-      IEEE Std: 754-2008
+      IEEE Std: 754-2019
+      DOI: 10.1109/IEEESTD.2019.8766229
     date: false
   RFC3629:
   RFC3339:
@@ -136,7 +138,14 @@ informative:
       author:
         - name: Andrew Ho
       date: 2018
-  SIPHASH: DOI.10.1007_978-3-642-34931-7_28
+  SIPHASH_LNCS: DOI.10.1007_978-3-642-34931-7_28
+  SIPHASH_OPEN:
+      target: https://131002.net/siphash/siphash.pdf
+      title: "SipHash: a fast short-input PRF"
+      author:
+        - name: Jean-Philippe Aumasson
+        - name: Daniel J. Bernstein
+      date: false # 2012
   RFC8610: cddl
   RFC8618: cdns
   RFC8742: cbor-sequence
@@ -339,7 +348,7 @@ Stream decoder:
   received.
 
 Terms and concepts for floating-point values such as Infinity, NaN
-(not a number), negative zero, and subnormal are defined in [IEEE754].
+(not a number), negative zero, and subnormal are defined in {{IEEE754}}.
 
 Where bit arithmetic or data types are explained, this document uses
 the notation familiar from the programming language C {{C}}, except that
@@ -371,7 +380,7 @@ also retain their usual meaning).
 
 CBOR is explicit about its generic data model, which defines the set
 of all data items that can be represented in CBOR.  Its basic generic
-data model is extensible by the registration of simple type values and
+data model is extensible by the registration of "simple values" and
 tags.  Applications can then subset the resulting extended generic
 data model to build their specific data models.
 
@@ -424,7 +433,7 @@ been) defined via the IANA registries created for CBOR.  Even if such
 an extension is unknown to a generic encoder or decoder, data items
 using that extension can be passed to or from the application by
 representing them at the interface to the application within the basic
-generic data model, i.e., as generic values of a simple type or
+generic data model, i.e., as generic simple values or
 generic tags.
 
 In other words, the basic generic data model is stable as defined in
@@ -829,7 +838,7 @@ Major type 7 is for two types of data: floating-point numbers and
 additional information in the initial byte has its own separate
 meaning, as defined in {{fpnoconttbl}}.  Like the major types for
 integers, items of this major type do not carry content data; all the
-information is in the initial bytes.
+information is in the initial bytes (the head).
 
 | 5-Bit Value | Semantics                                                 |
 |-------------|-----------------------------------------------------------|
@@ -848,7 +857,7 @@ represent the simple value. (To minimize confusion, only the values 32
 to 255 are used.)  This maintains the structure of the initial bytes:
 as for the other major types, the length of these always depends on
 the additional information in the first byte. {{fpnoconttbl2}} lists
-the values assigned and available for simple types.
+the numeric values assigned and available for simple values.
 
 |   Value | Semantics       |
 |---------|-----------------|
@@ -967,7 +976,7 @@ see the registry described at {{ianatags}} for the complete list.
 {: #tagvalues title='Tag numbers defined in RFC 7049'}
 
 Conceptually, tags are interpreted in the generic data model, not at
-(de-)serialization time.  A small number of tags (specifically, tag
+(de-)serialization time.  A small number of tags (at this time, tag
 number 25 and tag number 29) have been registered with semantics that
 may require processing at (de-)serialization time: The decoder needs to
 be aware and the encoder needs to be in control of the exact
@@ -982,11 +991,11 @@ property is NOT RECOMMENDED.
 IANA allocated tag numbers 65535, 4294967295, and
 18446744073709551615 (binary all-ones in 16-bit, 32-bit, and 64-bit).
 These can be used as a convenience for implementers
-that want a single integer to indicate either that a specific tag is
+that want a single integer data structure to indicate either that a specific tag is
 present, or the absence of a tag.
 That allocation is described in Section 10 of {{?I-D.bormann-cbor-notable-tags}}.
 These tags are not intended to occur in actual CBOR data items;
-implementations may flag such an occurrence as an error.
+implementations MAY flag such an occurrence as an error.
 
 Protocols using tag numbers 0 and 1 extend the generic data model
 ({{cbor-data-models}}) with data items representing points in time;
@@ -1039,7 +1048,7 @@ values, which may also be desirable at an application protocol level.
 While emitting tag number 1 values with non-finite tag content values
 (e.g., with NaN for undefined date/time values or with Infinite for an
 expiry date that is not set) may seem an obvious way to handle this,
-using untagged null or undefined is often a better solution.
+using untagged null or undefined avoids the use of non-finites and results in a shorter encoding.
 Application protocol designers are encouraged to consider these cases
 and include clear guidelines for handling them.
 
@@ -1569,6 +1578,9 @@ decoders can present partial information about a top-level data item
 to an application, such as the nested data items that could already be
 decoded, or even parts of a byte string that hasn't completely arrived
 yet.
+Such an application also MUST have matching streaming security mechanism, where
+the desired protection is available for incremental data presented to the
+application.
 
 Note that some applications and protocols will not want to use
 indefinite-length encoding.  Using indefinite-length encoding allows
@@ -1686,7 +1698,9 @@ generic decoder.
 A validity-checking decoder can do one of two things when it
 encounters such a case that it does not recognize:
 
-* It can report an error (and not return data).  Note that this error
+* It can report an error (and not return data).
+  Note that treating this case as an error can cause ossification, and is
+  thus not encouraged. This error
   is not a validity error per se.  This kind of error is more likely
   to be raised by a decoder that would be performing validity checking
   if this were a known case.
@@ -1876,7 +1890,7 @@ generic decoder may deliver a decoded map to an application that needs
 to be checked for duplicate map keys by that application
 (alternatively, the decoder may provide a programming interface to
 perform this service for the application).  Specific data models
-cannot distinguish values for map keys that are equal for this purpose
+are not able to distinguish values for map keys that are equal for this purpose
 at the generic data model level.
 
 ## Undefined Values {#undefined-values}
@@ -1987,7 +2001,10 @@ conversion:
 
 * Numbers with fractional parts are represented as floating-point
   values, performing the decimal-to-binary conversion based on the
-  precision provided by IEEE 754 binary64.  Then, when encoding in
+  precision provided by IEEE 754 binary64.
+  The mathematical value of the JSON number is converted to binary64
+  using the roundTiesToEven procedure in Section 4.3.1 of {{IEEE754}}.
+  Then, when encoding in
   CBOR, the preferred serialization uses the shortest floating-point
   representation exactly representing this conversion result; for
   instance, 1.5 is represented in a 16-bit floating-point value (not
@@ -2256,7 +2273,7 @@ Required parameters: n/a
 Optional parameters: n/a
 
 Encoding considerations:
-: binary
+: Binary
 
 Security considerations:
 : See {{securitycons}} of this document
@@ -2266,8 +2283,7 @@ Interoperability considerations: n/a
 Published specification: This document
 
 Applications that use this media type:
-: None yet, but it is expected that this format will be deployed
-  in protocols and applications.
+: Many
 
 
 Additional information:
@@ -2292,7 +2308,7 @@ Change controller:
 
 ## CoAP Content-Format
 
-The CoAP Content-Format for CBOR is defined in {{?IANA.core-parameters}}:
+The CoAP Content-Format for CBOR is registered in {{?IANA.core-parameters}}:
 
 Media Type: application/cbor
 
@@ -2375,6 +2391,20 @@ firewall, has come over a secure channel such as TLS, is encrypted or
 signed,
 or has come from some other source that is presumed trusted.
 
+{{preferred}} gives examples of limitations in interoperability when using a
+constrained CBOR decoder with input from a CBOR encoder that uses a
+non-preferred serialization. When a single data item is consumed both by such a
+constrained decoder and a full decoder, it can lead to security issues that can
+be exploited by an attacker who can inject or manipulate content.
+
+As discussed throughout this document, there are many values that can be
+considered "equivalent" in some circumstances and "not equivalent" in others. As
+just one example, the numeric value for the number "one" might be expressed as
+an integer or a bignum. A system interpreting CBOR input might accept either
+form for the number "one", or might reject one (or both) forms. Such acceptance
+or rejection can have security implications in the program that is using the
+interpreted input.
+
 Hostile input may be constructed to overrun buffers, overflow or
 underflow integer arithmetic, or cause other decoding disruption.  CBOR
 data items might have lengths or sizes that are intentionally
@@ -2408,7 +2438,7 @@ on input validation.  Processing for arbitrary-precision numbers may
 exceed linear effort.  Also, some hash-table implementations that are
 used by decoders to build in-memory representations of maps can be
 attacked to spend quadratic effort, unless a secret key
-(see Section 7 of {{SIPHASH}}) or some other mitigation is employed.
+(see Section 7 of {{SIPHASH_LNCS}}, also {{SIPHASH_OPEN}}) or some other mitigation is employed.
 Such superlinear efforts can be
 exploited by an attacker to exhaust resources at or before the input
 validator; they therefore need to be avoided in a CBOR decoder
@@ -2446,6 +2476,22 @@ they support and what validity checking they can provide for each of
 them as well as for basic CBOR validity (UTF-8 checking, duplicate map
 key checking).
 
+{{bignums}} notes that using the non-preferred choice of a bignum
+representation instead of a basic integer for encoding a number is not intended
+to have application semantics, but it can have such semantics if an application
+receiving CBOR data is using a decoder in the basic generic data model. This
+disparity causes a security issue if the two sets of semantics differ. Thus,
+applications using CBOR need to specify the data model that they are using for
+each use of CBOR data.
+
+It is common to convert CBOR data to other formats. In many cases, CBOR has more
+expressive types than other formats; this is particularly true for the
+common conversion to JSON. The loss of type information can cause security
+issues for the systems that are processing the less-expressive data.
+
+Security considerations for the use of base16 and base64 from {{RFC4648}}, and the use
+of UTF-8 from {{RFC3629}}, are relevant to CBOR as well.
+
 --- back
 
 # Examples {#examples}
@@ -2461,7 +2507,7 @@ representing "water"), and "\ud800\udd51" is a UTF-8 string in
 diagnostic notation with a single character U+10151 (GREEK ACROPHONIC
 ATTIC FIFTY STATERS).  (Note that all these single-character strings
 could also be represented in native UTF-8 in diagnostic notation, just
-not in an ASCII-only specification like the present one.)  In the
+not in an ASCII-only specification.)  In the
 diagnostic notation provided for bignums, their intended numeric value
 is shown as a decimal number (such as 18446744073709551616) instead of
 showing a tagged byte string (such as 2(h'010000000000000000')).
@@ -2921,8 +2967,7 @@ kind are identified in the pseudocode by specific instances of calling
 fail(), in order:
 
 * a reserved value is used for additional information (28, 29, 30)
-* major type 7, additional information 24, value < 32 (incorrect or
-  incorrectly encoded simple type)
+* major type 7, additional information 24, value < 32 (incorrect)
 * incorrect substructure of indefinite length byte/text string (may
   only contain definite length strings of the same major type)
 * "break" stop code (mt=7, ai=31) occurs in a value position of a map or
@@ -2975,7 +3020,7 @@ Subkind 1:
 
 Subkind 2:
 
-* Reserved two-byte encodings of simple types: f8 00, f8 01, f8 18, f8 1f
+* Reserved two-byte encodings of simple values: f8 00, f8 01, f8 18, f8 1f
 
 Subkind 3:
 
@@ -3013,8 +3058,8 @@ This document does not create a new version of the format.
 The two verified errata on RFC 7049, EID 3764 and EID 3770, concerned
 two encoding examples in the text that have been corrected
 ({{bignums}}: "29" -> "49", {{numbers}}: "0b000_11101" ->
-"0b000_11001").  Also, RFC 7049 contained an example using the simple
-type value 24 (EID 5917), which is not well-formed; this example has
+"0b000_11001").  Also, RFC 7049 contained an example using the numeric
+value 24 for a simple value (EID 5917), which is not well-formed; this example has
 been removed.  Errata report 5763 pointed to an accident in the
 wording of the definition of tags; this was resolved during a re-write
 of {{tags}}.  Errata report 5434 pointed out that the UBJSON example

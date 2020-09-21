@@ -1,0 +1,650 @@
+Thank you for the extensive review. We'll comment on the DISCUSS parts of the
+ballot first; a later response will cover the COMMENTs.
+
+--Paul Hoffman
+
+On 2020-09-08, at 00:06, Benjamin Kaduk via Datatracker <noreply@ietf.org> wrote:
+> 
+> Benjamin Kaduk has entered the following ballot position for
+> draft-ietf-cbor-7049bis-14: Discuss
+> 
+> […]
+> ----------------------------------------------------------------------
+> DISCUSS:
+> ----------------------------------------------------------------------
+> 
+> Thanks for this document; it's generally well-written and the changes
+> since 7049 are helpful.  I do have a few points that may need discussion
+> before publication, though.
+> 
+> Let's discuss whether the framing of tag number 35 for "regular
+> expressions that are roughly in [PCRE] form or a version of the
+> JavaScript regular expression syntax" meets the interoperability
+> expectations for Internet Standard status (bearing in mind that we are
+> defining a data format and not a protocol).  I note that it is okay
+> to leave the codepoint allocated with the current meaning and the
+> previous document as its reference, but decline to discuss it in the
+> document going for STD (we are in the process of doing that with COSE
+> countersignatures at the moment).
+
+* — tag 35
+
+Please see <https://github.com/cbor-wg/CBORbis/pull/210> for the proposed
+resolution. This PR is currently open.
+
+> The example in Section 5 of "the item is a map that has byte strings for
+> keys and contains at least one pair whose key is 0xab01" seems to be in
+> violation of the definition of a valid map, since applications are not
+> allowed to rely on invalid behavior.  (That is, the implied "more than
+> one pair whose key is 0xab01" would be invalid.)
+
+We have now changed this to "...and contains a pair whose key is 0xab01..." in
+<https://github.com/cbor-wg/CBORbis/pull/212>.
+
+> I think that the new deterministic encoding rules for sorting map keys
+> should be clear about whether "no content" sorts before or after
+> "content present" -- that is, how 0x10 and 0x1020 are ordered when the
+> 0x10 byte is identical and we have to compare \<nothing> with 0x20.
+
+We have now added an implementation note at the end of 4.2.1
+in <https://github.com/cbor-wg/CBORbis/pull/212>.
+
+> The discussion in Appendix C suggests that C (programming language)
+> implementations all use two's-complement representation of signed
+> integers; this requirement is present in POSIX but not C itself (I
+> verified this for C99 and C11).
+
+Indeed. This no longer useful variation allowed by C finally seems to be fixed
+in draft C++ 20, which unanimously passed its final technical approval ballot
+on September 4, 2020: http://eel.is/c++draft/basic.fundamental
+
+We agree the best way to handle this is to make this requirement explicit.
+C++20 is now referenced in new text in the part of the terminology section that
+talks about C-style notation in <https://github.com/cbor-wg/CBORbis/pull/208>.
+
+> Additionally, the encode_sint() function (also Appendix C) relies on C
+> implementation-defined behavior while right-shifting a signed integer.
+
+Similarly, this needless wart in C finally seems to be fixed in draft C++ 20 as
+well: http://eel.is/c++draft/expr.shift Also now referenced in 1.2
+in <https://github.com/cbor-wg/CBORbis/pull/208>.
+
+> The C decode_half() function in Appendix D assumes that 'int' is wider
+> than 16 bits (since assigning a value to an int16_t variable when the
+> value is not representable in int16_t incurs implementation-defined
+> behavior).  Given that this spec is specifically targetting constrained
+> devices, it's not clear that such an assumption is justified.  (It also
+> right shifts a signed integer, incurring the same implementation-defined
+> behavior mentioned above.  (The bitwise AND against 0x8000 is also
+> problematic for an int16_t.))
+
+Good point.  This can easily be fixed by declaring all the ints in that fragment
+as unsigneds instead. Done in <https://github.com/cbor-wg/CBORbis/pull/208>.
+
+
+
+
+Here are our responses to the COMMENTs. This is a follow-up to our earlier
+responses to the DISCUSSes.
+
+--Paul Hoffman
+
+> ----------------------------------------------------------------------
+> COMMENT:
+> ----------------------------------------------------------------------
+> 
+> Is there a comprehensive list of things that generic (en/de)coders need
+> to document their behavior for (e.g., how they handle duplicate map
+> keys; whether/what validity checking is done, including which tag
+> numbers are supported)?
+
+No.  Such a document coming from the CBOR WG in the future could be useful.
+
+> We use the expression "simple value" around 30 times, but "simple type
+> value" only twice (and "simple type" a few other times); are we happy
+> with the consistency of usage?
+
+We simplified to the common expression in the first case and reworded
+the second; we used the opportunity to increase the consistency of the
+terminology some more.
+
+##### 8cfa5af, a60b063
+
+> Please also note my comments on the IANA considerations in the
+> per-section comments; at least the first couple are fairly
+> consequential.
+
+Noted and commented on.
+
+> I'm pretty sympathetic to the secdir reviewer's desire for guidance on
+> how to implement validity checking.  I think it would be possible to
+> slot this into the existing discussion of validity in §5.3/5.4, possibly as
+> an additional subsection reiterating that it's required to check the
+> bits in 5.3.1/5.3.2, and the expectation that such checks are likely to
+> be incomplete in the face of new tag number allocations.
+
+Adding such guidance could indeed be useful, but not at this late stage in the
+document. It seems like good work for the CBOR WG to adopt in the future.
+
+> Section 1.2
+> 
+> Where bit arithmetic or data types are explained, this document uses
+> the notation familiar from the programming language C, except that
+> 
+> In recent memory we've asked for some form of reference for "the
+> programming language C" (even though the concepts we draw on are likely
+> to remain invariant for anything called C).
+
+We will add references to C that match those from the recently-approved RFC 8746.
+Done in <https://github.com/cbor-wg/CBORbis/pull/208>.
+
+> Section 2
+> 
+> In the basic (un-extended) generic data model, a data item is one of:
+> [...]
+> *  a sequence of zero or more Unicode code points ("text string")
+> 
+> Hmm, since we use "data item" for both the abstract idea and the
+> representation-format version, this description is only precise for the
+> abstract version (the representation is further constrained to UTF-8).
+> I am not sure whether there is a concise way to accurately express this
+> state, though.
+
+We have been using “encoded data item” for the latter; as we are talking about
+the model level, it should be reasonably clear that we are talking about the
+conceptual data item here.  (There is no great word for that; model-level data
+item is maybe another, as clumsy as conceptual.)
+
+> Section 3
+> 
+> The initial byte and any additional bytes consumed to construct the
+> argument are collectively referred to as the "head" of the data item.
+> 
+> side note: Interesting that we define "head" but do not use "tail" :)
+
+There was no need for us to define tail/body in this spec.
+
+> Section 3.3
+> 
+> meaning, as defined in Table 3.  Like the major types for integers,
+> items of this major type do not carry content data; all the
+> information is in the initial bytes.
+> 
+> (editorial) The "head", as it were, right?
+
+Yes, we will add that as a parenthesis.
+
+##### 66d1230
+
+> Section 3.4
+> 
+> Conceptually, tags are interpreted in the generic data model, not at
+> (de-)serialization time.  A small number of tags (specifically, tag
+> number 25 and tag number 29) have been registered with semantics that
+> may require processing at (de-)serialization time: The decoder needs
+> 
+> I suggest adding additional language to reiterate that this is a
+> point-in-time statement (and thus that there may be other such tags in
+> existence).
+
+We will replace "specifically" with "at this time"
+
+##### fc36c40
+
+> This means these tags cannot be implemented on top of every generic
+> CBOR encoder/decoder (which might not reflect the serialization order
+> for entries in a map at the data model level and vice versa); their
+> implementation therefore typically needs to be integrated into the
+> generic encoder/decoder.  The definition of new tags with this
+> property is NOT RECOMMENDED.
+> 
+> So we should give guidance to the DEs for the registry in question to
+> that effect?
+
+The DEs cannot enforce that — they would need a detailed understanding of the
+specification (if that is required for the range), and it is only NOT
+RECOMMENDED, so there may be a reason to deviate. Under the registration rules,
+the DEs could discuss the supposed need to not follow the NOT RECOMMENDED with
+the proposal authors.
+
+> IANA allocated tag numbers 65535, 4294967295, and
+> 18446744073709551615 (binary all-ones in 16-bit, 32-bit, and 64-bit).
+> These can be used as a convenience for implementers that want a
+> single integer to indicate either that a specific tag is present, or
+> the absence of a tag.  That allocation is described in Section 10 of
+> 
+> (editorial) Chasing the reference, I suggest that it is a "single
+> integer *data structure*" in the implementation's internal
+> representation; just reading this text alone left me confused as to how
+> this was intended to be used.
+
+We will make this "...implementers that want a single integer data structure to
+indicate..."
+
+##### 452cb47
+    
+> [I-D.bormann-cbor-notable-tags].  These tags are not intended to
+> occur in actual CBOR data items; implementations may flag such an
+> occurrence as an error.
+> 
+> I could maybe see this as "MAY".
+
+Good point. We will change "may flag to "MAY flag".
+
+##### b4649d8
+
+> Section 3.4.2
+> 
+> Thank you for mentioning leap seconds!
+> 
+> Note that platform types for date/time may include null or undefined
+> values, which may also be desirable at an application protocol level.
+> While emitting tag number 1 values with non-finite tag content values
+> (e.g., with NaN for undefined date/time values or with Infinite for
+> an expiry date that is not set) may seem an obvious way to handle
+> this, using untagged null or undefined is often a better solution.
+> Application protocol designers are encouraged to consider these cases
+> and include clear guidelines for handling them.
+> 
+> It's rather unfortunate that the text here doesn't provide any
+> justification for the claim of "better solution" (or reference to such
+> justification).
+
+We will change:
+   using untagged null or undefined is often a better solution.
+To:
+   using untagged null or undefined avoids the use of non-finites and results
+   in a shorter encoding.
+
+##### 874211a
+
+> Section 3.4.3
+> 
+> occurs in a bignum when using preferred serialization).  Note that
+> this means the non-preferred choice of a bignum representation
+> instead of a basic integer for encoding a number is not intended to
+> have application semantics (just as the choice of a longer basic
+> integer representation than needed, such as 0x1800 for 0x00 does
+> not).
+> 
+> It may be "not intended to", but it does, if you're using a decoder in
+> the generic data model.  We should be sure to cover the security
+> considerations of this disparity (and the corresponding need for an
+> application using CBOR to specify the data model it uses).
+
+We will add text to the Security Considerations section about this disparity.
+
+##### aa97614
+
+> Section 3.4.5.3
+> 
+> Note that tag numbers 33 and 34 differ from 21 and 22 in that the
+> data is transported in base-encoded form for the former and in raw
+> byte string form for the latter.
+> 
+> Do we want to mention tag 23 as well (as being the raw byte string)?
+
+Tag 23 does not have a direct equivalent in the way that tags 33 and 34 have in
+tags 21 and 22. Mentioning the lack of a direct equivalent doesn't seem
+necessary and may actually cause confusion.
+
+> Section 4.2.1
+> 
+> [I did not validate the hex-encoded IEEE754 against the decimal values.]
+> 
+> *  Indefinite-length items MUST NOT appear.  They can be encoded as
+>   definite-length items instead.
+> 
+> One could perhaps argue that a deterministic encoding procedure that
+> uses indefinite-length items is possible, and even useful in some cases.
+> This might argue for moving this requirement to Section 4.2.2's
+> list of "additional considerations".  That said, an application is not
+> obligated to use these core rules and can define its own rules if
+> needed, so I don't object to this requirement.
+
+We believe this requirement should stay with the core requirements.
+
+> Section 4.2.3
+> 
+> (Although [RFC7049] used the term "Canonical CBOR" for its form of
+> requirements on deterministic encoding, this document avoids this
+> term because "canonicalization" is often associated with specific
+> uses of deterministic encoding only.  The terms are essentially
+> interchangeable, however, and the set of core requirements in this
+> document could also be called "Canonical CBOR", while the length-
+> first-ordered version of that could be called "Old Canonical CBOR".)
+> 
+> If this document avoids the term, maybe the final sentence should not be
+> present?
+
+It is not easy to manage the language that implementers will use. With documents
+such as RFC 8785, people will continue to use “canonical”, and we want to avoid
+a false alternative between “canonical” (old) and “deterministic” (new) because
+it might make people choose “canonical” for no good reason.
+
+> Section 5
+> 
+> CBOR-based protocols MUST specify how their decoders handle invalid
+> and other unexpected data.  CBOR-based protocols MAY specify that
+> they treat arbitrary valid data as unexpected.  Encoders for CBOR-
+> based protocols MUST produce only valid items, that is, the protocol
+> cannot be designed to make use of invalid items.  An encoder can be
+> 
+> Just to check: my interpretation is that CBOR Sequences are compatible
+> with this requirement, since they use valid data items and just encode
+> them in sequence.  Right?
+
+A CBOR sequence in general (except when it is exactly one data item) is not a
+well-formed (and therefore not a valid) data item. However, a CBOR sequence may
+be required by the application to be composed of valid data items.
+
+> Section 5.1
+> 
+> Other decoders can present partial information about a top-level data
+> item to an application, such as the nested data items that could
+> already be decoded, or even parts of a byte string that hasn't
+> completely arrived yet.
+> 
+> This has potential to make some security types antsy, if coupled with
+> encryption mechanisms that release alleged plaintext prior to
+> authenticity check.  It's not immediately clear that this text needs to
+> change, though if it's also not a key point, perhaps it is easier to
+> just drop the mention rather than think about it more, though I'd also
+> be happy to see discussion of issues with streaming decryption in the
+> security considerations section.
+
+We will will add:
+   Such an application also MUST have matching streaming security mechanism,
+   where the desired protection is available for incremental data presented
+   to the application.
+   
+##### 57971e5
+
+> Section 5.3
+> 
+> A CBOR-based protocol MUST specify which of these options its
+> decoders take, for each kind of invalid item they might encounter.
+> 
+> Are the lists of types of validity error presented in the following
+> subsections exhaustive for the respective data models?  If so, it might
+> be worth mentioning that explicitly.
+
+The WG worked hard on the lists of types of validity errors, and it is meant to
+be complete, but it would be dangerous to declare they are exhaustive.
+
+> Section 5.4
+> 
+> *  It can report an error (and not return data).  Note that this
+>   error is not a validity error per se.  This kind of error is more
+>   likely to be raised by a decoder that would be performing validity
+>   checking if this were a known case.
+> 
+> (soapbox) Could we maybe be a little less encouraging of this behavior?
+> I am remembering horror stories of TLS stacks that did this for
+> extension types, which is an interoperability nightmare.  I recognize
+> that there are cases where it is the desired behavior, but in the
+> general case tags are an extensibility point and we shouldn't encourage
+> that joint to rust shut.
+
+We will add a sentence after the first sentence in the bullet point:
+   Note that treating this case as an error can cause ossification, and is
+   thus not encouraged.
+
+##### 1d9f981, ec05764
+
+> Section 5.6.1
+> 
+> As discussed in Section 2.2, specific data models can make values
+> equivalent for the purpose of comparing map keys that are distinct in
+> the generic data model.  Note that this implies that a generic
+> decoder may deliver a decoded map to an application that needs to be
+> checked for duplicate map keys by that application (alternatively,
+> the decoder may provide a programming interface to perform this
+> service for the application).  Specific data models cannot
+> distinguish values for map keys that are equal for this purpose at
+> the generic data model level.
+> 
+> This last bit seems like something that is forbidden by the protocol (vs
+> "cannot"); I wonder if a slight rewording is in order.
+
+We will change the sentence to read "Specific data models are not able to
+distinguish values..."
+
+##### 2cc176c
+
+> Section 6.2
+> 
+> *  Numbers with fractional parts are represented as floating-point
+>   values, performing the decimal-to-binary conversion based on the
+>   precision provided by IEEE 754 binary64.  Then, when encoding in
+> 
+> I forget if this conversion requires round-to-nearest or if multiple
+> rounding modes are available (the latter would of course be problematic
+> if we proceed on to the "can be represented in smaller float without
+> changing value" step).
+
+We will add "The mathematical value of the JSON number is converted to binary64
+using the roundTiesToEven procedure in Section 4.3.1 of [IEEE754] and update
+the reference to point to the 2019 version.
+
+##### b0baaab
+
+> Section 8
+> 
+> The notation borrows the JSON syntax for numbers (integer and
+> floating-point), True (>true<), False (>false<), Null (>null<), UTF-8
+> 
+> (soapbox) Is literal '>' and '<' really the best quoting strategy here
+> (and later on)?
+
+Yes. The actual best quoting would be using a font change, but that will be
+confusing for readers of some formats of the eventual RFC. Using quotation marks
+would definitely cause confusion in some readers that > and < do not.
+
+> Section 9.1, 9.2
+> 
+> What guidance can we give to the experts?
+
+We can't give any long-term guidance. Saying something like "it is good to
+balance the need for conserving the extensibility by keeping code points
+available and the need to react to requirements of applications" is possible,
+but is not actually useful and would simply become an attractive target for
+aggrieved applicants.
+
+> Section 9.3
+> 
+> Applications that use this media type:  None yet, but it is expected
+>   that this format will be deployed in protocols and applications.
+> 
+> I don't believe this to be currently accurate.
+
+Good catch. We will change this to "Many"
+    
+##### 001cb04
+
+> Additional information:  *  Magic number(s): n/a
+> 
+> I guess 0xd9d9f7 doesn't count, then?
+
+It is far from a universal magic number.
+
+> Section 9.4
+> 
+> The CoAP Content-Format for CBOR is defined in
+> [IANA.core-parameters]:
+> 
+> Is "defined in" the right way to word this?
+
+We will change "defined in" to "registered in".
+
+##### e5f34a0
+
+> Section 10
+> 
+> I guess the attack where you use indefinite-length encoding to achieve
+> total 'n' greater than 2**64 is not really practical at present...
+
+Correct.
+
+> Please add a mention of the risks of mixing a constrained decoder with a
+> variant (non-preferred-serialization) encoder, as alluded to in Section
+> 4.1.
+
+We will add the following:
+
+Section 4.1 gives examples of limitations in interoperability when using a
+constrained CBOR decoder with input from a CBOR encoder that uses a
+non-preferred serialization. When a single data item is consumed both by such a
+constrained decoder and a full decoder, it can lead to security issues that can
+be exploited by an attacker who can inject or manipulate content.
+
+##### eeba628
+
+> I also mention this down in G.3, but there seem to be some relevant
+> considerations regarding whether/when bignums and integers of the same
+> value are considered to be equivalent, in particular that the situation
+> is different depending on the data model in use.  This could probably
+> fit nicely into general discussion of handling the multiple possible
+> serializations of various data items.
+
+We will add the following:
+
+As discussed throughout this document, there are many values that can be
+considered "equivalent" in some circumstances and "not equivalent" in others. As
+just one example, the numeric value for the number "one" might be expressed as
+an integer or a bignum. A system interpreting CBOR input might accept either
+form for the number "one", or might reject one (or both) forms. Such acceptance
+or rejection can have security implications in the program that is using the
+interpreted input.
+    
+##### 03dfd80
+
+> I would consider (but am not sure if I would end up adding) a mention
+> that CBOR can convey time values, and thus that protocols using CBOR to
+> convey time values are likely to rely on a source of accurate time.
+
+This would only come up when an implementation compared a time value that had
+been encoded with CBOR with an actual clock. That situation would be identical
+to the time value encoded in any encoding system, and is thus not special to any
+encoding system.
+
+> I might incorporate by reference the RFC 4648 security considerations
+> since we talk about base64 in several places.
+
+Good point; added.
+
+> Protocols using CBOR text strings will likely have internationalization
+> considerations; whether CBOR itself should mention this is not entirely
+> clear to me.
+
+CBOR does not add any security considerations other than those already in UTF8.
+We will add a pointer to those.
+
+##### 17720dd, 4a643f6
+
+> The potential loss of (e.g., type) information when converting from CBOR
+> to JSON is probably worth a mention, noting that applications performing
+> such conversions should consider whether they are affected and/or it's
+> desired to include specific type information in the generated JSON.
+
+There are multiple ways to do this, which is one thing we could point out.
+
+We will add:
+   It is common to convert CBOR data to other formats. In many cases, CBOR
+   has more expressive types than other formats; this is particularly
+   true for the common conversion to JSON. The loss of type information can
+   cause security issues for the systems that are processing the
+   less-expressive data.
+
+##### e817ad4, 833a892
+
+> numbers may exceed linear effort.  Also, some hash-table
+> implementations that are used by decoders to build in-memory
+> representations of maps can be attacked to spend quadratic effort,
+> unless a secret key (see Section 7 of [SIPHASH]) or some other
+> mitigation is employed.  Such superlinear efforts can be exploited by
+> 
+> It seems likely that an alternate reference not behind a paywall would
+> be usable to make this point.
+
+We will change to use the current reference and add a reference to one that is
+apparently maintained by one of the authors:
+https://131002.net/siphash/siphash.pdf
+    
+##### c5032e4
+
+> Section 11.2
+> 
+> Would not [PCRE] need to be normative (if that functionality remains,
+> per the DISCUSS)?
+
+Please see the discussion under the DISCUSS for this.
+
+> Appendix A
+> 
+> [I did not verify the examples.]
+> 
+> ATTIC FIFTY STATERS).  (Note that all these single-character strings
+> could also be represented in native UTF-8 in diagnostic notation,
+> just not in an ASCII-only specification like the present one.)  In
+> 
+> The present specification is not ASCII-only...
+
+Good catch. We will remove "like the present one".
+
+##### 3adfa3d
+
+> Appendix C
+> 
+>  return 0;                     // no break out
+> 
+> Should this be 'return mt'?  IIUC the return value is a message type
+> or -1 for the break code, and errors are indicated out of band via
+> fail().
+
+This was caught earlier by Stuart Cheshire, and we have a more complete fix
+already in the repo (PR #203).
+
+> void encode_sint(int64_t n) {
+>  uint64t ui = n >> 63;    // extend sign to whole length
+>  mt = ui & 0x20;          // extract major type
+> 
+> If this is supposed to be C, you probably want to declare mt.
+
+It is labeled as pseudo-code (hard to compile with an ellipsis in there).
+But it doesn’t hurt to declare mt.
+
+This is pseudocode, not actual C. However, we will declare mt in it to make it
+clearer.
+
+##### PR #208
+
+> 
+> Appendix F
+> 
+> *  major type 7, additional information 24, value < 32 (incorrect or
+>   incorrectly encoded simple type)
+> 
+> I see "incorrectly encoded", but I'm not sure I understand what is meant
+> by "incorrect simple type".
+
+We will change this to "(incorrect)".
+
+##### e3a26a7
+
+> 
+> Appendix G.3
+> 
+> integers and floating point values.  Experience from implementation
+> and use now suggested that the separation between these two number
+> domains should be more clearly drawn in the document; language that
+> suggested an integer could seamlessly stand in for a floating point
+> value was removed.  Also, a suggestion (based on I-JSON [RFC7493])
+> 
+> So instead we have skew between the generic data model and the extended
+> model, where the generic model thinks some numers are different that the
+> extended model treats as the same.  Should we mention that here as well?
+
+That is not really a change from RFC 7049; clearly identifying the data models
+is a new way to discuss CBOR that is used in many places in the current
+document.

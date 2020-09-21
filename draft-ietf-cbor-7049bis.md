@@ -352,7 +352,8 @@ Terms and concepts for floating-point values such as Infinity, NaN
 
 Where bit arithmetic or data types are explained, this document uses
 the notation familiar from the programming language C {{C}}, except that
-"\*\*" denotes exponentiation.  Examples and pseudocode
+"\*\*" denotes exponentiation and ".." denotes a range that includes both
+ends given.  Examples and pseudocode
 assume that signed integers use two's complement representation and
 that right shifts of signed integers perform sign extension; these
 assumptions are also specified in Sections 6.8.2 and 7.6.7 of the 2020
@@ -536,7 +537,7 @@ The following lists the major types and the additional information and
 other bytes associated with the type.
 
 Major type 0:
-: an integer in the range 0..2**64-1 inclusive.  The value of the
+: an unsigned integer in the range 0..2**64-1 inclusive.  The value of the
   encoded item is the argument itself.  For example, the
   integer 10 is denoted as the one byte 0b000_01010 (major type 0,
   additional information 10).  The integer 500 would be 0b000_11001
@@ -649,7 +650,7 @@ item before all of it is known is often
 referred to as "streaming" within that data item.)
 
 Indefinite-length arrays and maps are dealt with differently than
-indefinite-length byte strings and text strings.
+indefinite-length strings (byte strings and text strings).
 
 ### The "break" Stop Code {#break}
 
@@ -1184,7 +1185,7 @@ offered by a generic decoder as a special option).
 
 #### Expected Later Encoding for CBOR-to-JSON Converters {#convexpect}
 
-Tags number 21 to 23 indicate that a byte string might require a specific
+Tag numbers 21 to 23 indicate that a byte string might require a specific
 encoding when interoperating with a text-based representation.  These
 tags are useful when an encoder knows that the byte string data it is
 writing is likely to be later converted to a particular JSON-based
@@ -1381,8 +1382,8 @@ it satisfies the following restrictions:
     only with an additional uint32_t.
 
   Floating-point values also MUST use the shortest form that preserves
-  the value, e.g. 1.5 is encoded as 0xf93e00 and 1000000.5 as
-  0xfa49742408.
+  the value, e.g. 1.5 is encoded as 0xf93e00 (binary16) and 1000000.5 as
+  0xfa49742408 (binary32).
   (One implementation of this is to have all floats start as a 64-bit
   float, then do a test conversion to a 32-bit float; if the result is
   the same numeric value, use the shorter form and repeat the process
@@ -1455,8 +1456,9 @@ encodings, such as:
   with a specific data model that declares integer and
   floating-point values to be interchangeable, the protocol's
   deterministic encoding needs to specify
-  whether (for example) the integer 1.0 is encoded as 0x01, 0xf93c00, 0xfa3f800000,
-  or 0xfb3ff0000000000000. Example rules for this are:
+  whether (for example) the integer 1.0 is encoded as 0x01 (unsigned
+  integer), 0xf93c00 (binary16), 0xfa3f800000 (binary32),
+  or 0xfb3ff0000000000000 (binary64). Example rules for this are:
   1. Encode integral values that fit in 64 bits as values from major
      types 0 and 1, and other values as the preferred (smallest of 16-, 32-, or
      64-bit) floating-point representation that accurately represents the value,
@@ -1737,7 +1739,13 @@ environments pose different restrictions on the range and precision of
 numbers that are representable.  For example, the basic JavaScript number
 system treats all numbers as floating-point values, which may result in
 silent loss of precision in decoding integers with more than 53
-significant bits.  A protocol that uses numbers should define its
+significant bits.
+Another example is that, since CBOR keeps the sign bit for its integer
+representation in the major type, it has one bit more for signed
+numbers of a certain length (e.g., -2\*\*64..2\*\*64-1 for 1+8-byte
+integers) than the typical platform signed integer representation of
+the same length (-2\*\*63..2\*\*63-1 for 8-byte int64_t).
+A protocol that uses numbers should define its
 expectations on the handling of non-trivial numbers in decoders and
 receiving applications.
 
@@ -1973,6 +1981,12 @@ as a JSON null.
 
 * Indefinite-length items are made definite before conversion.
 
+A CBOR-to-JSON converter may want to keep to the JSON profile I-JSON
+{{?RFC7493}}, to maximize interoperability and increase confidence
+that the JSON output can be processed with predictable results.  For
+example, this has implications on the range of integers that can be
+represented reliably, as well as on the top-level items that may be
+supported by older JSON implementations.
 
 ## Converting from JSON to CBOR
 
@@ -3208,5 +3222,5 @@ Nico Williams, Peter Occil, Phillip Hallam-Baker, Ray Polk, Stuart Cheshire, Tim
 Tony Finch, Tony Hansen, and Yaron Sheffer.
 Benjamin Kaduk provided an extensive review during IESG processing.
 
-<!--  LocalWords:  UTC bigfloats codepoint curation
+<!--  LocalWords:  UTC bigfloats codepoint curation pseudocode
  -->

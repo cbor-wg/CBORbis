@@ -2470,7 +2470,7 @@ key checking).
 {{bignums}} notes that using the non-preferred choice of a bignum
 representation instead of a basic integer for encoding a number is not intended
 to have application semantics, but it can have such semantics if an application
-receiving CBOR data is using a decoder in the generic data model. This
+receiving CBOR data is using a decoder in the basic generic data model. This
 disparity causes a security issue if the two sets of semantics differ. Thus,
 applications using CBOR need to specify the data model that they are using for
 each use of CBOR data.
@@ -2480,7 +2480,7 @@ expressive types than other formats; this is particularly true for the
 common conversion to JSON. The loss of type information can cause security
 issues for the systems that are processing the less-expressive data.
 
-Security considerations for the use of base64 from {{RFC4648}}, and the use
+Security considerations for the use of base16 and base64 from {{RFC4648}}, and the use
 of UTF-8 from {{RFC3629}}, are relevant to CBOR as well.
 
 --- back

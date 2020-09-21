@@ -540,7 +540,7 @@ Good point; added.
 CBOR does not add any security considerations other than those already in UTF8.
 We will add a pointer to those.
 
-##### 17720dd
+##### 17720dd, 4a643f6
 
 > The potential loss of (e.g., type) information when converting from CBOR
 > to JSON is probably worth a mention, noting that applications performing

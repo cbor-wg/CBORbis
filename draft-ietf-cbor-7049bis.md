@@ -1447,8 +1447,8 @@ encodings, such as:
   distinct values, the application might not distinguish these and might
   decide to represent all zero values with a positive sign, disallowing
   negative zero.
-  (The application may also want to restrict the precision of floating
-  point values in such a way that there is never a need to represent
+  (The application may also want to restrict the precision of
+  floating-point values in such a way that there is never a need to represent
   64-bit — or even 32-bit — floating-point values.)
 
 * If a protocol includes a field that can express floating-point values,
@@ -1807,7 +1807,7 @@ decoder might do one of the following:
   see also {{validity-checking}}).  These generic decoders are
   universally useful.  An application may still need to do perform its
   own duplicate checking based on application rules (for instance if
-  the application equates integers and floating point values in map
+  the application equates integers and floating-point values in map
   key positions for specific maps).
 * Pass all map entries to the application, including ones with
   duplicate keys.  This requires the application to handle (check
@@ -3121,13 +3121,13 @@ implementations and on the extensibility features of the format.
 
 RFC 7049, as a format derived from the JSON ecosystem, was influenced
 by the JSON number system that was in turn inherited from JavaScript
-at the time.  JSON does not provide distinct integers and floating
-point values (and the latter are decimal in the format).  CBOR
+at the time.  JSON does not provide distinct integers and floating-point
+values (and the latter are decimal in the format).  CBOR
 provides binary representations of numbers, which do differ between
-integers and floating point values.  Experience from implementation
+integers and floating-point values.  Experience from implementation
 and use now suggested that the separation between these two number
 domains should be more clearly drawn in the document; language that
-suggested an integer could seamlessly stand in for a floating point
+suggested an integer could seamlessly stand in for a floating-point
 value was removed.  Also, a suggestion (based on I-JSON {{?RFC7493}})
 was added for handling these types when converting JSON to CBOR.
 

@@ -1008,7 +1008,7 @@ tag numbers 2 and 3, with arbitrarily sized integers; and tag numbers
 Tag number 0 contains a text string in the standard format described by
 the `date-time` production in {{RFC3339}}, as refined by Section 3.3
 of {{RFC4287}}, representing the point in time described there. A
-nested item of another type or that doesn't match the {{RFC4287}}
+nested item of another type or a text string that doesn't match the {{RFC4287}}
 format is invalid.
 
 ### Epoch-based Date/Time {#epochdatetimesect}
@@ -1811,7 +1811,7 @@ has to stop with an error.
 When processing maps that exhibit entries with duplicate keys, a generic
 decoder might do one of the following:
 
-* Not accept maps duplicate keys (that is, enforce validity for maps,
+* Not accept maps with duplicate keys (that is, enforce validity for maps,
   see also {{validity-checking}}).  These generic decoders are
   universally useful.  An application may still need to do perform its
   own duplicate checking based on application rules (for instance if

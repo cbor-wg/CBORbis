@@ -108,7 +108,7 @@ We simplified to the common expression in the first case and reworded
 the second; we used the opportunity to increase the consistency of the
 terminology some more.
 
-##### 8cfa5af, 
+##### 8cfa5af, a60b063
 
 > Please also note my comments on the IANA considerations in the
 > per-section comments; at least the first couple are fairly
@@ -390,7 +390,7 @@ We will add a sentence after the first sentence in the bullet point:
    Note that treating this case as an error can cause ossification, and is
    thus not encouraged.
 
-##### 1d9f981
+##### 1d9f981, ec05764
 
 > Section 5.6.1
 > 
@@ -556,7 +556,7 @@ We will add:
    cause security issues for the systems that are processing the
    less-expressive data.
 
-##### e817ad4
+##### e817ad4, 833a892
 
 > numbers may exceed linear effort.  Also, some hash-table
 > implementations that are used by decoders to build in-memory

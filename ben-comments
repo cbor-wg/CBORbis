@@ -550,8 +550,8 @@ We will add a pointer to those.
 There are multiple ways to do this, which is one thing we could point out.
 
 We will add:
-   It is common to convert CBOR data to other formats. In most cases, CBOR
-   has more expressive types than many other formats; this is particularly
+   It is common to convert CBOR data to other formats. In many cases, CBOR
+   has more expressive types than other formats; this is particularly
    true for the common conversion to JSON. The loss of type information can
    cause security issues for the systems that are processing the
    less-expressive data.

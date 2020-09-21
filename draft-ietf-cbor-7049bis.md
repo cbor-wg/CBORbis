@@ -2475,8 +2475,8 @@ disparity causes a security issue if the two sets of semantics differ. Thus,
 applications using CBOR need to specify the data model that they are using for
 each use of CBOR data.
 
-It is common to convert CBOR data to other formats. In most cases, CBOR has more
-expressive types than many other formats; this is particularly true for the
+It is common to convert CBOR data to other formats. In many cases, CBOR has more
+expressive types than other formats; this is particularly true for the
 common conversion to JSON. The loss of type information can cause security
 issues for the systems that are processing the less-expressive data.
 

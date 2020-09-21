@@ -2436,7 +2436,7 @@ in the size of the input, which means that an attacker has to spend
 resources that are commensurate to the resources spent by the defender
 on input validation.
 However, an attacker might be able to craft inputs that will take longer for a
-target decoder to process then for the attacker to produce.
+target decoder to process than for the attacker to produce.
 Processing for arbitrary-precision numbers may
 exceed linear effort.  Also, some hash-table implementations that are
 used by decoders to build in-memory representations of maps can be

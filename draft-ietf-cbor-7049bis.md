@@ -37,14 +37,6 @@ author:
   org: ICANN
   email: paul.hoffman@icann.org
 normative:
-  ECMA262:
-    target: https://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
-    title: ECMAScript 2018 Language Specification
-    author:
-    - org: Ecma International
-    date: 2018-06
-    seriesinfo:
-      ECMA: Standard ECMA-262, 9th Edition
   C:
     title: Information technology — Programming languages — C
     author:
@@ -130,6 +122,14 @@ informative:
   RFC6838:
   RFC7049:
   RFC0713:
+  ECMA262:
+    target: https://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
+    title: ECMAScript 2018 Language Specification
+    author:
+    - org: Ecma International
+    date: 2018-06
+    seriesinfo:
+      ECMA: Standard ECMA-262, 9th Edition
   PCRE:
       target: http://www.pcre.org/
       title: PCRE - Perl Compatible Regular Expressions
@@ -942,6 +942,8 @@ tag A applies to the result of applying tag B on data item C.
 IANA maintains a registry of tag numbers as described in {{ianatags}}.
 {{tagvalues}} provides a list of tag numbers that were defined in {{RFC7049}}, with definitions in
 the rest of this section.
+(Tag number 35 was also defined in {{RFC7049}}; a discussion of this
+tag number follows in {{encodedtext}}.)
 Note that many other tag numbers have been defined since the publication of {{RFC7049}};
 see the registry described at {{ianatags}} for the complete list.
 
@@ -960,7 +962,6 @@ see the registry described at {{ianatags}} for the complete list.
 |         32 | text string | URI; see {{encodedtext}}                                      |
 |         33 | text string | base64url; see {{encodedtext}}                                |
 |         34 | text string | base64; see {{encodedtext}}                                   |
-|         35 | text string | Regular expression; see {{encodedtext}}                       |
 |         36 | text string | MIME message; see {{encodedtext}}                             |
 |      55799 | (any)       | Self-described CBOR; see {{self-describe}}                    |
 {: #tagvalues title='Tag numbers defined in RFC 7049'}
@@ -1228,14 +1229,6 @@ for some of these formats.
 
   the string is invalid.
 
-* Tag number 35 is for regular expressions that are roughly in Perl
-  Compatible Regular Expressions (PCRE/PCRE2) form {{PCRE}} or a
-  version of the JavaScript regular expression syntax {{ECMA262}}.
-  (Note that more specific identification may be necessary if the
-  actual version of the specification underlying the regular
-  expression, or more than just the text of the regular expression
-  itself, need to be conveyed.) Any contained string value is valid.
-
 * Tag number 36 is for MIME messages (including all headers), as defined in
   {{RFC2045}}. A text string that isn't a valid MIME message is
   invalid.  (For this tag, validity checking
@@ -1248,6 +1241,22 @@ for some of these formats.
 Note that tag numbers 33 and 34 differ from 21 and 22 in that the data is
 transported in base-encoded form for the former and in raw byte string
 form for the latter.
+
+{{RFC7049}} also defined a tag number 35, for regular expressions that
+are in Perl Compatible Regular Expressions (PCRE/PCRE2) form {{PCRE}}
+or in JavaScript regular expression syntax {{ECMA262}}.
+The state of the art in these regular expression specifications has
+since advanced and is continually advancing, so the present
+specification does not attempt to update the references to a snapshot
+that is current at the time of writing.
+Instead, this tag remains available (as registered in {{RFC7049}}) for
+applications that specify the particular regular expression variant
+they use out-of-band (possibly by limiting the usage to a defined
+common subset of both PCRE and ECMA262).
+As the present specification clarifies tag validity beyond
+{{RFC7049}}, we note that due to the open way the tag was defined in
+{{RFC7049}}, any contained string value needs to be valid at the CBOR
+tag level (but may then not be "expected" at the application level).
 
 
 ### Self-Described CBOR {#self-describe}

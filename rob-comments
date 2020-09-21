@@ -1,0 +1,199 @@
+Hi Rob,
+
+thank you for your kind words about CBOR and for mentioning the signed
+integer range issue.
+
+> ----------------------------------------------------------------------
+> COMMENT:
+> ----------------------------------------------------------------------
+>
+> Hi,
+>
+> Thank you for your work on this document, and bringing this to full standard.
+> Since I'm a big fan of CBOR and try to evangelize it whenever possible I'm
+> please to see this happening.
+>
+> However, I have one minor annoyance with CBOR, which is the range of negative
+> numbers that are encoded in major type 1.  My gripe is that the encoding allows
+> for negative integers that are not easily representable in a simple form in
+> most programming languages without using something equivalent to BigInteger.
+
+Right.  The underlying observation was that unsigned integers are way more likely to be used in constrained environments than signed integers.  We didn't want to waste a significant part of the code space, so negative integers were designed to be non-overlapping with unsigned ones, and that gives us a bit more than the usual bit-stealing sign representation used for signed integers.  That may be less familiar than just mapping C's data types, but it certainly makes sense for the application.  So you can have a range from -256..255 that fits into a single byte (plus the initial byte).
+
+> E.g., all values below -2^63 won't fit into a int64 type, and the value 2^64
+> won't even fit into an uint64 that was used to represent a negative number
+> (obviously unless it followed the CBOR encoding semantics of being offset by 1)
+
+We don't go into good platform representations of 65-bit signed integers.
+
+> For a generic decoder I presume that this isn't an issue since it can fallback
+> to something like BigInteger.  But for other decoders handling normal sized
+> integer datatypes I would presume that they would effectively presumably regard
+> anything smaller than -2^63 as not well-formed for their specific problem
+> domain.
+
+Certainly well-formed, but not "expected" according to the set of
+application data models they can support.
+
+When we do an update of the CDDL spec (RFC 8610), we might spend a little more time on explaining why you rarely want to use the full 65-bit signed types but instead be more specific about what you need.  But CBOR itself simply happily can represent what you give it, and a bit more than you'd expect at first.
+
+> I'm not suggesting that this should be changed (hence comment not a discuss),
+> but there are a couple of places in the document that it might be helpful to
+> warn implementors about this, that I have mentioned below.
+>
+> Other minor comments:
+>
+>    3.  Specification of the CBOR Encoding
+>
+>       Major type 0:  an integer in the range 0..2**64-1 inclusive.  The
+>          value of the encoded item is the argument itself.  For example,
+>          the integer 10 is denoted as the one byte 0b000_01010 (major type
+>          0, additional information 10).  The integer 500 would be
+>          0b000_11001 (major type 0, additional information 25) followed by
+>          the two bytes 0x01f4, which is 500 in decimal.
+>
+>       Major type 1:  a negative integer in the range -2**64..-1 inclusive.
+>          The value of the item is -1 minus the argument.  For example, the
+>          integer -500 would be 0b001_11001 (major type 1, additional
+>          information 25) followed by the two bytes 0x01f3, which is 499 in
+>          decimal.
+>
+> Would writing "0 to 2**64-1" be more clear than 0..2**64-1?
+
+(Sorry, CDDL thinking here, https://tools.ietf.org/html/rfc8610#section-2.2.2.1.)
+We use this notation some 35 times in the document, so adding some text in the terminology section makes sense (now in 1.2).
+(We won't use the opportunity to delete all 4 instances of "inclusive", though.)
+
+> Or otherwise
+> perhaps mention that in the terminology section that "x..y" is used to
+> represent an inclusive range set of all values from x to y, including x and y.
+> Also, noting that here where ".." has been used it explicit states that it is
+> inclusive, but that doesn't appear to be the case everywhere.
+>
+> I suggest changing "Major type 0:  an integer ..." back to "Major type 0:  an
+> unsigned integer", as in RFC7049, because the type is referred to as "Unsigned
+> integer".  It also makes it more consistent with the definition of Major type 1.
+
+Indeed; this lack of symmetry already came up in other discussions.
+
+>    3.2.1.  The "break" Stop Code
+>
+>       The "break" stop code is encoded with major type 7 and additional
+>       information value 31 (0b111_11111).  It is not itself a data item: it
+>       is just a syntactic feature to close an indefinite-length item.
+>
+>       If the "break" stop code appears anywhere where a data item is
+>       expected, other than directly inside an indefinite-length string,
+>       array, or map -- for example directly inside a definite-length array
+>       or map -- the enclosing item is not well-formed.
+>
+> I was wondering whether it would be helpful to clarify that by
+> indefinite-length string it means text or byte string?  Although this becomes
+> clear in section 3.2.3 anyway ...  My thinking is that section 3.2 lists 4
+> types that can have indefinite length, and then in this section both types are
+> string are treated together.
+
+When discussing CBOR data models, we tend to group major types 2 and 3
+as "strings", and 4 and 5 as "containers".  We don't use the latter in
+7049bis; we do use unqualified "string" though.
+
+We used the end of 3.2 to add another expansion of this term.
+
+>    3.2.3.  Indefinite-Length Byte Strings and Text Strings
+>
+> Would it be helpful to clarify that the chunks must be the same type.  E.g. you
+> cannot have a byte string that contains text string chunks and vice-versa?
+
+We do say:
+
+   If any item between the indefinite-length string indicator
+   (0b010_11111 or 0b011_11111) and the "break" stop code is not a
+   definite-length string item of the same major type, the string is
+   not well-formed.
+
+https://cbor-wg.github.io/CBORbis/draft-ietf-cbor-7049bis.html#rfc.section.3.2.3
+
+>
+>    3.4.5.2.  Expected Later Encoding for CBOR-to-JSON Converters
+>
+> "Tags number 21 to 23 ..." => "Tag numbers 21 to 23 ..."
+
+Fixed.
+
+>    4.2.1.  Core Deterministic Encoding Requirements
+>
+>          Floating-point values also MUST use the shortest form that
+>          preserves the value, e.g. 1.5 is encoded as 0xf93e00 and 1000000.5
+>          as 0xfa49742408.  (One implementation of this is to have all
+>          floats start as a 64-bit float, then do a test conversion to a
+>          32-bit float; if the result is the same numeric value, use the
+>
+> I find this paragraph slightly opaque, and I would suggest spelling out that
+> 1.5 has been encoded as a 16 bit IEEE float, whereas 1.00000005 has been
+> encoded as a 32 bit IEEE float.  The same comment applies to 4.2.2 as well.
+
+Added the terms binary16/32/64 as used in other parts of the document.
+
+> I also noticed that in most places the document refers to "floating-point" but
+> in a few places "floating point" is used instead.
+
+Fixed three occurrences, thanks.
+(We did this previously, and then Brownian motion crept in.)
+
+>    5.5.  Numbers
+>
+> As per my top comment, I think that it would be useful to raise in this section
+> that CBOR can encode negative values that cannot normally be represented in a
+> compact form.
+
+Added in the middle of the first paragraph:
+
+  Another example is that, since CBOR keeps the sign bit for its integer
+  representation in the major type, it has one bit more for signed
+  numbers of a certain length (e.g., -2\*\*64..2\*\*64-1 for 1+8-byte
+  integers) than the typical platform signed integer representation of
+  the same length (-2\*\*63..2\*\*63-1 for 8-byte int64_t).
+
+
+>    6.1.  Converting from CBOR to JSON
+>
+>       Most of the types in CBOR have direct analogs in JSON.  However, some
+>       do not, and someone implementing a CBOR-to-JSON converter has to
+>       consider what to do in those cases.  The following non-normative
+>       advice deals with these by converting them to a single substitute
+>       value, such as a JSON null.
+>
+>       *  An integer (major type 0 or 1) becomes a JSON number.
+>
+> It is worth referencing back to section 5.5 on Javascript numbers and
+> explicitly warn that not all CBOR integers can be precisely represented as JSON
+> numbers, and there may be a loss of precision?
+
+We added a paragraph at the end of 6.1 that points to RFC 7493.
+
+>    Appendix C.  Pseudocode
+>
+>       Major types 0 and 1 are designed in such a way that they can be
+>       encoded in C from a signed integer without actually doing an if-then-
+>       else for positive/negative (Figure 2).  This uses the fact that
+>       (-1-n), the transformation for major type 1, is the same as ~n
+>       (bitwise complement) in C unsigned arithmetic; ~n can then be
+>       expressed as (-1)^n for the negative case, while 0^n leaves n
+>       unchanged for non-negative.  The sign of a number can be converted to
+>       -1 for negative and 0 for non-negative (0 or positive) by arithmetic-
+>       shifting the number by one bit less than the bit length of the number
+>       (for example, by 63 for 64-bit numbers).
+>
+> This was another place where I thought that it might be useful to warn the
+> reader about decoding negative integers and the risk of overflow taking a major
+> 1 value into an int64 native type.
+
+This paragraph is about describing the pseudocode that follows, which
+is an encoder.
+
+We don't have pseudocode that shows how a decoder might range-check
+encoded data items for fit into the receiving data structures; this is
+so platform specific that I don't think we should provide any
+(and certainly not at this stage of the document).
+
+All these changes are in ae2bab7 and 94f98be, now PR #....

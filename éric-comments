@@ -55,10 +55,12 @@ were requested, but were able to add some of them to increase clarity. ]]
 > exhaustive and usually quite clear (with exceptions see below).
 > 
 > Thanks to Eve Schooler for her very detailed IoT directorate review at
-> https://urldefense.com/v3/__https://datatracker.ietf.org/doc/review-ietf-cbor-7049bis-14-iotdir-telechat-schooler-2020-09-08/__;!!PtGJab4!rtwfVxQHkFGq4iJT44U_snv-JQVWMcva9viSWxdDtQ57oLE9Ynzm4fBvwWgsNC-g_3BgGI9png$ 
+> https://datatracker.ietf.org/doc/review-ietf-cbor-7049bis-14-iotdir-telechat-schooler-2020-09-08/ 
 > I strongly suggest to the authors to follow Eve's recommendation to clarify and
 > make the text easier to read.
-> 
+
+Definitely! See above.
+
 > Please find below a couple of non-blocking COMMENT points.
 > 
 > I hope that this helps to improve the document,
@@ -74,18 +76,33 @@ were requested, but were able to add some of them to increase clarity. ]]
 > reference to a RFC ? The reader would benefit from some short description. This
 > oddity was also mentioned by Eve in her review, so, I strongly suggest to
 > address the issue.
-> 
+
+As you can see at <https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml#tags>,
+these are not RFCs, they are to a personal website. Instead of creating a link in an
+RFC that could go stale, it is better to expect a developer who cares about the tags
+to go to the IANA registry.
+
 > -- Section 3.4.5.2 --
 > As noted by other AD, I am puzzled by the added value of checking whether a
 > string is PCRE or ECMA262.
-> 
+
+Already fixed; see earlier responses to Ben.
+
+>
 > -- Section 3.4.6 --
 > I like this idea of 'magic number' but, as I am not a Unicode expert, I wonder
 > whether "In particular, 0xd9d9f7 is not a valid start of a Unicode text in any
 > Unicode encoding if it is followed by a valid CBOR data item." will always
 > stand true.
-> 
+
+One can never predict the future, but the stability of the Unicode standard in
+respect to these code points seems pretty good.
+
+
 > -- Section 4.2.1 --
 > Humm this section says "MUST be as short as possible" while the introduction
 > says "optimize for CPU not for bytes". Same applies for sorted keys... How can
 > we reconciliate ? Suggestion: add some text about this apparent goals conflict.
+
+The goal of Section 4.2.1 is pretty clearly "deterministic encoding". This section
+has nothing to do with the optimization of the format itself.

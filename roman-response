@@ -1,0 +1,44 @@
+Thanks for your comments. Our notes are below.
+
+--Paul Hoffman
+
+> ----------------------------------------------------------------------
+> COMMENT:
+> ----------------------------------------------------------------------
+> 
+> I support Ben Kaduk’s DISCUSS position.
+
+We have dealt with that in a different thread.
+ 
+> ** Section 1.0. Is it possible to enumerate the fixed errata?
+
+It is possible, but does not seem important. They were issues in some examples.
+ 
+> ** Section 3.4.5.3.  For Tag 35, how does one know if the syntax is a PCRE or
+> ECMA regular expression?
+
+Fixed earlier in response to Ben.
+ 
+> ** Section 3.4.5.3.  PCRE is the only informative reference of all of the tags
+> defined in this section (even ECMA is normative).  Please make it normative.
+
+Fixed earlier in response to Ben.
+
+> ** Section 4.1.  As an implementer of an application, what is the take away
+> from this section?  I’m not following on the definition of “preferred”.
+
+This section is signifying is that each application needs to specify which
+serialization is being used for values with multiple serializations (such as
+integer and bigint for the number "forty two"). It is not talking about a
+universal preference, but one that each implementer needs to specify for their
+particular application.
+
+ 
+> ** Section 10.  Per “The input check itself may consume resources.  This is
+> usually linear in the size of the input, which means that an attacker has to
+> spend resources that are commensurate to the resources spent by the defender on
+> input validation.”  I’m not sure this is true for all types of resources.  For
+> example, with compute resources, as an attacker I can craft an input that will
+> take longer for the target to process then for me to produce.
+
+Good catch. We added text covering that.

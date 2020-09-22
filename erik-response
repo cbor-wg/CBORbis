@@ -1,0 +1,50 @@
+Thanks for your comments. Our notes are below.
+
+--Paul Hoffman
+
+> ----------------------------------------------------------------------
+> COMMENT:
+> ----------------------------------------------------------------------
+> 
+> [[ questions ]]
+> 
+> [ section 3.3 ]
+> 
+> * Is it worth comparing and contrasting this encoding format with RFC 4506
+>  section 4.6?  Are they identical?
+
+They are not, and so probably not worth comparing, because...
+
+> [[ comments ]]
+> 
+> [ section 1 ]
+> 
+> * I suppose XDR (4506) isn't well-known anymore.  :-(
+>  (no edits necessary, just a comment)
+
+...of that. That is, no one asked us to make the comparison when we wrote RFC 7049.
+
+> [[ nits ]]
+> 
+> [ section 1.2 ]
+> 
+> * "does not include following extraneous data"
+>  Is "following" important, or is it just "does not include other
+>  extraneous data"?
+
+Using "following" is important in that extraneous data could possibly appear before an item (although that seems weird).
+
+ 
+> [ section 3.4.1 ]
+> 
+> * Perhaps "another type or that" -> "another type or a text string that"
+
+Good catch; fixed.
+
+> [ section 5.6 ]
+> 
+> * Perhaps "Not accept maps duplicate keys"
+>  -> "Not accept maps with duplicate keys"?
+
+Yes, definitely. Fixed.
+

@@ -2177,6 +2177,9 @@ type 7, value 42.
 
 A number of useful extensions to the diagnostic notation defined here are
 provided in Appendix G of {{-cddl}}, "Extended Diagnostic Notation" (EDN).
+Similarly, an extension of this notation could be provided in a
+separate document to provide for the documentation of NaN payloads,
+which are not covered in the present document.
 
 ## Encoding Indicators {#encoding-indicators}
 
@@ -2207,9 +2210,16 @@ indicator is not shown in {{examples}}.  (Note that the encoding
 indicator "_" is thus an abbreviation of the full form "_7", which is
 not used.)
 
-Byte and text strings of indefinite length can be
+The detailed chunk structure of byte and text strings of indefinite
+length can be
 notated in the form (_ h'0123', h'4567') and (_ "foo", "bar").
-
+However, for an indefinite length string with no chunks inside, (_ )
+would be ambiguous whether a byte string (0x5fff) or a text string
+(0x7fff) is meant and is therefore not used.
+The basic forms ''_ and ""_ can be used instead and are reserved for
+the case with no chunks only — not as short forms for the (permitted,
+but not really useful) encodings with only empty chunks, which to
+preserve the chunk structure need to be notated as (_ ''), (_ ""), etc.
 
 # IANA Considerations {#ianacons}
 

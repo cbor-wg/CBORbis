@@ -29,7 +29,7 @@ requirements language, and this is the best result we could come up with.
 > (for example, tags are explained well on page 20, last paragraph); these kinds
 > of explanations are not always present.
 
-This is usful input. Many of us have been reading this for seven years...
+This is useful input. Many of us have been reading this for seven years...
 We have taken many of your suggestions about forward references and first
 definitions to heart and will put them in the document before sending it
 to the RFC Editor.
@@ -78,9 +78,8 @@ Definitely! See above.
 > address the issue.
 
 As you can see at <https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml#tags>,
-these are not RFCs, they are to a personal website. Instead of creating a link in an
-RFC that could go stale, it is better to expect a developer who cares about the tags
-to go to the IANA registry.
+these are not RFCs, they are to a personal website.  Instead of creating a link in an
+RFC that could go stale, we added another reference to the IANA registry.
 
 > -- Section 3.4.5.2 --
 > As noted by other AD, I am puzzled by the added value of checking whether a

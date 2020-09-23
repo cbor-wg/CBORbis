@@ -407,7 +407,7 @@ In the basic (un-extended) generic data model defined in {{encoding}}, a data it
   ("keys") each to a data item ("values"), ("map")
 * a tagged data item ("tag"), comprising a tag number (an integer in
   the range 0..2\*\*64-1) and the tag content (a data item)
-  
+
 Note that integer and floating-point values are distinct in this
 model, even if they have the same numeric value.
 
@@ -978,7 +978,7 @@ see the registry described at {{ianatags}} for the complete list.
 
 Conceptually, tags are interpreted in the generic data model, not at
 (de-)serialization time.  A small number of tags (at this time, tag
-number 25 and tag number 29) have been registered with semantics that
+number 25 and tag number 29 {{?IANA.cbor-tags}}) have been registered with semantics that
 may require processing at (de-)serialization time: The decoder needs to
 be aware and the encoder needs to be in control of the exact
 sequence in which data items are encoded into the CBOR data item.

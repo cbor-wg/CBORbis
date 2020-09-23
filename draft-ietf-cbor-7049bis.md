@@ -393,7 +393,7 @@ in the environment).  The ability to provide generic encoders and
 decoders is an explicit design goal of CBOR; however many applications
 will provide their own application-specific encoders and/or decoders.
 
-In the basic (un-extended) generic data model defined in {{majortypes}}, a data item is one of:
+In the basic (un-extended) generic data model defined in {{encoding}}, a data item is one of:
 
 * an integer in the range -2\*\*64..2\*\*64-1 inclusive
 * a simple value, identified by a number
@@ -503,7 +503,7 @@ Less than 24:
 : No argument value is derived.
   If the major type is 0, 1, or 6, the encoded item is not
   well-formed.  For major types 2 to 5, the item's length is
-  indefinite, and for major type 7, the byte does not consitute a data
+  indefinite, and for major type 7, the byte does not constitute a data
   item at all but terminates an indefinite length item; all are
   described in {{indefinite}}.
 
@@ -569,7 +569,7 @@ Major type 3:
   well-formed but invalid ({{terminology}}). This type is provided for
   systems that need to interpret or display human-readable text, and
   allows the differentiation between unstructured bytes and text that
-  has a specified repertoire (Unicode) and encoding (UTF-8).  In contrast to formats
+  has a specified repertoire (that of Unicode) and encoding (UTF-8).  In contrast to formats
   such as JSON, the Unicode characters in this type are never
   escaped. Thus, a newline character (U+000A) is always represented in
   a string as the byte 0x0a, and never as the bytes 0x5c6e (the
@@ -1014,7 +1014,7 @@ format is invalid.
 ### Epoch-based Date/Time {#epochdatetimesect}
 
 Tag number 1 contains a numerical value counting the number of seconds
-from 1970-01-01T00:00Z in UTC time to the represented point in civil (clock)
+from 1970-01-01T00:00Z in UTC time to the represented point in civil
 time.
 
 The tag content MUST be an unsigned or negative integer (major types 0

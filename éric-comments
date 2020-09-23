@@ -1,0 +1,107 @@
+Thanks for your comments and those of the IoT directorate review. Our notes are below.
+
+--Paul Hoffman
+
+
+> The document is very thorough. In places, it provides a lot of detail upfront
+> that seems like it could be deferred until later sections and closer to the
+> topics at hand. For consistency and accuracy, the document would benefit from
+> review by the authors of the usage of may and must, capitalized or not, and
+> alternate terms (e.g., "does not", "can", "cannot", "might", etc.) that may
+> require replacement by those recommended by [RFC2119][RFC8174]. Explicit use of
+> "recommended" advice and usages could be beneficial.
+
+The WG tried to do this wherever possible. It is very difficult to do this in the
+specification of a data format because most the recommendations are for application
+developers, not encoder and decoder developers. The WG jiggled some of the
+requirements language, and this is the best result we could come up with.
+
+> Given the length and
+> coverage of the spec, and given that this was a first read of the spec by this
+> reviewer, below are suggestions for additional forward/backward pointers to
+> sections where topics are mentioned (as I found myself flipping forward or
+> backward in the doc, in search of the first mention or deeper discussion), for
+> places where subsections and table names could use reconciling, for consistent
+> use of double quotes that highlight special terms, and a few places where
+> clarifications could help readability. The examples throughout are great,
+> though there are some places where examples are missing.It is also helpful
+> when a section includes an explanation of the primary purpose for a feature
+> (for example, tags are explained well on page 20, last paragraph); these kinds
+> of explanations are not always present.
+
+This is useful input. Many of us have been reading this for seven years...
+We have taken many of your suggestions about forward references and first
+definitions to heart and will put them in the document before sending it
+to the RFC Editor.
+
+> The linkage to IoT is given in the
+> document as advice for constrained node processing, though it would be
+> interesting -  now that the IoT Edge includes constrained as well as less
+> constrained nodes - to evaluate if there is also relevance for lower latency
+> IoT scenarios.
+
+Great!
+
+[[ Lots of editorial notes elided here, but many edits were added to the
+document based on them: thanks! We could not add the extensive cross-references that
+were requested, but were able to add some of them to increase clarity. ]]
+
+
+> ----------------------------------------------------------------------
+> COMMENT:
+> ----------------------------------------------------------------------
+> 
+> Thank you for the work put into this document. While it is rather long, it is
+> exhaustive and usually quite clear (with exceptions see below).
+> 
+> Thanks to Eve Schooler for her very detailed IoT directorate review at
+> https://datatracker.ietf.org/doc/review-ietf-cbor-7049bis-14-iotdir-telechat-schooler-2020-09-08/ 
+> I strongly suggest to the authors to follow Eve's recommendation to clarify and
+> make the text easier to read.
+
+Definitely! See above.
+
+> Please find below a couple of non-blocking COMMENT points.
+> 
+> I hope that this helps to improve the document,
+> 
+> Regards,
+> 
+> -éric
+> 
+> == COMMENTS ==
+> 
+> -- Section 3.4  --
+> Is there a reason why "specifically, tag number 25 and tag number 29" have no
+> reference to a RFC ? The reader would benefit from some short description. This
+> oddity was also mentioned by Eve in her review, so, I strongly suggest to
+> address the issue.
+
+As you can see at <https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml#tags>,
+these are not RFCs, they are to a personal website.  Instead of creating a link in an
+RFC that could go stale, we added another reference to the IANA registry.
+
+> -- Section 3.4.5.2 --
+> As noted by other AD, I am puzzled by the added value of checking whether a
+> string is PCRE or ECMA262.
+
+Already fixed; see earlier responses to Ben.
+
+>
+> -- Section 3.4.6 --
+> I like this idea of 'magic number' but, as I am not a Unicode expert, I wonder
+> whether "In particular, 0xd9d9f7 is not a valid start of a Unicode text in any
+> Unicode encoding if it is followed by a valid CBOR data item." will always
+> stand true.
+
+One can never predict the future, but the stability of the Unicode standard in
+respect to these code points seems pretty good.
+
+
+> -- Section 4.2.1 --
+> Humm this section says "MUST be as short as possible" while the introduction
+> says "optimize for CPU not for bytes". Same applies for sorted keys... How can
+> we reconciliate ? Suggestion: add some text about this apparent goals conflict.
+
+The goal of Section 4.2.1 is pretty clearly "deterministic encoding". This section
+has nothing to do with the optimization of the format itself.

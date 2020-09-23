@@ -393,7 +393,7 @@ in the environment).  The ability to provide generic encoders and
 decoders is an explicit design goal of CBOR; however many applications
 will provide their own application-specific encoders and/or decoders.
 
-In the basic (un-extended) generic data model, a data item is one of:
+In the basic (un-extended) generic data model defined in {{encoding}}, a data item is one of:
 
 * an integer in the range -2\*\*64..2\*\*64-1 inclusive
 * a simple value, identified by a number
@@ -473,7 +473,7 @@ floats as integers or vice versa, perhaps to save encoded bytes.
 
 A CBOR data item ({{cbor-data-models}}) is encoded to or decoded from
 a byte string carrying a well-formed encoded data item as described in this section.  The encoding is
-summarized in {{jumptable}}, indexed by the initial byte.  An encoder MUST produce only well-formed
+summarized in {{jumptable}} in {{jump-table}}, indexed by the initial byte.  An encoder MUST produce only well-formed
 encoded data items.  A decoder MUST NOT return a decoded data item when it
 encounters input that is not a well-formed encoded CBOR data item (this does
 not detract from the usefulness of diagnostic and recovery tools that
@@ -503,8 +503,8 @@ Less than 24:
 : No argument value is derived.
   If the major type is 0, 1, or 6, the encoded item is not
   well-formed.  For major types 2 to 5, the item's length is
-  indefinite, and for major type 7, the byte does not consitute a data
-  item at all but terminates an indefinite length item; both are
+  indefinite, and for major type 7, the byte does not constitute a data
+  item at all but terminates an indefinite length item; all are
   described in {{indefinite}}.
 
 The initial byte and any additional bytes consumed to construct the
@@ -569,11 +569,11 @@ Major type 3:
   well-formed but invalid ({{terminology}}). This type is provided for
   systems that need to interpret or display human-readable text, and
   allows the differentiation between unstructured bytes and text that
-  has a specified repertoire and encoding.  In contrast to formats
+  has a specified repertoire (that of Unicode) and encoding (UTF-8).  In contrast to formats
   such as JSON, the Unicode characters in this type are never
   escaped. Thus, a newline character (U+000A) is always represented in
   a string as the byte 0x0a, and never as the bytes 0x5c6e (the
-  characters "\\" and "n") or as 0x5c7530303061 (the characters "\\",
+  characters "\\" and "n") nor as 0x5c7530303061 (the characters "\\",
   "u", "0", "0", "0", and "a").
 
 Major type 4:
@@ -957,10 +957,10 @@ tag number follows in {{encodedtext}}.)
 Note that many other tag numbers have been defined since the publication of {{RFC7049}};
 see the registry described at {{ianatags}} for the complete list.
 
-| Tag Number | Data Item   | Semantics                                                     |
+| Tag Number | Data Item   | Tag Content Semantics                                         |
 |------------+-------------+---------------------------------------------------------------|
 |          0 | text string | Standard date/time string; see {{stringdatetimesect}}         |
-|          1 | integer or float | Epoch-based date/time; see {{epochdatetimesect}}              |
+|          1 | integer or float | Epoch-based date/time; see {{epochdatetimesect}}         |
 |          2 | byte string | Positive bignum; see {{bignums}}                              |
 |          3 | byte string | Negative bignum; see {{bignums}}                              |
 |          4 | array       | Decimal fraction; see {{fractions}}                           |
@@ -978,7 +978,7 @@ see the registry described at {{ianatags}} for the complete list.
 
 Conceptually, tags are interpreted in the generic data model, not at
 (de-)serialization time.  A small number of tags (at this time, tag
-number 25 and tag number 29) have been registered with semantics that
+number 25 and tag number 29 {{?IANA.cbor-tags}}) have been registered with semantics that
 may require processing at (de-)serialization time: The decoder needs to
 be aware and the encoder needs to be in control of the exact
 sequence in which data items are encoded into the CBOR data item.
@@ -1024,9 +1024,10 @@ information 25, 26, or 27). Other contained types are invalid.
 Non-negative values (major type 0 and non-negative floating-point
 numbers) stand for time values on or after 1970-01-01T00:00Z UTC and
 are interpreted according to POSIX {{TIME_T}}.
-(POSIX time is also known as UNIX Epoch time.  Note that leap seconds
+(POSIX time is also known as "UNIX Epoch time".)
+Leap seconds
 are handled specially by POSIX time and this results in a 1 second
-discontinuity several times per decade.)
+discontinuity several times per decade.
 Note that applications that require the expression of times beyond
 early 2106 cannot leave out support of 64-bit integers for the tag content.
 
@@ -1328,7 +1329,7 @@ short representation is available (again,
 assuming that there is no application need for integers that can only
 be represented with the 64-bit variant).
 A decoder that does not rely on only ever
-receiving preferred serializations ("variation-tolerant decoder") can there be said to be more
+receiving preferred serializations ("variation-tolerant decoder") can therefore be said to be more
 universally interoperable (it might very well optimize for the case of
 receiving preferred serializations, though).
 Full implementations of CBOR decoders are by definition
@@ -1911,7 +1912,7 @@ data items to be encoded without harm.
 # Converting Data between CBOR and JSON
 
 This section gives non-normative advice about converting between CBOR
-and JSON. Implementations of converters are free to use whichever
+and JSON. Implementations of converters MAY use whichever
 advice here they want.
 
 It is worth noting that a JSON text is a sequence of characters, not
@@ -1988,7 +1989,7 @@ example, this has implications on the range of integers that can be
 represented reliably, as well as on the top-level items that may be
 supported by older JSON implementations.
 
-## Converting from JSON to CBOR
+## Converting from JSON to CBOR {#converting-from-json}
 
 All JSON values, once decoded, directly map into one or more CBOR
 values.  As with any kind of CBOR generation, decisions have to be
@@ -2253,7 +2254,7 @@ Required.
 IANA has created the "Concise Binary Object Representation (CBOR)
 Tags" registry at {{?IANA.cbor-tags}}.
 The tags that were defined in {{RFC7049}} are described in detail in {{tags}},
-and other tags have already been defined.
+and other tags have already been defined since then.
 
 New entries in the range 0 to 23 ("1+0") are assigned by Standards Action.
 New entries in the ranges 24 to 255 ("1+1") and 256 to 32767 (lower
@@ -2516,12 +2517,16 @@ expressive types than other formats; this is particularly true for the
 common conversion to JSON. The loss of type information can cause security
 issues for the systems that are processing the less-expressive data.
 
+{{converting-from-json}} describes a possibly-common usage scenario of
+converting between CBOR and JSON that could allow an attack if the attcker knows
+that the application is performing the conversion.
+
 Security considerations for the use of base16 and base64 from {{RFC4648}}, and the use
 of UTF-8 from {{RFC3629}}, are relevant to CBOR as well.
 
 --- back
 
-# Examples {#examples}
+# Examples of Encoded CBOR Data Items {#examples}
 
 The following table provides some CBOR-encoded values in hexadecimal
 (right column), together with diagnostic notation for these values
@@ -2625,7 +2630,7 @@ showing a tagged byte string (such as 2(h'010000000000000000')).
 {: #table_examples title='Examples of Encoded CBOR Data Items'}
 
 
-# Jump Table {#jump-table}
+# Jump Table for Initial Byte {#jump-table}
 
 For brevity, this jump table does not show initial bytes that are
 reserved for future extension. It also only shows a selection of the

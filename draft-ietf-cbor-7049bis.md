@@ -167,19 +167,6 @@ This revision formally obsoletes RFC 7049, while keeping full compatibility
 of the interchange format from RFC 7049.
 It does not create a new version of the format.
 
---- to_be_removed_note_Contributing
-
-This document is being worked on in the CBOR Working Group.
-Please contribute on the mailing list there, or in the GitHub
-repository for this draft:
-https://github.com/cbor-wg/CBORbis
-
-The charter for the CBOR Working Group says that the WG will update RFC
-7049 to fix verified errata. Security issues and clarifications may be
-addressed, but changes to this document will ensure backward
-compatibility for popular deployed codebases. This document will be
-targeted at becoming an Internet Standard.
-
 --- middle
 
 # Introduction
@@ -2230,10 +2217,6 @@ rules in {{-iana}}. IANA has also assigned a new MIME media type and
 an associated Constrained Application Protocol (CoAP) Content-Format
 entry.
 
-\[To be removed by RFC editor:]
-IANA is requested to update these registries to point to the present
-document instead of RFC 7049.
-
 ## Simple Values Registry {#ianasimple}
 
 IANA has created the "Concise Binary Object Representation (CBOR)
@@ -2388,14 +2371,7 @@ Contact:
    IETF Applications and Real-Time Area <art@ietf.org>
 
 Author/Change Controller:
-:  The IESG <iesg@ietf.org>[^RFC6838note]
-
-[^RFC6838note]: Editors' note: RFC 6838 has a template field
-    Author/Change controller, the descriptive text of which makes
-    clear that this is the change controller, not the author.  Go
-    figure.  There is no separate author entry as in the media types
-    registry.  (RFC editor: Please remove this note before
-    publication.)
+:  The IESG <iesg@ietf.org>
 
 # Security Considerations {#securitycons}
 

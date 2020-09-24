@@ -3119,7 +3119,9 @@ Other more clerical changes include:
   {{comparison-app}};
 
 * the discussion of diagnostic notation mentions the "Extended
-  Diagnostic Notation" (EDN) defined in {{-cddl}};
+  Diagnostic Notation" (EDN) defined in {{-cddl}} as well as the gap
+  diagnostic notation has in representing NaN payloads; an explanation
+  was added on how to represent indefinite length strings with no chunks;
 
 * the addition of this appendix.
 
@@ -3161,7 +3163,8 @@ and use now suggested that the separation between these two number
 domains should be more clearly drawn in the document; language that
 suggested an integer could seamlessly stand in for a floating-point
 value was removed.  Also, a suggestion (based on I-JSON {{?RFC7493}})
-was added for handling these types when converting JSON to CBOR.
+was added for handling these types when converting JSON to CBOR, and
+the use of a specific rounding mechanism has been recommended.
 
 For a single value in the data model, CBOR often provides multiple
 encoding options.  The revision adds a new section
@@ -3191,7 +3194,8 @@ acceptability.
 
 The handling of non-well-formed simple values was clarified in text
 and pseudocode.  {{errors}} was added to discuss well-formedness
-errors and provide examples for them.
+errors and provide examples for them.  The pseudocode was updated to
+be more portable and some portability considerations were added.
 
 The discussion of validity has been sharpened in two areas.  Map
 validity (handling of duplicate keys) was clarified and the domain of
@@ -3203,6 +3207,9 @@ were clarified on tag content, in general and specifically for tag 1.
 An implementation note (and note for future tag definitions) was added
 to {{tags}} about defining tags with semantics that depend on
 serialization order.
+
+Tag 35 is no longer defined in this updated document; the registration
+based on the definition in RFC 7049 remains in place.
 
 Terminology was introduced in {{encoding}} for "argument" and "head",
 simplifying further discussion.
@@ -3239,6 +3246,9 @@ Lundblade, Matthew Lepinski, Michael Richardson,
 Nico Williams, Peter Occil, Phillip Hallam-Baker, Ray Polk, Stuart Cheshire, Tim Bray,
 Tony Finch, Tony Hansen, and Yaron Sheffer.
 Benjamin Kaduk provided an extensive review during IESG processing.
+<!-- Do not start this on a new line: --> <contact fullname="Éric Vyncke"/>, Erik Kline, Robert Wilton, and
+Roman Danyliw provided further IESG comments, which included an IoT
+directorate review by Eve Schooler.
 
 <!--  LocalWords:  UTC bigfloats codepoint curation pseudocode
  -->

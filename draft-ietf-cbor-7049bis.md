@@ -758,13 +758,15 @@ BF           -- Start indefinite-length map
 
 ### Indefinite-Length Byte Strings and Text Strings
 
-Indefinite-length strings are represented by a byte containing the major type
-and additional information value of 31, followed by a series of zero or more byte
-or text strings ("chunks") that have definite lengths, followed by the
-"break" stop code ({{break}}).  The data item represented by the
-indefinite-length string is the concatenation of the chunks (i.e., the
-empty byte or text string, respectively, if no chunk is present).
-(Note that zero-length chunks, while not particularly useful, are permitted.)
+Indefinite-length strings are represented by a byte containing the
+major type for byte string or text string with an additional
+information value of 31, followed by a series of zero or more strings
+of the specified type ("chunks") that have definite lengths, and
+finished by the "break" stop code ({{break}}).  The data item
+represented by the indefinite-length string is the concatenation of
+the chunks.  If no chunks are present, the data item is an empty
+string of the specified type.  Zero-length chunks, while not
+particularly useful, are permitted.
 
 If any item between the indefinite-length string indicator
 (0b010_11111 or 0b011_11111) and the "break" stop code is not a definite-length

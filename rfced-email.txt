@@ -245,7 +245,7 @@ We don't think a change is needed here.
 Nice.
 Further simplified proposal in:
 
-https://github.com/cbor-wg/CBORbis/commit/
+https://github.com/cbor-wg/CBORbis/commit/d19c18b
 
 ("Tags" is plural in the sentence, so "data items" can be as well.)
 
@@ -289,6 +289,9 @@ That gets a bit lost in the new version.
 
 Good catch, yes!
 
+Now
+https://github.com/cbor-wg/CBORbis/commit/
+
 > 
 > 12) <!-- [rfced]  FYI -  We have changed the exponentiation notation
 > from ^ to ** here match the rest of the document:
@@ -300,6 +303,7 @@ Good catch, yes!
 > 
 
 Indeed (2^64 would be 66).
+Superseded by the superscript conversion.
 
 > 
 > 13) <!-- [rfced] We added citations for BCP 14 here. Please let us know any
@@ -374,6 +378,8 @@ Citing from our reply (Archived-At: <https://mailarchive.ietf.org/arch/msg/cbor/
 
 I would of course use actual guillemets (German style, i.e. inward pointing as with the greater than/less than signs here), which would work well in all formats, but for reasons I cannot understand the conventions that have been established around RFCXMLv3 deprive us of the use of typographic characters (quotes, dashes, ellipses) in the text and force us to use these ASCII surrogates.
 
+So no improvement is currently possible.
+
 > 
 > 16) <!-- [rfced] We have the following questions about the IANA Considerations
 > section.
@@ -410,6 +416,12 @@ NEW:
   The Internet media type [RFC6838] ("MIME type") for a single encoded CBOR data item
   is application/cbor, as defined in [IANA.media-types]:
 
+The remaining concern is that these headings conflate registries specific to
+CBOR (which were created for RFC 7049) with pre-existing registries.
+Maybe not a big problem.
+
+
+
 
 
 > b) Section 9: Would it be helpful to update this introductory paragraph to
@@ -431,11 +443,9 @@ NEW:
 
 This sounds a bit Finnish to me (no articles :-),
 
-Maybe:
-IANA has created two registries for new CBOR values.  The registries are
-separate, that is, not under an umbrella registry, and follow the rules in
-[RFC8126].  IANA has also assigned a new media type, an associated CoAP
-Content-Format entry, and a structured syntax suffix.
+Our proposal in
+
+https://github.com/cbor-wg/CBORbis/commit/
 
 > 
 > c) Section 9.1: FYI - we have updated "these Standards Actions allocate" to read
@@ -462,17 +472,14 @@ Certainly.  In practice, the Standards Action chooses a number and IANA allocate
 
 We purposely do not give a fragment identifier.
 
-Oh.  Following that (bad) example of RFC 8259 here.
+((Background:
+This follows the example of RFC 8259.
 We do say (in the structured syntax suffix registration):
-
 … (At
 publication of RFC 8949, there is no fragment identification
 syntax defined for "application/cbor”.)
-
-So the intent is documented, but I don’t know whether the absence of the fragment identifier considerations in the media type registration (where Section 4.11 of 6383 makes me think it is optional) is all that’s needed.
-
-(And this might very well change in the future, with the recent creation of the JSONpath WG as a possible direction.)
-
+So the intent is documented.
+))
 
 > e) Section 9.3: We have made some small changes in the media type registration
 > template (see diff file). If no objections, we will ask IANA to update the
@@ -596,7 +603,7 @@ Interesting.  dx.doi.org doesn’t know that, and therefore the automatically ge
 > -->
 > 
 
-I am not sure what’s the point — these are fixed, but OK, reading appendix G.1 is easier with the links in the document.
+I am not sure what’s the point — these errata are fixed, but OK, reading appendix G.1 is easier with the links in the document.
 
 By the way, there are few actual “errata” in 7049, most of these are just “errata reports”, as appendix G.1 goes to pains to distinguish. The bibliography entries are therefore not correct.
 

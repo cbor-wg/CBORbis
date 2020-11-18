@@ -1251,7 +1251,7 @@ Current:
           <t>Note that platform types for date/time may include <tt>null</tt> or <tt>undefined</tt>
 values, which may also be desirable at an application protocol level.
 While emitting tag number 1 values with non-finite tag content values
-(e.g., with NaN for undefined date/time values or with Infinite for an
+(e.g., with NaN for undefined date/time values or with Infinity for an
 expiry date that is not set) may seem an obvious way to handle this,
 using untagged <tt>null</tt> or <tt>undefined</tt> avoids the use of non-finites and results in a shorter encoding.
 Application protocol designers are encouraged to consider these cases
@@ -2493,11 +2493,11 @@ https://www.iana.org/assignments/core-parameters
       <t>IANA has created two registries for new CBOR values. The registries
       are separate, that is, not under an umbrella registry, and follow the
       rules in <xref target="RFC8126" format="default"/>. IANA has also
-      assigned a new media type and an associated 
-      CoAP Content-Format entry.</t>
+      assigned a new media type, an associated 
+      CoAP Content-Format entry, and a structured syntax suffix.</t>
       <section anchor="ianasimple" toc="default">
 
-        <name>Simple Values Registry</name>
+        <name>CBOR Simple Values Registry</name>
         <t>IANA has created the "Concise Binary Object Representation (CBOR)
         Simple Values" registry at <xref target="IANA.cbor-simple-values"
         format="default"/>. The initial values are shown in <xref
@@ -2513,7 +2513,7 @@ contiguous blocks (if any).</t>
 Required.</t>
       </section>
       <section anchor="ianatags" toc="default">
-        <name>Tags Registry</name>
+        <name>CBOR Tags Registry</name>
         <t>IANA has created the "Concise Binary Object Representation (CBOR)
 Tags" registry at <xref target="IANA.cbor-tags" format="default"/>.
 The tags that were defined in <xref target="RFC7049" format="default"/> 
@@ -2545,8 +2545,8 @@ implementations that do not support 64-bit numbers.</t>
       </section>
       <section anchor="media-type-mime-type" toc="default">
 
-        <name>Media Type</name>
-        <t>The Internet media type <xref target="RFC6838" format="default"/> for a single encoded CBOR data
+        <name>Media Types Registry</name>
+        <t>The Internet media type <xref target="RFC6838" format="default"/> ("MIME type") for a single encoded CBOR data
 item is "application/cbor" as defined in the "Media Types" registry <xref target="IANA.media-types" format="default"/>:</t>
     <dl newline="false" spacing="normal">
         <dt>Type name:</dt><dd>application</dd>

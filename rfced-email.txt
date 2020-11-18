@@ -1,3 +1,5 @@
+-*- mode: message -*-
+
 > On 2020-11-04, at 08:51, rfc-editor@rfc-editor.org wrote:
 > 
 > Authors,
@@ -33,13 +35,18 @@ In that version, the relevant section for two’s complement is 6.8.1, not 6.8.2
 > 2) <!-- [rfced]  Would it be clearer to add parentheses to statements
 > like the following (here in Section 2 and throughout the document).
 
-Yes.
+Yes, but maybe we can avoid the whole issue by switching to superscript notation.
+(It would also help to be able to use a minus where the HTML rendering currently has a hyphen.)
 
 > Superscript formatting could be applied instead, which would add
 > parentheses in the text output. 
 
-Well, xml2rfc is a bit counterproductive here.
+Our proposal is in:
 
+https://github.com/cbor-wg/CBORbis/commit/
+
+(( Background:
+Well, xml2rfc is a bit counterproductive here.
 Obviously, we would want 2<sup>64</sup>
 That works fine in HTML, but creates
 
@@ -47,37 +54,14 @@ That works fine in HTML, but creates
 
 in TXT.
 
-That uses ^, which is exclusive or in C (as used in the Pseudocode appendix).
+That uses ^, which is exclusive-or in C (as used in the Pseudocode appendix).
 It also adds a completely redundant additional level of parentheses.
 
-If we could nudge xml2rfc to use the 2**X convention, this would work much better.
+If we could nudge xml2rfc to use the 2**X convention for plain text, this
+would work much better.
+))
 
-> Current:
-> *  an integer in the range -2**64..2**64-1 inclusive
-> 
-> Perhaps:
-> *  an integer in the range -2**64..(2**64)-1 inclusive
 
-That change is fine.
-
-> 
-> 
-> Note that the following text may need to be revised if updates are made to
-> notation for exponentiation:
-> 
-> Original:
-> Where bit arithmetic or data types are explained, this document uses
-> the notation familiar from the programming language C [C], except
-> that "**" denotes exponentiation and ".." denotes a range that
-> includes both ends given. 
-
-NEW:
-Where bit arithmetic or data types are explained, this document uses
-the notation familiar from the programming language C [C], except
-that superscript notation denotes exponentiation (replaced by a "**” 
-operator in the text form) and ".." denotes a range that includes both ends given. 
-
-> -->
 > 
 > 
 > 3) <!-- [rfced]  We had difficulty parsing the following in Section 2.0:

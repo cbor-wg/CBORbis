@@ -247,8 +247,17 @@ Current:
 -->
         <t>Where bit arithmetic or data types are explained, this document uses
 the notation familiar from the programming language C <xref target="C" format="default"/>, except that
-"**" denotes exponentiation and ".." denotes a range that includes both
-ends given.  Examples and pseudocode
+".." denotes a range that includes both ends given, and superscript
+notation denotes exponentiation.  For example, 2 to the power of 64 is
+notated: 2<sup>64</sup>.
+In the plain-text version of this specification, superscript notation
+is not available and therefore is rendered by a surrogate notation.
+That notation is not optimized for this RFC; it is unfortunately
+ambiguous with C's exclusive-or (which is only used in the appendices,
+which in turn do not use exponentiation) and requires circumspection
+from the reader of the plain-text version.
+</t>
+<t>Examples and pseudocode
 assume that signed integers use two's complement representation and
 that right shifts of signed integers perform sign extension; these
 assumptions are also specified in Sections 6.8.1 (basic.fundamental)
@@ -312,7 +321,7 @@ Original:
    includes both ends given. 
 -->
       <ul spacing="normal">
-        <li>an integer in the range -2**64..2**64-1 inclusive</li>
+        <li>an integer in the range -2<sup>64</sup>..2<sup>64</sup>-1 inclusive</li>
         <li>a simple value, identified by a number
 between 0 and 255, but distinct from that number itself</li>
         <li>a floating-point value, distinct from an integer, out of the set
@@ -323,7 +332,7 @@ representable by IEEE 754 binary64 (including non-finites) <xref target="IEEE754
         <li>a mapping (mathematical function) from zero or more data items
 ("keys") each to a data item ("values"), ("map")</li>
         <li>a tagged data item ("tag"), comprising a tag number (an integer in
-the range 0..2**64-1) and the tag content (a data item)</li>
+the range 0..2<sup>64</sup>-1) and the tag content (a data item)</li>
       </ul>
       <t>Note that integer and floating-point values are distinct in this
 model, even if they have the same numeric value.</t>
@@ -491,7 +500,7 @@ other bytes associated with the type.</t>
         <dl newline="false" spacing="normal">
           <dt>Major type 0:</dt>
           <dd>
-  an unsigned integer in the range 0..2**64-1 inclusive.  The value of the
+  an unsigned integer in the range 0..2<sup>64</sup>-1 inclusive.  The value of the
 encoded item is the argument itself.  For example, the
 integer 10 is denoted as the one byte 0b000_01010 (major type 0,
 additional information 10).  The integer 500 would be 0b000_11001
@@ -499,7 +508,7 @@ additional information 10).  The integer 500 would be 0b000_11001
 0x01f4, which is 500 in decimal.</dd>
           <dt>Major type 1:</dt>
           <dd>
-  a negative integer in the range -2**64..-1 inclusive.  The value of
+  a negative integer in the range -2<sup>64</sup>..-1 inclusive.  The value of
 the item is -1 minus the argument.  For example, the integer
 -500 would be 0b001_11001 (major type 1, additional information 25)
 followed by the two bytes 0x01f3, which is 499 in decimal.</dd>
@@ -558,7 +567,7 @@ decoding; see also <xref target="map-keys" format="default"/>.</dd>
           <dt>Major type 6:</dt>
           <dd>
   a tagged data item ("tag") whose tag number, an integer in the range
-0..2**64-1 inclusive, is the argument and
+0..2<sup>64</sup>-1 inclusive, is the argument and
 whose enclosed data item ("tag content") is the single encoded data item that follows the head.
 See <xref target="tags" format="default"/>.</dd>
           <dt>Major type 7:</dt>
@@ -1273,7 +1282,7 @@ representation instead of a basic integer for encoding a number is not
 intended to have application semantics (just as the choice of a longer
 basic integer representation than needed, such as 0x1800 for 0x00, does
 not).</t>
-          <t>For example, the number 18446744073709551616 (2**64) is represented
+          <t>For example, the number 18446744073709551616 (2<sup>64</sup>) is represented
 as 0b110_00010 (major type 6, tag number 2), followed by 0b010_01001 (major
 type 2, length 9), followed by 0x010000000000000000 (one byte 0x01 and
 eight bytes 0x00). In hexadecimal:</t>
@@ -1286,9 +1295,9 @@ C2                        -- Tag 2
         <section anchor="fractions" toc="default">
           <name>Decimal Fractions and Bigfloats</name>
           <t>Protocols using tag number 4 extend the generic data model with data
-items representing arbitrary-length decimal fractions of the form m*(10**e).
+items representing arbitrary-length decimal fractions of the form m*(10<sup>e</sup>).
 Protocols using tag number 5 extend the generic data model with data
-items representing arbitrary-length binary fractions of the form m*(2**e).
+items representing arbitrary-length binary fractions of the form m*(2<sup>e</sup>).
 As with
 bignums, values of different types are not equal in the generic data
 model.</t>
@@ -1306,8 +1315,8 @@ without the need for supporting IEEE 754.</t>
           <t>A decimal fraction or a bigfloat is represented as a tagged array that
 contains exactly two integer numbers: an exponent e and a mantissa m.
 Decimal fractions (tag number 4) use base-10 exponents; the value of a
-decimal fraction data item is m*(10**e).  Bigfloats (tag number 5) use
-base-2 exponents; the value of a bigfloat data item is m*(2**e).
+decimal fraction data item is m*(10<sup>e</sup>).  Bigfloats (tag number 5) use
+base-2 exponents; the value of a bigfloat data item is m*(2<sup>e</sup>).
 The exponent e <bcp14>MUST</bcp14> be represented in an integer of major type 0 or 1,
 while the mantissa can also be a bignum (<xref target="bignums" format="default"/>).  Contained
 items with other structures are invalid.</t>
@@ -1613,7 +1622,7 @@ Current:
    absolute value of 2**64 or larger using tag numbers 2 or 3...
 -->
           <t>If a protocol includes a field that can express integers with an
-absolute value of 2**64 or larger using tag numbers 2 or 3
+absolute value of 2<sup>64</sup> or larger using tag numbers 2 or 3
 (<xref target="bignums" format="default"/>), the protocol's deterministic encoding needs to specify
 whether smaller integers are also expressed using these tags or using
 major types 0 and 1.  Preferred serialization uses the latter choice,
@@ -1924,9 +1933,9 @@ the silent loss of precision in decoding integers with more than 53
 significant bits.
 Another example is that, since CBOR keeps the sign bit for its integer
 representation in the major type, it has one bit more for signed
-numbers of a certain length (e.g., -2**64..2**64-1 for 1+8-byte
+numbers of a certain length (e.g., -2<sup>64</sup>..2<sup>64</sup>-1 for 1+8-byte
 integers) than the typical platform signed integer representation of
-the same length (-2**63..2**63-1 for 8-byte int64_t).
+the same length (-2<sup>63</sup>..2<sup>63</sup>-1 for 8-byte int64_t).
 A protocol that uses numbers should define its
 expectations on the handling of nontrivial numbers in decoders and
 receiving applications.</t>
@@ -2169,13 +2178,13 @@ tag number 2 and 3), choosing the shortest form; integers longer than
 an implementation-defined threshold may instead be represented as
 floating-point values.  The
 default range that is represented as integer is
--2**53+1..2**53-1 (fully exploiting the range for exact integers
+-2<sup>53</sup>+1..2<sup>53</sup>-1 (fully exploiting the range for exact integers
 in the binary64 representation often used for decoding JSON <xref target="RFC7493" format="default"/>).
 A CBOR-based protocol, or a generic converter implementation,
-may choose -2**32..2**32-1 or -2**64..2**64-1 (fully
+may choose -2<sup>32</sup>..2<sup>32</sup>-1 or -2<sup>64</sup>..2<sup>64</sup>-1 (fully
 using the integer ranges available in CBOR with uint32_t or
-uint64_t, respectively) or even -2**31..2**31-1 or
--2**63..2**63-1 (using popular ranges for two's complement
+uint64_t, respectively) or even -2<sup>31</sup>..2<sup>31</sup>-1 or
+-2<sup>63</sup>..2<sup>63</sup>-1 (using popular ranges for two's complement
 signed integers).
 (If
 the JSON was generated from a JavaScript implementation, its
@@ -2278,7 +2287,7 @@ ideas, just because they are there.</t>
 codepoint space by an IANA registry.  Instead, allocations out of this
 space can only be done by updating this specification.</t>
         <t>For an additional information value of n &gt;= 24, the size of the
-additional data typically is 2**(n-24) bytes.  Therefore, additional
+additional data typically is 2<sup>(n-24)</sup> bytes.  Therefore, additional
 information values 28 and 29 should be viewed as candidates for
 128-bit and 256-bit quantities, in case a need arises to add them to
 the protocol.  Additional information value 30 is then the only

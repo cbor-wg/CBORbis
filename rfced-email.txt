@@ -179,7 +179,11 @@ https://github.com/cbor-wg/CBORbis/commit/b33791e
 
 Please see our proposal in:
 
-https://github.com/cbor-wg/CBORbis/commit/
+https://github.com/cbor-wg/CBORbis/commit/0b7023d
+
+Note that editing this uncovered a little inaccuracy that was addressed in
+
+https://github.com/cbor-wg/CBORbis/commit/029cd21
 
 (( Background:
 They need to be lower case for their use in diagnostic notation, where also typewriter formatting is appropriate.
@@ -239,16 +243,11 @@ We don't think a change is needed here.
 > 
 
 Nice.
-Maybe simplify further to:
-The tag definition usually defines which nested data items are
-valid for such tags.  Tag definitions may restrict their
-content to a very specific syntactic structure, as the tags defined
-in this document do, or they may define their content more 
-semantically, for instance, as tags 40 and 1040 do by accepting 
-multiple ways to represent arrays [RFC8746]. 
+Further simplified proposal in:
 
-(Tags is plural, so data items can be as well.)
-I’m not yet happy with the for instance, as it might be read to apply to “… more semantically”, when it really is about “as tags…”.
+https://github.com/cbor-wg/CBORbis/commit/
+
+("Tags" is plural in the sentence, so "data items" can be as well.)
 
 > 
 > 10) <!-- [rfced] We have made the following update to improve readability.

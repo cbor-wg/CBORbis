@@ -1034,12 +1034,13 @@ Perhaps:
    semantically, for instance, as tags 40 and 1040 do by accepting 
    multiple ways to represent arrays [RFC8746]. 
 -->
-<t>The tag definition usually restricts what kinds of nested data item or
-items are valid for such tags.  Tag definitions may restrict their content to
-a very specific syntactic structure, as the tags defined in this document do,
-or they may aim at a more semantically defined definition of their content, as
-for instance tags 40 and 1040 do <xref target="RFC8746" format="default"/>:
-these accept a number of different ways of representing arrays.</t>
+<t>The tag definition usually defines which nested data items are
+valid for such tags.  Tag definitions may restrict their content to a
+very specific syntactic structure, as the tags defined in this
+document do, or they may define their content more semantically.  An
+example for the latter is how tags 40 and 1040 accept multiple ways to
+represent arrays <xref target="RFC8746" format="default"/>.
+</t>
 
 <!-- [rfced] We have made the following update to improve readability.
 Please let us know if other changes are necessary.

@@ -987,7 +987,7 @@ We use the term <em>tag</em> for the entire data item consisting of both a
 tag number and the tag content: the tag content is the data item that
 is being tagged.</t>
         <t>For example, assume that a byte string of length 12 is marked with a
-tag of number 2 to indicate it is a positive <em>bignum</em> (<xref target="bignums" format="default"/>).
+tag of number 2 to indicate it is an unsigned <em>bignum</em> (<xref target="bignums" format="default"/>).
 The encoded data item would start with a byte 0b110_00010 (major type
 6, additional information 2 for the tag number) followed by the
 encoded tag content: 0b010_01100 (major type 2, additional information
@@ -1112,7 +1112,7 @@ see the registry described at <xref target="ianatags" format="default"/> for the
             <tr>
               <td align="left">2</td>
               <td align="left">byte string</td>
-              <td align="left">Positive bignum; see <xref target="bignums" format="default"/></td>
+              <td align="left">Unsigned bignum; see <xref target="bignums" format="default"/></td>
             </tr>
             <tr>
               <td align="left">3</td>
@@ -1861,7 +1861,7 @@ to the basic generic data model:</t>
             <dt>Inadmissible type for tag content:</dt>
             <dd>
   Tag numbers (<xref target="tags" format="default"/>) specify what type of data item is supposed to be
-used as their tag content; for example, the tag numbers for positive or negative bignums are
+used as their tag content; for example, the tag numbers for unsigned or negative bignums are
 supposed to be put on byte strings. A decoder that decodes the
 tagged data item into a native representation (a native big integer
 in this example) is expected to check the type of the data item
@@ -3640,7 +3640,7 @@ unsigned integers are in network byte order.)</t>
           </tr>
           <tr>
             <td align="left">0xc2</td>
-            <td align="left">positive bignum (data item "byte string" follows)</td>
+            <td align="left">unsigned bignum (data item "byte string" follows)</td>
           </tr>
           <tr>
             <td align="left">0xc3</td>

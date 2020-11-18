@@ -791,8 +791,8 @@ string can only be started at a code point boundary.</t>
 
 0b010_11111 0b010_00100 0xaabbccdd 0b010_00011 0xeeff99 0b111_11111
 -->
-          <t>0b010_11111 0b010_00100 0xaabbccdd 0b010_00011 0xeeff99 0b111_11111</t>
           <artwork type="hex-dump"><![CDATA[
+0b010_11111 0b010_00100 0xaabbccdd 0b010_00011 0xeeff99 0b111_11111
 5F              -- Start indefinite-length byte string
    44           -- Byte string of length 4
       aabbccdd  -- Bytes content

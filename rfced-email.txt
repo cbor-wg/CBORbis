@@ -140,7 +140,7 @@ https://github.com/cbor-wg/CBORbis/commit/0d44842
 
 Our proposal is in
 
-https://github.com/cbor-wg/CBORbis/commit/
+https://github.com/cbor-wg/CBORbis/commit/686179e
 
 (( Background:
 
@@ -163,6 +163,11 @@ So we used <artwork type="hex-dump"> for our ten formatted hex-dumps, and kept <
 
 We have done so in the previous examples, so:
 Yes, indeed!
+
+Now in
+
+https://github.com/cbor-wg/CBORbis/commit/
+
 
 > 7) <!-- [rfced]  We note that the following simple values are 
 > inconsistently formatted:  false, true, null, and undefined.

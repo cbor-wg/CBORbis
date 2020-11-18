@@ -684,7 +684,7 @@ preferred values for "type"
 contain an applicable type, then feel free to suggest a new one.
 Also, it is acceptable to leave the "type" attribute not set.  
 -->
-          <sourcecode type="" markers="false"><![CDATA[
+          <artwork type="hex-dump"><![CDATA[
 83        -- Array of length 3
    01     -- 1
    82     -- Array of length 2
@@ -693,11 +693,11 @@ Also, it is acceptable to leave the "type" attribute not set.
    82     -- Array of length 2
       04  -- 4
       05  -- 5
-]]></sourcecode>
+]]></artwork>
           <t>Indefinite-length encoding could be applied independently to each of
 the three arrays encoded in this data item, as required, leading to
 representations such as:</t>
-          <sourcecode type="" markers="false"><![CDATA[
+          <artwork type="hex-dump"><![CDATA[
 0x9f018202039f0405ffff
 9F        -- Start indefinite-length array
    01     -- 1
@@ -709,8 +709,8 @@ representations such as:</t>
       05  -- 5
       FF  -- "break" (inner array)
    FF     -- "break" (outer array)
-]]></sourcecode>
-          <sourcecode type="" markers="false"><![CDATA[
+]]></artwork>
+          <artwork type="hex-dump"><![CDATA[
 0x9f01820203820405ff
 9F        -- Start indefinite-length array
    01     -- 1
@@ -721,8 +721,8 @@ representations such as:</t>
       04  -- 4
       05  -- 5
    FF     -- "break"
-]]></sourcecode>
-          <sourcecode type="" markers="false"><![CDATA[
+]]></artwork>
+          <artwork type="hex-dump"><![CDATA[
 0x83018202039f0405ff
 83        -- Array of length 3
    01     -- 1
@@ -733,8 +733,8 @@ representations such as:</t>
       04  -- 4
       05  -- 5
       FF  -- "break"
-]]></sourcecode>
-          <sourcecode type="" markers="false"><![CDATA[
+]]></artwork>
+          <artwork type="hex-dump"><![CDATA[
 0x83019f0203ff820405
 83        -- Array of length 3
    01     -- 1
@@ -745,10 +745,10 @@ representations such as:</t>
    82     -- Array of length 2
       04  -- 4
       05  -- 5
-]]></sourcecode>
+]]></artwork>
           <t>An example of an indefinite-length map (that happens to have two
 key/value pairs) might be:</t>
-          <sourcecode type="" markers="false"><![CDATA[
+          <artwork type="hex-dump"><![CDATA[
 0xbf6346756ef563416d7421ff
 BF           -- Start indefinite-length map
    63        -- First key, UTF-8 string length 3
@@ -758,7 +758,7 @@ BF           -- Start indefinite-length map
       416d74 --   "Amt"
    21        -- Second value, -2
    FF        -- "break"
-]]></sourcecode>
+]]></artwork>
         </section>
         <section anchor="indefinite-length-byte-strings-and-text-strings" toc="default">
           <name>Indefinite-Length Byte Strings and Text Strings</name>
@@ -792,14 +792,14 @@ string can only be started at a code point boundary.</t>
 0b010_11111 0b010_00100 0xaabbccdd 0b010_00011 0xeeff99 0b111_11111
 -->
           <t>0b010_11111 0b010_00100 0xaabbccdd 0b010_00011 0xeeff99 0b111_11111</t>
-          <sourcecode type="" markers="false"><![CDATA[
+          <artwork type="hex-dump"><![CDATA[
 5F              -- Start indefinite-length byte string
    44           -- Byte string of length 4
       aabbccdd  -- Bytes content
    43           -- Byte string of length 3
       eeff99    -- Bytes content
    FF           -- "break"
-]]></sourcecode>
+]]></artwork>
           <t>After decoding, this results in a single byte string with seven bytes:
 0xaabbccddeeff99.</t>
         </section>
@@ -1287,11 +1287,11 @@ not).</t>
 as 0b110_00010 (major type 6, tag number 2), followed by 0b010_01001 (major
 type 2, length 9), followed by 0x010000000000000000 (one byte 0x01 and
 eight bytes 0x00). In hexadecimal:</t>
-          <sourcecode type="" markers="false"><![CDATA[
+          <artwork type="hex-dump"><![CDATA[
 C2                        -- Tag 2
    49                     -- Byte string of length 9
       010000000000000000  -- Bytes content
-]]></sourcecode>
+]]></artwork>
         </section>
         <section anchor="fractions" toc="default">
           <name>Decimal Fractions and Bigfloats</name>
@@ -1330,12 +1330,12 @@ integer, additional information 1 for the value of -2), followed by
 0b000_11001 (major type 0 for the second integer, additional
 information 25 for a two-byte value), followed by
 0b0110101010110011 (27315 in two bytes).  In hexadecimal:</t>
-          <sourcecode type="" markers="false"><![CDATA[
+          <artwork type="hex-dump"><![CDATA[
 C4             -- Tag 4
    82          -- Array of length 2
       21       -- -2
       19 6ab3  -- 27315
-]]></sourcecode>
+]]></artwork>
           <t>An example of a bigfloat is the representation of the number 1.5 
 as 0b110_00101 (major type 6 for tag, additional information
 5 for the tag number), followed by 0b100_00010 (major type 4 for
@@ -1344,12 +1344,12 @@ followed by 0b001_00000 (major type 1 for the first integer,
 additional information 0 for the value of -1), followed by
 0b000_00011 (major type 0 for the second integer, additional
 information 3 for the value of 3).  In hexadecimal:</t>
-          <sourcecode type="" markers="false"><![CDATA[
+          <artwork type="hex-dump"><![CDATA[
 C5             -- Tag 5
    82          -- Array of length 2
       20       -- -1
       03       -- 3
-]]></sourcecode>
+]]></artwork>
           <t>Decimal fractions and bigfloats provide no representation of Infinity,
 -Infinity, or NaN; if these are needed in place of a decimal fraction
 or bigfloat, the IEEE 754 half-precision representations from

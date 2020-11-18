@@ -125,7 +125,7 @@ This is explained in the last paragraph of section 1.2, so is probably OK.))
 
 We have made these changes (and a few more related ones) in:
 
-https://github.com/cbor-wg/CBORbis/commit/
+https://github.com/cbor-wg/CBORbis/commit/0d44842
 
 
 
@@ -138,6 +138,12 @@ https://github.com/cbor-wg/CBORbis/commit/
 > Also, it is acceptable to leave the "type" attribute not set.  
 > -->
 
+Our proposal is in
+
+https://github.com/cbor-wg/CBORbis/commit/
+
+(( Background:
+
 The first 10 code blocks in the document are actually (formatted and commented) hex-dumps.
 RFC 7991 provides for hex dumps as <artwork type=“hex-dump”>.
 
@@ -145,7 +151,8 @@ The only occurrence of this I can find in RFCs today is RFC 8688, where this tag
 I don’t think it is really defined what <artwork type=“hex-dump”> means, although the usage of hex-dump for base64 in RFC 8688 is rather questionable.
 (See also the discussion of the type attribute for artwork in https://tools.ietf.org/html/draft-levkowetz-xml2rfc-v3-implementation-notes-11#section-3.1.3 — which correctly points out that “type” is a bit overloaded here.)
 
-That said, I would be happy to use <artwork type=“hex-dump”> for our ten formatted hex-dumps, and keep <sourcecode type=“pseudocode”> (twice), <sourcecode type=“c”>, and <sourcecode type=“python”> for the four programs in appendix C.
+So we used <artwork type="hex-dump"> for our ten formatted hex-dumps, and kept <sourcecode type=“pseudocode”> (twice), <sourcecode type=“c”>, and <sourcecode type=“python”> for the four programs in appendix C.
+))
 
 > 
 > 6) <!-- [rfced]  Should the following be included in the sourcecode?

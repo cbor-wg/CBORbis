@@ -290,7 +290,7 @@ That gets a bit lost in the new version.
 Good catch, yes!
 
 Now
-https://github.com/cbor-wg/CBORbis/commit/
+https://github.com/cbor-wg/CBORbis/commit/0eccd5a
 
 > 
 > 12) <!-- [rfced]  FYI -  We have changed the exponentiation notation
@@ -445,7 +445,7 @@ This sounds a bit Finnish to me (no articles :-),
 
 Our proposal in
 
-https://github.com/cbor-wg/CBORbis/commit/
+https://github.com/cbor-wg/CBORbis/commit/0eccd5a
 
 > 
 > c) Section 9.1: FYI - we have updated "these Standards Actions allocate" to read

@@ -166,7 +166,7 @@ Yes, indeed!
 
 Now in
 
-https://github.com/cbor-wg/CBORbis/commit/
+https://github.com/cbor-wg/CBORbis/commit/b33791e
 
 
 > 7) <!-- [rfced]  We note that the following simple values are 
@@ -177,19 +177,29 @@ https://github.com/cbor-wg/CBORbis/commit/
 > -->
 > 
 
+Please see our proposal in:
+
+https://github.com/cbor-wg/CBORbis/commit/
+
+(( Background:
 They need to be lower case for their use in diagnostic notation, where also typewriter formatting is appropriate.
 The data model discussion (Section 2) uses them in this form as well, and that seems right.
-There is a problem in that the TXT fallback for <tt> makes them look like text strings, which are also valid in diagnostic notation but mean something emphatically different from the simple values true, false, etc. represent.
+
+The big problem is that the TXT fallback for <tt> makes them look like text strings, which are also valid in diagnostic notation but mean something emphatically different from the simple values true, false, etc. represent.
+So we cannot globally switch them to <tt>, we need to see whether that would cause confusion in the specific section.
 
 They are currently upper case in the CBOR Simple Values registry (and thus also, unstyled, in Table 4), and I’m not sure we want to change this.
 The discussion near this table uses lower case unstyled, which probably should be replaced by typewriter font in the HTML, and the confusion potential for text strings of the TXT fallback is limited here.
 
 Section 3.4 uses »null or undefined value«, where the names »null« and »undefined« actually are used as adjectives.  This probably would also benefit from typewriter style, converting them into nouns.
-The last paragraph of 3.4.2 has three of these as well; the first and second “undefined” are used in their English sense, while the third is the CBOR simple value data item!  (Same for title of 5.7: English sense, but the »Undefined« currently used in the text currently is the data item again and a typewriter »undefined« would fit better.)
+The last paragraph of 3.4.2 has three of these as well; the first and second “undefined” are used in their English sense (but the first could be converted to a noun as above), while the third is the CBOR simple value data item!  (Same for title of 5.7: English sense, but the »Undefined« currently used in the text currently is the data item again and a typewriter »undefined« would fit better.)
 
 Section 8 uses unstyled upper case again (to distinguish the concept from the notation, which cannot be in typewriter font as the TXT fallback definitely would be confused with the notation for text strings.
 Table 6 is fine with lower case unstyled (actual diagnostic notation).
 Table 7 is upper case unstyled again (the table entries are rather inconsistently capitalized; they all could be lower-case (except “UTF-8” of course).
+
+None of this is really black-and-white, but the proposed changes make it a bit more consistent while avoiding the false vs. "false" trap.
+))
 
 > 
 > 8) <!-- [rfced]  In the following sentence in Section 3.4, what is
@@ -203,6 +213,8 @@ Table 7 is upper case unstyled again (the table entries are rather inconsistentl
 > -->
 
 The preferred serialization.
+
+We don't think a change is needed here.
 
 > 
 > 9) <!-- [rfced]  We're having difficulty parsing the following: 

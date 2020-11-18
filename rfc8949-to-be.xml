@@ -965,8 +965,8 @@ be capitalized?
         <t>An encoder <bcp14>MUST NOT</bcp14> issue two-byte sequences that
         start with 0xf8 (major type 7, additional information 24) and continue
         with a byte less than 0x20 (32 decimal).  Such sequences are not
-        well-formed.  (This implies that an encoder cannot encode false, true,
-        null, or undefined in two-byte sequences and that only the one-byte
+        well-formed.  (This implies that an encoder cannot encode <tt>false</tt>, <tt>true</tt>,
+        <tt>null</tt>, or <tt>undefined</tt> in two-byte sequences and that only the one-byte
         variants of these are well-formed; more generally speaking, each
         simple value only has a single representation variant).</t>
         <t>The 5-bit values of 25, 26, and 27 are for 16-bit, 32-bit, and 64-bit
@@ -1059,9 +1059,9 @@ Current:
    guidance on the handling of this convention in application protocols 
    and the mapping to platform types for tag number 1.
 -->
-        <t>As a matter of convention, many tags do not accept null or undefined
-values as tag content; instead, a null or
-undefined value can be used in place of the entire tag. For example,
+        <t>As a matter of convention, many tags do not accept <tt>null</tt> or <tt>undefined</tt>
+values as tag content; instead, a <tt>null</tt> or
+<tt>undefined</tt> value can be used in place of the entire tag. For example,
 <xref target="epochdatetimesect" format="default"/> provides guidance
 on the handling of this convention in application
 protocols and the mapping to platform types for tag number 1.</t>
@@ -1247,12 +1247,12 @@ Current:
    (e.g., with NaN for undefined date/time values or with Infinite for
    an expiry date that is not set)...
 -->
-          <t>Note that platform types for date/time may include null or undefined
+          <t>Note that platform types for date/time may include <tt>null</tt> or <tt>undefined</tt>
 values, which may also be desirable at an application protocol level.
 While emitting tag number 1 values with non-finite tag content values
 (e.g., with NaN for undefined date/time values or with Infinite for an
 expiry date that is not set) may seem an obvious way to handle this,
-using untagged null or undefined avoids the use of non-finites and results in a shorter encoding.
+using untagged <tt>null</tt> or <tt>undefined</tt> avoids the use of non-finites and results in a shorter encoding.
 Application protocol designers are encouraged to consider these cases
 and include clear guidelines for handling them.</t>
         </section>
@@ -3496,43 +3496,43 @@ unsigned integers are in network byte order.)</t>
         <tbody>
           <tr>
             <td align="left">0x00..0x17</td>
-            <td align="left">Unsigned integer 0x00..0x17 (0..23)</td>
+            <td align="left">unsigned integer 0x00..0x17 (0..23)</td>
           </tr>
           <tr>
             <td align="left">0x18</td>
-            <td align="left">Unsigned integer (one-byte uint8_t follows)</td>
+            <td align="left">unsigned integer (one-byte uint8_t follows)</td>
           </tr>
           <tr>
             <td align="left">0x19</td>
-            <td align="left">Unsigned integer (two-byte uint16_t follows)</td>
+            <td align="left">unsigned integer (two-byte uint16_t follows)</td>
           </tr>
           <tr>
             <td align="left">0x1a</td>
-            <td align="left">Unsigned integer (four-byte uint32_t follows)</td>
+            <td align="left">unsigned integer (four-byte uint32_t follows)</td>
           </tr>
           <tr>
             <td align="left">0x1b</td>
-            <td align="left">Unsigned integer (eight-byte uint64_t follows)</td>
+            <td align="left">unsigned integer (eight-byte uint64_t follows)</td>
           </tr>
           <tr>
             <td align="left">0x20..0x37</td>
-            <td align="left">Negative integer -1-0x00..-1-0x17 (-1..-24)</td>
+            <td align="left">negative integer -1-0x00..-1-0x17 (-1..-24)</td>
           </tr>
           <tr>
             <td align="left">0x38</td>
-            <td align="left">Negative integer -1-n (one-byte uint8_t for n follows)</td>
+            <td align="left">negative integer -1-n (one-byte uint8_t for n follows)</td>
           </tr>
           <tr>
             <td align="left">0x39</td>
-            <td align="left">Negative integer -1-n (two-byte uint16_t for n follows)</td>
+            <td align="left">negative integer -1-n (two-byte uint16_t for n follows)</td>
           </tr>
           <tr>
             <td align="left">0x3a</td>
-            <td align="left">Negative integer -1-n (four-byte uint32_t for n follows)</td>
+            <td align="left">negative integer -1-n (four-byte uint32_t for n follows)</td>
           </tr>
           <tr>
             <td align="left">0x3b</td>
-            <td align="left">Negative integer -1-n (eight-byte uint64_t for n follows)</td>
+            <td align="left">negative integer -1-n (eight-byte uint64_t for n follows)</td>
           </tr>
           <tr>
             <td align="left">0x40..0x57</td>
@@ -3632,27 +3632,27 @@ unsigned integers are in network byte order.)</t>
           </tr>
           <tr>
             <td align="left">0xc0</td>
-            <td align="left">Text-based date/time (data item follows; see <xref target="stringdatetimesect" format="default"/>)</td>
+            <td align="left">text-based date/time (data item follows; see <xref target="stringdatetimesect" format="default"/>)</td>
           </tr>
           <tr>
             <td align="left">0xc1</td>
-            <td align="left">Epoch-based date/time (data item follows; see <xref target="epochdatetimesect" format="default"/>)</td>
+            <td align="left">epoch-based date/time (data item follows; see <xref target="epochdatetimesect" format="default"/>)</td>
           </tr>
           <tr>
             <td align="left">0xc2</td>
-            <td align="left">Positive bignum (data item "byte string" follows)</td>
+            <td align="left">positive bignum (data item "byte string" follows)</td>
           </tr>
           <tr>
             <td align="left">0xc3</td>
-            <td align="left">Negative bignum (data item "byte string" follows)</td>
+            <td align="left">negative bignum (data item "byte string" follows)</td>
           </tr>
           <tr>
             <td align="left">0xc4</td>
-            <td align="left">Decimal Fraction (data item "array" follows; see <xref target="fractions" format="default"/>)</td>
+            <td align="left">decimal Fraction (data item "array" follows; see <xref target="fractions" format="default"/>)</td>
           </tr>
           <tr>
             <td align="left">0xc5</td>
-            <td align="left">Bigfloat (data item "array" follows; see <xref target="fractions" format="default"/>)</td>
+            <td align="left">bigfloat (data item "array" follows; see <xref target="fractions" format="default"/>)</td>
           </tr>
           <tr>
             <td align="left">0xc6..0xd4</td>
@@ -3660,7 +3660,7 @@ unsigned integers are in network byte order.)</t>
           </tr>
           <tr>
             <td align="left">0xd5..0xd7</td>
-            <td align="left">Expected Conversion (data item follows; see <xref target="convexpect" format="default"/>)</td>
+            <td align="left">expected conversion (data item follows; see <xref target="convexpect" format="default"/>)</td>
           </tr>
           <tr>
             <td align="left">0xd8..0xdb</td>
@@ -3672,19 +3672,19 @@ unsigned integers are in network byte order.)</t>
           </tr>
           <tr>
             <td align="left">0xf4</td>
-            <td align="left">False</td>
+            <td align="left">false</td>
           </tr>
           <tr>
             <td align="left">0xf5</td>
-            <td align="left">True</td>
+            <td align="left">true</td>
           </tr>
           <tr>
             <td align="left">0xf6</td>
-            <td align="left">Null</td>
+            <td align="left">null</td>
           </tr>
           <tr>
             <td align="left">0xf7</td>
-            <td align="left">Undefined</td>
+            <td align="left">undefined</td>
           </tr>
           <tr>
             <td align="left">0xf8</td>
@@ -3692,15 +3692,15 @@ unsigned integers are in network byte order.)</t>
           </tr>
           <tr>
             <td align="left">0xf9</td>
-            <td align="left">Half-Precision Float (two-byte IEEE 754)</td>
+            <td align="left">half-precision float (two-byte IEEE 754)</td>
           </tr>
           <tr>
             <td align="left">0xfa</td>
-            <td align="left">Single-Precision Float (four-byte IEEE 754)</td>
+            <td align="left">single-precision float (four-byte IEEE 754)</td>
           </tr>
           <tr>
             <td align="left">0xfb</td>
-            <td align="left">Double-Precision Float (eight-byte IEEE 754)</td>
+            <td align="left">double-precision float (eight-byte IEEE 754)</td>
           </tr>
           <tr>
             <td align="left">0xff</td>

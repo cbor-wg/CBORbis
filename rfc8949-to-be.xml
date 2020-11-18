@@ -475,7 +475,7 @@ Current, Section 3.4:
    with a tag of number 2 to indicate it is a positive "bignum"
 -->
       <t>The initial byte and any additional bytes consumed to construct the
-argument are collectively referred to as the "head" of the data item.</t>
+argument are collectively referred to as the <em>head</em> of the data item.</t>
       <t>The meaning of this argument depends on the major type.
 For example, in major type 0, the argument is the value of the data
 item itself (and in major type 1, the value of the data item is
@@ -569,7 +569,7 @@ decoding; see also <xref target="map-keys" format="default"/>.</dd>
           <dd>
   a tagged data item ("tag") whose tag number, an integer in the range
 0..2<sup>64</sup>-1 inclusive, is the argument and
-whose enclosed data item ("tag content") is the single encoded data item that follows the head.
+whose enclosed data item (<em>tag content</em>) is the single encoded data item that follows the head.
 See <xref target="tags" format="default"/>.</dd>
           <dt>Major type 7:</dt>
           <dd>
@@ -977,17 +977,17 @@ are encoded in the additional bytes of the appropriate size.  (See
       <section anchor="tags" toc="default">
         <name>Tagging of Items</name>
         <t>In CBOR, a data item can be enclosed by a tag to give it some
-additional semantics, as uniquely identified by a "tag number".
+additional semantics, as uniquely identified by a <em>tag number</em>.
 The tag is major type 6, its argument (<xref target="encoding" format="default"/>) indicates the tag
 number, and it contains a single enclosed data item, the
-"tag content".
+<em>tag content</em>.
 (If a tag requires further structure to its content, this structure is
 provided by the enclosed data item.)
-We use the term "tag" for the entire data item consisting of both a
+We use the term <em>tag</em> for the entire data item consisting of both a
 tag number and the tag content: the tag content is the data item that
 is being tagged.</t>
         <t>For example, assume that a byte string of length 12 is marked with a
-tag of number 2 to indicate it is a positive "bignum" (<xref target="bignums" format="default"/>).
+tag of number 2 to indicate it is a positive <em>bignum</em> (<xref target="bignums" format="default"/>).
 The encoded data item would start with a byte 0b110_00010 (major type
 6, additional information 2 for the tag number) followed by the
 encoded tag content: 0b010_01100 (major type 2, additional information

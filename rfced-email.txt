@@ -88,7 +88,7 @@ them at the same level.
 
 Our proposal is in:
 
-https://github.com/cbor-wg/CBORbis/commit/
+https://github.com/cbor-wg/CBORbis/commit/9297c1d
 
 
 > 
@@ -117,8 +117,18 @@ https://github.com/cbor-wg/CBORbis/commit/
 > with a tag of number 2 to indicate it is a positive "bignum"
 > -->
 
-Italics (RFCXML “em”, in today’s HTML style actually oblique) look good in HTML but currently cause a fallback that looks like _head_ in TXT.  
-Paul: do you have an opinion?
+Yes.
+
+((Italics (RFCXML “em”, in today’s HTML style actually oblique) look good in
+HTML but currently cause a fallback that looks like _head_ in TXT.
+This is explained in the last paragraph of section 1.2, so is probably OK.))
+
+We have made these changes (and a few more related ones) in:
+
+https://github.com/cbor-wg/CBORbis/commit/
+
+
+
 
 > 5) <!-- [rfced]  Please review whether the "type" attribute should be 
 > set for sourcecode elements in the XML file. If the current list of 

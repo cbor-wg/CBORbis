@@ -43,7 +43,7 @@ Yes, but maybe we can avoid the whole issue by switching to superscript notation
 
 Our proposal is in:
 
-https://github.com/cbor-wg/CBORbis/commit/
+https://github.com/cbor-wg/CBORbis/commit/50ab1db
 
 (( Background:
 Well, xml2rfc is a bit counterproductive here.
@@ -83,15 +83,13 @@ would work much better.
 > argument", see Section 3).
 > -->
 
-Serialization variants include the various examples given, so we can’t put them at the same level.
+Serialization variants include the various examples given, so we can’t put
+them at the same level.
 
-Maybe:
-Also note that serialization variants are not visible at the generic
-data model level.  This includes the number of bytes of the encoded
-floating-point value as well as the choice of encoding for an “argument" (see
-{{encoding}}), for example for an
-integer, for the length of a text or byte string, for the number of elements
-in an array or pairs in a map, or for a tag number.
+Our proposal is in:
+
+https://github.com/cbor-wg/CBORbis/commit/
+
 
 > 
 > 4) <!-- [rfced]  Would you like to apply italics formatting for the 

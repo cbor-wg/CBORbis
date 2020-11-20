@@ -131,12 +131,9 @@ https://github.com/cbor-wg/CBORbis/commit/686179e
 
 (( Background:
 
-The first 10 code blocks in the document are actually (formatted and commented) hex-dumps.
-RFC 7991 provides for hex dumps as <artwork type=“hex-dump”>.
+The first 10 code blocks in the document are actually (formatted and commented) hex-dumps. RFC 7991 provides for hex dumps as <artwork type=“hex-dump”>.
 
-The only occurrence of this I can find in RFCs today is RFC 8688, where this tag is used for what is actually base-64 encoded examples.
-I don’t think it is really defined what <artwork type=“hex-dump”> means, although the usage of hex-dump for base64 in RFC 8688 is rather questionable.
-(See also the discussion of the type attribute for artwork in https://tools.ietf.org/html/draft-levkowetz-xml2rfc-v3-implementation-notes-11#section-3.1.3 — which correctly points out that “type” is a bit overloaded here.)
+The only occurrence of this we can find in RFCs today is RFC 8688, where this tag is used for what is actually base-64 encoded examples. We don’t think it is really defined what <artwork type=“hex-dump”> means, although the usage of hex-dump for base64 in RFC 8688 is rather questionable. (See also the discussion of the type attribute for artwork in https://tools.ietf.org/html/draft-levkowetz-xml2rfc-v3-implementation-notes-11#section-3.1.3 — which correctly points out that “type” is a bit overloaded here.)
 
 So we used <artwork type="hex-dump"> for our ten formatted hex-dumps, and kept <sourcecode type=“pseudocode”> (twice), <sourcecode type=“c”>, and <sourcecode type=“python”> for the four programs in appendix C.
 ))
@@ -334,11 +331,9 @@ That change is fine. (The original text works for me, but the replacement is als
 > For example, the byte string 0x12345678 could be written h'12345678',
 > b32'CI2FM6A', or b64'EjRWeA'.
 > -->
-> 
 
-Citing from our reply (Archived-At: <https://mailarchive.ietf.org/arch/msg/cbor/IJcQDO0VDzG2Tv5P1CNuWkrwM5E>) to the AD that asked the same question:
+Citing from our reply (Archived-At: <https://mailarchive.ietf.org/arch/msg/cbor/IJcQDO0VDzG2Tv5P1CNuWkrwM5E>) to the AD who asked the same question:
 
-> 
 >> (soapbox) Is literal '>' and '<' really the best quoting strategy here
 >> (and later on)?
 > 
@@ -346,11 +341,11 @@ Citing from our reply (Archived-At: <https://mailarchive.ietf.org/arch/msg/cbor/
 > confusing for readers of some formats of the eventual RFC. Using quotation marks
 > would definitely cause confusion in some readers that > and < do not.
 
-I would of course use actual guillemets (German style, i.e. inward pointing as with the greater than/less than signs here), which would work well in all formats, but for reasons I cannot understand the conventions that have been established around RFCXMLv3 deprive us of the use of typographic characters (quotes, dashes, ellipses) in the text and force us to use these ASCII surrogates.
+We would of course use actual guillemets (German style, i.e. inward pointing as with the greater than/less than signs here), which would work well in all formats, but the conventions that have been established for RFCXMLv3 deprive us of the use of typographic characters (curly quotes, long dashes, ellipses) in the text and force us to use these ASCII surrogates.
 
-So no improvement is currently possible.
+Thus, no improvement is currently possible.
 
-> 
+
 > 16) <!-- [rfced] We have the following questions about the IANA Considerations
 > section.
 > 
@@ -377,7 +372,6 @@ So no improvement is currently possible.
 
 This is a good change.  For the sake of implementers that may only know the more common vernacular, can we put “MIME type” in the text of 9.3 then:
 
-
 OLD:
   The Internet media type [RFC6838] for a single encoded CBOR data item
   is application/cbor, as defined in [IANA.media-types]:
@@ -388,11 +382,7 @@ NEW:
 
 The remaining concern is that these headings conflate registries specific to
 CBOR (which were created for RFC 7049) with pre-existing registries.
-Maybe not a big problem.
-
-
-
-
+This is maybe not a big problem.
 
 > b) Section 9: Would it be helpful to update this introductory paragraph to
 > mention the structured syntax suffix registered in Section 9.5?
@@ -409,15 +399,12 @@ Maybe not a big problem.
 > separate, that is, not under an umbrella registry, and follow the rules in
 > [RFC8126].  IANA has also assigned a new media type, associated CoAP
 > Content-Format entry, and structured syntax suffix.
-> 
 
 This sounds a bit Finnish to me (no articles :-),
 
 Our proposal in
+  https://github.com/cbor-wg/CBORbis/commit/0eccd5a
 
-https://github.com/cbor-wg/CBORbis/commit/0eccd5a
-
-> 
 > c) Section 9.1: FYI - we have updated "these Standards Actions allocate" to read
 > "IANA allocate" here.
 > 
@@ -430,24 +417,19 @@ https://github.com/cbor-wg/CBORbis/commit/0eccd5a
 > It is suggested that IANA  allocate
 > values starting with the number 16 in order to reserve the lower
 > numbers for contiguous blocks (if any).
-> 
 
 Certainly.  In practice, the Standards Action chooses a number and IANA allocates this then, but this text works.
 
-> 
 > d) Section 9.3: We note that the media type registration does not include the
 > "Fragment identifier considerations” entry that appears in the template in
 > Section 5.6 of RFC 6838. Should this entry be included?
-> 
 
 We purposely do not give a fragment identifier.
 
 ((Background:
 This follows the example of RFC 8259.
 We do say (in the structured syntax suffix registration):
-… (At
-publication of RFC 8949, there is no fragment identification
-syntax defined for "application/cbor”.)
+… (At publication of RFC 8949, there is no fragment identification syntax defined for "application/cbor”.)
 So the intent is documented.
 ))
 
@@ -455,11 +437,9 @@ So the intent is documented.
 > template (see diff file). If no objections, we will ask IANA to update the
 > template at https://www.iana.org/assignments/media-types/application/cbor to
 > match the updated document.
-> 
 
-(Will cover this in the diff review.)
+(We will cover this in the diff review.)
 
-> 
 > f) The following note in the IANA email dated 16 October 2020 indicates that
 > the second registration (i.e., the one with ID 11060) does not appear in the
 > document. Should this be added (perhaps to Section 9.4)? Or should this
@@ -481,7 +461,6 @@ So the intent is documented.
 > Please see
 > https://www.iana.org/assignments/core-parameters
 > -->
-> 
 
 Here is an excerpt of our exchange with IANA about this:
 
@@ -502,11 +481,9 @@ Here is an excerpt of our exchange with IANA about this:
 > 
 > It currently points to the 1994 version.
 > --> 
-> 
 
-I believe so, but haven’t checked the 2015 version.
-
-> 
+Yes.
+ 
 > 18) <!-- [rfced]  Would you like to update the [ECMA262] reference 
 > to point to the 11th Edition (June 2020)? 
 > 
@@ -518,13 +495,11 @@ I believe so, but haven’t checked the 2015 version.
 >    CNN-TERMS to [RFC7228], and from the 5.1 edition to the 9th
 >    edition of [ECMA262]; 
 > -->
-> 
 
 The reference to ECMA 262 is mainly there because of a historical comment on tag 35 in RFC 7049.  At the time (2013), neither the 9th edition nor the current edition existed.  (The background is that this definition changes faster in ECMA262 than we can track it here, so we gave up on trying to nail down tag 35.)
 In summary, updating the reference is a bit weird, but not weirder than it already was, and probably will not confuse people too much.
 (There is also a reference in Section 5.6, which should be stable with upgrades of the JavaScript language.)
 
-> 
 > 19) <!-- [rfced]  We have updated the [PCRE] reference; 
 > PCRE is written by Philip Hazel.  Andrew Ho appears
 > to be the sysadmin (https://sourceforge.net/p/pcre/wiki/Home/) 
@@ -539,12 +514,10 @@ In summary, updating the reference is a bit weird, but not weirder than it alrea
 > --> 
 > 
 
-Thank you.
-I hope that the RFC editor keeps a common library of hard-to-reference de-factor standards like this; I would appreciate if that could be looked up by RFC authors.
+Thank you. We hope that the RFC editor keeps a common library of hard-to-reference de-factor standards like this; we would appreciate if that could be looked up by RFC authors.
 
-Should this now be 2020 (or, really, n.d.)?
-
-> 
+However, this should probably have no date, because the web page is undated. Listing when a web page was most recently accessed is quite confusing to readers who actually go to the page and don't see any date indication.
+ 
 > 20) <!-- [rfced]  We have updated the following reference based on 
 > information found on the DOI page:
 > 
@@ -562,22 +535,17 @@ Should this now be 2020 (or, really, n.d.)?
 >            489-508, DOI 10.1007/978-3-642-34931-7_28, 2012,
 >            <https://doi.org/10.1007/978-3-642-34931-7_28>.
 > -->
-> 
 
 Interesting.  dx.doi.org doesn’t know that, and therefore the automatically generated bibxml doesn’t either.  Thank you.
 
-
-> 
 > 21) <!-- [rfced]  FYI - We have added informative references to 
 > RFC 7049 errata. Please let us know if any updates are necessary.
 > -->
-> 
 
-I am not sure what’s the point — these errata are fixed, but OK, reading appendix G.1 is easier with the links in the document.
+We are not sure what the point of doing so is. These errata are fixed, but OK, reading appendix G.1 is easier with the links in the document.
 
-By the way, there are few actual “errata” in 7049, most of these are just “errata reports”, as appendix G.1 goes to pains to distinguish. The bibliography entries are therefore not correct.
+By the way, there are very few actual “errata” in 7049, most of these are just “errata reports”, as appendix G.1 goes to pains to distinguish. The bibliography entries are therefore not correct.
 
-> 
 > 22) <!-- [rfced] Appendix A: We updated to use the new <u> tag for the Unicode and
 > removed the following sentence. Please let us know any objections.
 > 
@@ -586,12 +554,10 @@ By the way, there are few actual “errata” in 7049, most of these are just �
 > strings could also be represented in native UTF-8 in diagnostic
 > notation, just not in an ASCII-only specification.) 
 > -->
-> 
-> 
 
 This sentence is the result of a correction already (https://github.com/cbor-wg/CBORbis/commit/3adfa3d9afc2654a26516da7758fd180fcda4f21); since industry documents (in particular in some form of specification language) are still often limited to ASCII, this sentence is still relevant.
 
-(I don’t think we need to be adventurous and include the actual characters in the text, in particular if we cannot even use quotes because they are deemed dangerous.)
+(I don’t think we need to be adventurous and include the actual characters in the text, in particular if we cannot even use curly quotes because they are deemed dangerous.)
 
 > 23) <!-- [rfced] Is "specification" the correct word choice here? Please review
 > and let us know if any updates are needed.
@@ -601,14 +567,11 @@ This sentence is the result of a correction already (https://github.com/cbor-wg/
 > e.g., now pointing to the CBOR working group as the author of the
 > specification). 
 > -->
-> 
 
-The present document, RFC 8949-to-be, is meant here.
-Could this be made clearer?
+RFC 8949-to-be is what we want here. Could this be made clearer?
 
 (Some foreign-language-speaker readers have problems with “present” in the being-at-hand sense, which is not advertised a lot by dictionaries.)
 
-> 
 > 24) <!-- [rfced] FYI - We updated the following sentence to mention the applicable
 > registry.
 > 
@@ -623,136 +586,9 @@ Could this be made clearer?
 > "1+2") are no longer assigned by First Come First Served; this range
 > is now Specification Required.
 > -->
-> 
 
 Very good.
 
+Again, thank you for the thorough review. If any of our responses above or changes in the XML file cause concern, by all means let us know.
 
-> 
-> Thank you.
-> 
-> RFC Editor/jm/rv
-> 
-> 
-> 
-> On Nov 3, 2020, at 11:44 PM, rfc-editor@rfc-editor.org wrote:
-> 
-> *****IMPORTANT*****
-> 
-> Updated 2020/11/03
-> 
-> RFC Author(s):
-> --------------
-> 
-> Instructions for Completing AUTH48 in XML
-> 
-> This is your last chance to make changes to your RFC-to-be: 
-> draft-ietf-cbor-7049bis-16.txt.
-> Once the document is published as an RFC, we will not make changes.  
-> Please follow the instructions below to complete the AUTH48 process.
-> (For frequently asked questions, please see 
-> https://www.rfc-editor.org/faq/#auth48.)
-> 
-> 1) This document is being processed using xml2rfc v3 tools. 
-> Please help us by reviewing all formats carefully during AUTH48.
-> The following files are available for review: 
-> 
-> https://www.rfc-editor.org/authors/rfc8949.html
-> https://www.rfc-editor.org/authors/rfc8949.pdf
-> https://www.rfc-editor.org/authors/rfc8949.txt
-> 
-> https://www.rfc-editor.org/authors/rfc8949.xml 
-> (Note: you may need to view the page source to save the file.) 
-> 
-> Note that <https://tools.ietf.org/rfcdiff> provides tools to make various 
-> kinds of diff files.  We provide the following for your convenience.  
-> 
-> Changes to the content are best viewable in the following 
-> diff file of the text:
-> https://www.rfc-editor.org/authors/rfc8949-diff.html
-> 
-> Changes to the XML file are viewable in the following diff file 
-> (includes updates to the XML tagging and the content): 
-> https://www.rfc-editor.org/authors/rfc8949-xmldiff1.html
-> 
-> 2) Review and resolve (as necessary) any questions raised by the RFC
-> Editor.  The questions (if any) have been included in the XML file as
-> comments marked <!-- [rfced] ... --> and will be sent in a subsequent email.
-> 
-> 3) Send us your changes or respond with your approval for publication.  
-> Please use 'REPLY ALL' so that rfc-editor@rfc-editor.org and the parties
-> CC'ed on this message receive your response. 
-> 
-> Your document will not move forward until we have received 
-> approvals from each of the authors listed on the front page.  
-> Your approval indicates that you approve the .xml, .html, .pdf, 
-> and .txt for publication. Your approval also indicates that you have 
-> engaged other parties (e.g., Contributors or Working Group) as 
-> necessary before providing your approval.
-> 
-> If sending changes, please do one of the following:
-> 
-> a. Update the provided XML file, then email us the revised XML file.  
->   You may use any filename for the revised file; we will rename 
->   it as needed. 
-> 
-> --OR--
-> 
-> b. Provide us with an explicit list of changes in this format.
-> 
->   Section # (or indicate Global)
-> 
->   OLD:
->   old text
-> 
->   NEW:
->   new text
-> 
-> Be sure to pay particular attention to these areas of the document:
-> - IANA Considerations updates (if applicable)
-> - Contact information
-> - Copyright notice and legends; see the Trust Legal Provisions (TLP)
->  -- https://trustee.ietf.org/license-info/
-> 
-> In particular for XMLv3, please review the XML tagging to ensure it 
-> is correct. In addition, please do the following: 
-> 
-> a) if applicable, review the type attribute of each sourcecode element 
->   in the XML file to ensure correctness. See the xml2rfc FAQ for details
->   (https://www.rfc-editor.org/materials/FAQ-xml2rfcv3.html#q_sourcecode).  
-> 
-> b) review each artwork element. Specifically, should any artwork element 
->   be tagged as sourcecode or another element?
-> 
-> c) update the XML if you would like to take advantage of any of the 
->   new features allowed in XML v3 (e.g., superscript and bold).
-> 
-> 4) If your document contains an SVG image, please be aware that the 
-> RFC Editor will ask you to make any necessary changes to that file. 
-> Revisions to SVG are most easily done in the tool used to create 
-> the file.  Please use svgcheck to validate your SVG file 
-> before submission (see https://pypi.org/project/svgcheck/).
-> 
-> 5) Review changes submitted by your coauthors (if any).  We assume that
-> you will speak up if you do not agree with the proposed changes.
-> That is, your silence is your assent to changes submitted by your
-> coauthors. Note that any changes that are beyond editorial will be
-> sent to the relevant body for approval.
-> 
-> 6) Please reply, as the document will not be published until we receive
-> approvals from each author.  The details of the AUTH48 status of your
-> document are here:
-> 
-> https://www.rfc-editor.org/auth48/rfc8949
-> 
-> Thank you for your cooperation,
-> 
-> RFC Editor
-> 
-> --------------------------------------
-> RFC8949 (draft-ietf-cbor-7049bis-16)
-> 
-> Title            : Concise Binary Object Representation (CBOR)
-> Author(s)        : C. Bormann, P. Hoffman
-> WG Chair(s)      : Francesca Palombini
-> Area Director(s) : Murray Kucherawy, Barry Leiba
+Carsten and Paul

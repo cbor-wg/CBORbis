@@ -1,0 +1,600 @@
+-*- mode: message -*-
+
+> On 2020-11-04, at 08:51, rfc-editor@rfc-editor.org wrote:
+> 
+> Authors,
+> 
+> While reviewing this document during AUTH48, please resolve (as necessary) the following questions, which are also in the XML file.
+
+We give links to a GitHub repo if you want to look at the differences generated for each answer. If you disagree with any of our changes, by all means let us know.
+
+Thank you for this extensive review. We answer the questions below, but have fixed the text directly in rfc8949-to-be.xml.
+
+In our responses below, we sometimes give lengthy background explanations. Feel free to skip them unless you find them useful (or at least interesting).
+
+
+> 1) <!-- [rfced]  C++ is currently under development at ISO/IEC, and
+> the current reference [Cplusplus17] is for the 2017 version.
+> Should the sentence below mention an unpublished version?
+> 
+> Current:
+> these assumptions are also
+> specified in Sections 6.8.2 and 7.6.7 of the 2020 version of C++,
+> successor of [Cplusplus17].
+> -->
+> 
+
+We updated this text based on the current status:
+  https://github.com/cbor-wg/CBORbis/commit/afae360
+
+(( Background:
+We didn’t know whether C++20, which makes these changes, would be published by now.  That is not the case.  Referencing the official ISO/IEC JTC1 document also might lead to a paywall; ISO/IEC 14482 is not among JTC1’s “publicly available standards” (https://standards.iso.org/ittf/PubliclyAvailableStandards/).
+Both problems are addressed by referencing the current pre-publication draft for C++20, ISO/IEC JTC1 SC22 WG21 N 4860, which is a representation of ISO/IEC DIS 14882 but not quite exactly it (which is behind https://www.iso.org/standard/79358.html and costs CHF 118): https://isocpp.org/files/papers/N4860.pdf; isocpp.org is sufficiently quasi-official that it should not go away soon.
+We then no longer need to reference C++17.
+
+In that version, the relevant section for two’s complement is 6.8.1, not 6.8.2; the fragility of section referencing is another reason why we should have a specific document to point to (we also included the less fragile section tags [basic.fundamental] and [expr.shift]).
+))
+
+
+> 2) <!-- [rfced]  Would it be clearer to add parentheses to statements
+> like the following (here in Section 2 and throughout the document).
+
+Yes, but maybe we can avoid the whole issue by switching to superscript notation.
+(It would also help to be able to use a minus where the HTML rendering currently has a hyphen.)
+
+> Superscript formatting could be applied instead, which would add
+> parentheses in the text output. 
+
+Our proposal is in:
+  https://github.com/cbor-wg/CBORbis/commit/50ab1db
+
+(( Background:
+Well, xml2rfc is a bit counterproductive here. Obviously, we would want 2<sup>64</sup> That works fine in HTML, but creates
+  2^(64)
+in the text format using current xml2rfc tools. The text format uses ^, which is exclusive-or in C (as used in the Pseudocode appendix). It also adds a completely redundant additional level of parentheses.
+))
+
+
+> 3) <!-- [rfced]  We had difficulty parsing the following in Section 2.0:
+> 
+> Current:
+> Also note that serialization variants are not visible at the generic
+> data model level, including the number of bytes of the encoded
+> floating-point value or the choice of one of the ways in which an
+> integer, the length of a text or byte string, the number of elements
+> in an array or pairs in a map, or a tag number, (collectively "the
+> argument", see Section 3) can be encoded.
+> 
+> Perhaps:
+> Also note that the following are not visible at the generic data 
+> model level: serialization variants, the number of bytes of the 
+> encoded floating-point value, or the choice of encoding for an 
+> integer, the length of a text or byte string, the number of elements 
+> in an array or pairs in a map, or a tag number (collectively, "the 
+> argument", see Section 3).
+> -->
+
+Serialization variants include the various examples given, so we can’t put them at the same level.
+
+Our proposal is (unfortunately split) in three commits:
+  https://github.com/cbor-wg/CBORbis/commit/9297c1d
+  https://github.com/cbor-wg/CBORbis/commit/9556ba0
+  https://github.com/cbor-wg/CBORbis/commit/764b8a9
+
+or as a complete diff:
+
+  https://github.com/cbor-wg/CBORbis/compare/61ca0f4...master
+
+
+> 4) <!-- [rfced]  Would you like to apply italics formatting for the 
+> following?
+> 
+> Current, Section 3:
+> The initial byte and any additional bytes consumed to construct 
+> the argument are collectively referred to as the "head" of the 
+> data item.
+> 
+> Current, Section 3.1:
+> a tagged data item ("tag") whose tag number, an integer in the 
+> range 0..2**64-1 inclusive, is the argument and whose enclosed 
+> data item ("tag content")
+> 
+> Current, Section 3.4:
+> In CBOR, a data item can be enclosed by a tag to give it some 
+> additional semantics, as uniquely identified by a "tag number". 
+> The tag is major type 6, its argument (Section 3) indicates the 
+> tag number, and it contains a single enclosed data item, the 
+> "tag content". 
+> 
+> Current, Section 3.4:
+> For example, assume that a byte string of length 12 is marked 
+> with a tag of number 2 to indicate it is a positive "bignum"
+> -->
+
+Yes.
+
+(( Background:
+Italics (RFCXML “em”, in today’s HTML style actually oblique) look good in
+HTML but currently cause a fallback that looks like _head_ in the text format.
+This is explained in the last paragraph of section 1.2, so is probably OK.
+))
+
+We have made these changes (and a few more related ones) in:
+  https://github.com/cbor-wg/CBORbis/commit/0d44842
+
+
+> 5) <!-- [rfced]  Please review whether the "type" attribute should be 
+> set for sourcecode elements in the XML file. If the current list of 
+> preferred values for "type"
+> (https://www.rfc-editor.org/materials/sourcecode-types.txt) does not
+> contain an applicable type, then feel free to suggest a new one.
+> Also, it is acceptable to leave the "type" attribute not set.  
+> -->
+
+Our proposal is in
+
+https://github.com/cbor-wg/CBORbis/commit/686179e
+
+(( Background:
+
+The first 10 code blocks in the document are actually (formatted and commented) hex-dumps. RFC 7991 provides for hex dumps as <artwork type=“hex-dump”>.
+
+The only occurrence of this we can find in RFCs today is RFC 8688, where this tag is used for what is actually base-64 encoded examples. We don’t think it is really defined what <artwork type=“hex-dump”> means, although the usage of hex-dump for base64 in RFC 8688 is rather questionable. (See also the discussion of the type attribute for artwork in https://tools.ietf.org/html/draft-levkowetz-xml2rfc-v3-implementation-notes-11#section-3.1.3 — which correctly points out that “type” is a bit overloaded here.)
+
+So we used <artwork type="hex-dump"> for our ten formatted hex-dumps, and kept <sourcecode type=“pseudocode”> (twice), <sourcecode type=“c”>, and <sourcecode type=“python”> for the four programs in appendix C.
+))
+
+
+> 6) <!-- [rfced]  Should the following be included in the sourcecode?
+> 
+> 0b010_11111 0b010_00100 0xaabbccdd 0b010_00011 0xeeff99 0b111_11111
+> -->
+
+We have done so in the previous examples, so: Yes, indeed!
+  https://github.com/cbor-wg/CBORbis/commit/b33791e
+
+
+> 7) <!-- [rfced]  We note that the following simple values are 
+> inconsistently formatted:  false, true, null, and undefined.
+> 
+> Should they be marked with monospace formatting? Should they
+> be capitalized?
+> -->
+
+Please see our proposal in:
+  https://github.com/cbor-wg/CBORbis/commit/0b7023d
+
+Note that editing this uncovered a little inaccuracy that was addressed in
+  https://github.com/cbor-wg/CBORbis/commit/029cd21
+
+(( Background
+They need to be lower case for their use in diagnostic notation, where also typewriter formatting is appropriate.
+The data model discussion (Section 2) uses them in this form as well, and that seems right.
+
+The big problem is that the TXT fallback for <tt> makes them look like text strings, which are also valid in diagnostic notation but mean something emphatically different from the simple values true, false, etc. represent.
+So we cannot globally switch them to <tt>, we need to see whether that would cause confusion in the specific section.
+
+They are currently upper case in the CBOR Simple Values registry (and thus also, unstyled, in Table 4), and I’m not sure we want to change this.
+The discussion near this table uses lower case unstyled, which probably should be replaced by typewriter font in the HTML, and the confusion potential for text strings of the TXT fallback is limited here.
+
+Section 3.4 uses »null or undefined value«, where the names »null« and »undefined« actually are used as adjectives.  This probably would also benefit from typewriter style, converting them into nouns.
+The last paragraph of 3.4.2 has three of these as well; the first and second “undefined” are used in their English sense (but the first could be converted to a noun as above), while the third is the CBOR simple value data item!  (Same for title of 5.7: English sense, but the »Undefined« currently used in the text currently is the data item again and a typewriter »undefined« would fit better.)
+
+Section 8 uses unstyled upper case again (to distinguish the concept from the notation, which cannot be in typewriter font as the TXT fallback definitely would be confused with the notation for text strings.
+Table 6 is fine with lower case unstyled (actual diagnostic notation).
+Table 7 is upper case unstyled again (the table entries are rather inconsistently capitalized; they all could be lower-case (except “UTF-8” of course).
+
+None of this is really black-and-white, but the proposed changes make it a bit more consistent while avoiding the false vs. "false" trap.
+))
+
+
+> 8) <!-- [rfced]  In the following sentence in Section 3.4, what is
+> meant by "this" ("this may prefer...")?
+> 
+> Current:
+> The tag definition may specify a preferred
+> serialization (Section 4.1) that is recommended for generic encoders;
+> this may prefer basic generic data model representations over ones
+> that employ a tag.
+> -->
+
+The preferred serialization.
+
+We don't think a change is needed here.
+
+
+> 9) <!-- [rfced]  We're having difficulty parsing the following: 
+> 
+> Original:
+> The tag definition usually restricts what kinds of nested data item
+> or items are valid for such tags.  Tag definitions may restrict their
+> content to a very specific syntactic structure, as the tags defined
+> in this document do, or they may aim at a more semantically defined
+> definition of their content, as for instance tags 40 and 1040 do
+> [RFC8746]: These accept a number of different ways of representing
+> arrays.
+> 
+> Perhaps:
+> The tag definition usually defines which nested data item(s) are
+> valid for such tags. Tag definitions may restrict their
+> content to a very specific syntactic structure, as the tags defined
+> in this document do, or they may define their content more 
+> semantically, for instance, as tags 40 and 1040 do by accepting 
+> multiple ways to represent arrays [RFC8746]. 
+> -->
+> 
+
+Nice! Further simplified proposal in:
+  https://github.com/cbor-wg/CBORbis/commit/d19c18b
+
+("Tags" is plural in the sentence, so "data items" can be as well.)
+
+
+> 10) <!-- [rfced] We have made the following update to improve readability.
+> Please let us know if other changes are necessary.
+> 
+> Original:
+> As a matter of convention, many tags do not accept null or undefined
+> values as tag content; instead, the expectation is that a null or
+> undefined value can be used in place of the entire tag; Section 3.4.2
+> provides some further considerations for one specific tag about the
+> handling of this convention in application protocols and in mapping
+> to platform types.
+> 
+> Current:
+> As a matter of convention, many tags do not accept null or undefined
+> values as tag content; instead, a null or undefined value can be used 
+> in place of the entire tag. For example, Section 3.4.2 provides 
+> guidance on the handling of this convention in application protocols 
+> and the mapping to platform types for tag number 1.
+> -->
+
+Please revert to the original wording.
+
+(( Background
+The tag cannot really define what can be used in place of it.
+But it can be defined in the expectation that it does not really have to provide for null or undefined (adjective!) values as a meaning of the tag because the application protocol can use `null` or `undefined` in place of the tag.
+That gets a bit lost in the new version.
+(Also, Section 3.4.2 really only discusses this for the one tag for epoch-based date/time, not generally.)
+))
+
+
+> 11) <!-- [rfced]  Should "Infinite" be "Infinity" in the following?
+> 
+> Current:
+> While emitting tag number 1 values with non-finite tag content values
+> (e.g., with NaN for undefined date/time values or with Infinite for
+> an expiry date that is not set)...
+> -->
+
+Good catch, yes!
+  https://github.com/cbor-wg/CBORbis/commit/0eccd5a
+
+> 
+> 12) <!-- [rfced]  FYI -  We have changed the exponentiation notation
+> from ^ to ** here match the rest of the document:
+> 
+> Current:
+> If a protocol includes a field that can express integers with an
+> absolute value of 2**64 or larger using tag numbers 2 or 3...
+> -->
+
+Indeed (2^64 would be 66). We fixed this with the superscript conversion above in your question #2.
+
+
+> 13) <!-- [rfced] We added citations for BCP 14 here. Please let us know any
+> objections.
+> 
+> Original:
+> With few exceptions, it is advisory only and
+> explicitly excludes any language from BCP 14 other than words that
+> could be interpreted as "MAY" in the sense of BCP 14. 
+> 
+> Updated:
+> With few exceptions, it is advisory only and
+> explicitly excludes any language from BCP 14 [RFC2119] [RFC8174]
+> other than words that could be interpreted as "MAY" in the sense of
+> BCP 14. 
+> -->
+
+Very good.
+
+
+> 14) <!-- [rfced] Will it be clear to readers what items "are equal" here?
+> 
+> Original:
+> (Byte and text) strings are compared byte by byte, arrays element by
+> element, and are equal if they have the same number of bytes/elements
+> and the same values at the same positions. 
+> 
+> Perhaps:
+> Both byte strings and text strings are compared byte by byte; arrays
+> are compared element by element. Strings and arrays are equal
+> if they have the same number of bytes/elements and the same values at the
+> same positions.
+> -->
+
+That change is fine. (The original text works for me, but the replacement is also fine.)
+
+
+> 15) <!-- [rfced] Please review the convention ">term<" (also used in RFC 7049 but
+> in no other published RFC that we could find). Would you like to keep the
+> current convention or would one of the new v3 features work better
+> (perhaps <tt>)?
+> 
+> Current:
+> The notation borrows the JSON syntax for numbers (integer and
+> floating-point), True (>true<), False (>false<), Null (>null<), UTF-8
+> strings, arrays, and maps (maps are called objects in JSON; the
+> diagnostic notation extends JSON here by allowing any data item in
+> the key position).  Undefined is written >undefined< as in
+> JavaScript.  
+> ...
+> Byte strings are notated in one of the base encodings, without
+> padding, enclosed in single quotes, prefixed by >h< for base16, >b32<
+> for base32, >h32< for base32hex, >b64< for base64 or base64url (the
+> actual encodings do not overlap, so the string remains unambiguous).
+> For example, the byte string 0x12345678 could be written h'12345678',
+> b32'CI2FM6A', or b64'EjRWeA'.
+> -->
+
+Citing from our reply (Archived-At: <https://mailarchive.ietf.org/arch/msg/cbor/IJcQDO0VDzG2Tv5P1CNuWkrwM5E>) to the AD who asked the same question:
+
+>> (soapbox) Is literal '>' and '<' really the best quoting strategy here
+>> (and later on)?
+> 
+> Yes. The actual best quoting would be using a font change, but that will be
+> confusing for readers of some formats of the eventual RFC. Using quotation marks
+> would definitely cause confusion in some readers that > and < do not.
+
+We would of course use actual guillemets (German style, i.e. inward pointing as with the greater than/less than signs here), which would work well in all formats, but the conventions that have been established for RFCXMLv3 deprive us of the use of typographic characters (curly quotes, long dashes, ellipses) in the text and force us to use these ASCII surrogates.
+
+Thus, no improvement is currently possible.
+
+
+> 16) <!-- [rfced] We have the following questions about the IANA Considerations
+> section.
+> 
+> a) Section 9: May we align the titles of the subsections in the IANA section?
+> (Note that we have removed "MIME Type" from the title of Section 9.3.)
+> 
+> Original:
+> 9.  IANA Considerations
+>   9.1.  Simple Values Registry
+>   9.2.  Tags Registry
+>   9.3.  Media Type ("MIME Type") 
+>   9.4.  CoAP Content-Format
+>   9.5.  The +cbor Structured Syntax Suffix Registration
+> 
+> Perhaps:
+> 9.  IANA Considerations
+>   9.1.  CBOR Simple Values Registry
+>   9.2.  CBOR Tags Registry
+>   9.3.  Media Types Registry
+>   9.4.  CoAP Content-Formats Registry
+>   9.5.  Structured Syntax Suffixes Registry
+> 
+> 
+
+This is a good change.  For the sake of implementers that may only know the more common vernacular, can we put “MIME type” in the text of 9.3 then:
+
+OLD:
+  The Internet media type [RFC6838] for a single encoded CBOR data item
+  is application/cbor, as defined in [IANA.media-types]:
+
+NEW:
+  The Internet media type [RFC6838] ("MIME type") for a single encoded CBOR data item
+  is application/cbor, as defined in [IANA.media-types]:
+
+The remaining concern is that these headings conflate registries specific to
+CBOR (which were created for RFC 7049) with pre-existing registries.
+This is maybe not a big problem.
+
+> b) Section 9: Would it be helpful to update this introductory paragraph to
+> mention the structured syntax suffix registered in Section 9.5?
+> 
+> Current:
+> IANA has created two registries for new CBOR values.  The registries
+> are separate, that is, not under an umbrella registry, and follow the
+> rules in [RFC8126].  IANA has also assigned a new media type and an
+> associated Constrained Application Protocol (CoAP) Content-Format
+> entry.
+> 
+> Perhaps:
+> IANA has created two registries for new CBOR values.  The registries are
+> separate, that is, not under an umbrella registry, and follow the rules in
+> [RFC8126].  IANA has also assigned a new media type, associated CoAP
+> Content-Format entry, and structured syntax suffix.
+
+This sounds a bit Finnish to me (no articles :-),
+
+Our proposal in
+  https://github.com/cbor-wg/CBORbis/commit/0eccd5a
+
+> c) Section 9.1: FYI - we have updated "these Standards Actions allocate" to read
+> "IANA allocate" here.
+> 
+> Original:
+> It is suggested that these Standards Actions allocate
+> values starting with the number 16 in order to reserve the lower
+> numbers for contiguous blocks (if any).
+> 
+> Updated:
+> It is suggested that IANA  allocate
+> values starting with the number 16 in order to reserve the lower
+> numbers for contiguous blocks (if any).
+
+Certainly.  In practice, the Standards Action chooses a number and IANA allocates this then, but this text works.
+
+> d) Section 9.3: We note that the media type registration does not include the
+> "Fragment identifier considerations” entry that appears in the template in
+> Section 5.6 of RFC 6838. Should this entry be included?
+
+We purposely do not give a fragment identifier.
+
+((Background:
+This follows the example of RFC 8259.
+We do say (in the structured syntax suffix registration):
+… (At publication of RFC 8949, there is no fragment identification syntax defined for "application/cbor”.)
+So the intent is documented.
+))
+
+> e) Section 9.3: We have made some small changes in the media type registration
+> template (see diff file). If no objections, we will ask IANA to update the
+> template at https://www.iana.org/assignments/media-types/application/cbor to
+> match the updated document.
+
+(We will cover this in the diff review.)
+
+> f) The following note in the IANA email dated 16 October 2020 indicates that
+> the second registration (i.e., the one with ID 11060) does not appear in the
+> document. Should this be added (perhaps to Section 9.4)? Or should this
+> registration be removed from the registry? Here is the direct link to the
+> "CoAP Content-Formats" registry:
+> https://www.iana.org/assignments/core-parameters/core-parameters.xhtml#content-formats.
+> 
+> From IANA email:
+> 
+> ACTION 4:
+> 
+> References to RFC 7049 have been replaced with references to this document for
+> the following CoAP Content-Format registrations (note that the second
+> registration is not mentioned in the IANA Considerations section):
+> 
+> application/cbor 60 [RFC-ietf-cbor-7049bis-16]
+> application/cbor deflate 11060 [RFC-ietf-cbor-7049bis-16]
+> 
+> Please see
+> https://www.iana.org/assignments/core-parameters
+> -->
+
+Here is an excerpt of our exchange with IANA about this:
+
+>> We understand that draft-ietf-cbor-7049bis-14 will obsolete RFC 7049. We have two questions about updating existing references to that document:
+>> 
+>> 1) draft-ietf-cbor-7049bis-14 will have us update the reference to the CoAP Content-Format registration with value 60, but it doesn't mention the registration with value 11060, which also has RFC 7049 as a reference. Should the document mention that registration? Should we update it? See
+>> 
+>> https://www.iana.org/assignments/core-parameters
+> 
+> Right, that is the usual ambiguity whether “reference” refers to the source of the registration or to the relevant documents to be used with the registration.
+> 11060 was registered to have deflate content-coding on application/cbor media-type.
+> As the media type is probably going to 7049bis the 11060 registration should, too.
+
+11060 (application/cbor with content-coding deflate) was added alongside 11050 (equivalent for JSON) early 2019 in a simple registration action.  There is no document describing this, as all information is in the registry.  For application/cbor, the registry entry points to 7049, and that should be updated to 8949.  But this is an informational, not a definitional reference.  8949 doesn’t “know” about 11060. (We could add a comment that it exists, but don’t need to.)
+
+> 17) <!-- [rfced] May we update the [ASN.1] reference to point to the 2015 version?
+> https://www.itu.int/rec/T-REC-X.690-201508-I/en
+> 
+> It currently points to the 1994 version.
+> --> 
+
+Yes.
+ 
+> 18) <!-- [rfced]  Would you like to update the [ECMA262] reference 
+> to point to the 11th Edition (June 2020)? 
+> 
+> https://www.ecma-international.org/publications/standards/Ecma-262.htm
+> 
+> We would also update the following:
+> 
+> *  the update of references, e.g., from RFC 4627 to [RFC8259], from
+>    CNN-TERMS to [RFC7228], and from the 5.1 edition to the 9th
+>    edition of [ECMA262]; 
+> -->
+
+The reference to ECMA 262 is mainly there because of a historical comment on tag 35 in RFC 7049.  At the time (2013), neither the 9th edition nor the current edition existed.  (The background is that this definition changes faster in ECMA262 than we can track it here, so we gave up on trying to nail down tag 35.)
+In summary, updating the reference is a bit weird, but not weirder than it already was, and probably will not confuse people too much.
+(There is also a reference in Section 5.6, which should be stable with upgrades of the JavaScript language.)
+
+> 19) <!-- [rfced]  We have updated the [PCRE] reference; 
+> PCRE is written by Philip Hazel.  Andrew Ho appears
+> to be the sysadmin (https://sourceforge.net/p/pcre/wiki/Home/) 
+> 
+> Original:
+> [PCRE]     Ho, A., "PCRE - Perl Compatible Regular Expressions",
+>            2018, <http://www.pcre.org/>.
+> 
+> Current:
+> [PCRE]     Hazel, P., "PCRE - Perl Compatible Regular Expressions",
+>            2018, <https://www.pcre.org/>.
+> --> 
+> 
+
+Thank you. We hope that the RFC editor keeps a common library of hard-to-reference de-factor standards like this; we would appreciate if that could be looked up by RFC authors.
+
+However, this should probably have no date, because the web page is undated. Listing when a web page was most recently accessed is quite confusing to readers who actually go to the page and don't see any date indication.
+ 
+> 20) <!-- [rfced]  We have updated the following reference based on 
+> information found on the DOI page:
+> 
+> Original:
+> [SIPHASH_LNCS]
+>            Aumasson, J. and D. Bernstein, "SipHash: A Fast Short-
+>            Input PRF", Lecture Notes in Computer Science pp. 489-508,
+>            DOI 10.1007/978-3-642-34931-7_28, 2012,
+>            <https://doi.org/10.1007/978-3-642-34931-7_28>.
+> 
+> Current:
+> [SIPHASH_LNCS]
+>            Aumasson, J. and D. Bernstein, "SipHash: A Fast Short-
+>            Input PRF", Progress in Cryptology - INDOCRYPT 2012, pp.
+>            489-508, DOI 10.1007/978-3-642-34931-7_28, 2012,
+>            <https://doi.org/10.1007/978-3-642-34931-7_28>.
+> -->
+
+Interesting.  dx.doi.org doesn’t know that, and therefore the automatically generated bibxml doesn’t either.  Thank you.
+
+> 21) <!-- [rfced]  FYI - We have added informative references to 
+> RFC 7049 errata. Please let us know if any updates are necessary.
+> -->
+
+We are not sure what the point of doing so is. These errata are fixed, but OK, reading appendix G.1 is easier with the links in the document.
+
+By the way, there are very few actual “errata” in 7049, most of these are just “errata reports”, as appendix G.1 goes to pains to distinguish. The bibliography entries are therefore not correct.
+
+> 22) <!-- [rfced] Appendix A: We updated to use the new <u> tag for the Unicode and
+> removed the following sentence. Please let us know any objections.
+> 
+> Original:
+> (Note that all these single-character
+> strings could also be represented in native UTF-8 in diagnostic
+> notation, just not in an ASCII-only specification.) 
+> -->
+
+This sentence is the result of a correction already (https://github.com/cbor-wg/CBORbis/commit/3adfa3d9afc2654a26516da7758fd180fcda4f21); since industry documents (in particular in some form of specification language) are still often limited to ASCII, this sentence is still relevant.
+
+(I don’t think we need to be adventurous and include the actual characters in the text, in particular if we cannot even use curly quotes because they are deemed dangerous.)
+
+> 23) <!-- [rfced] Is "specification" the correct word choice here? Please review
+> and let us know if any updates are needed.
+> 
+> Original:
+> The IANA considerations were generally updated (clerical changes,
+> e.g., now pointing to the CBOR working group as the author of the
+> specification). 
+> -->
+
+RFC 8949-to-be is what we want here. Could this be made clearer?
+
+(Some foreign-language-speaker readers have problems with “present” in the being-at-hand sense, which is not advertised a lot by dictionaries.)
+
+> 24) <!-- [rfced] FYI - We updated the following sentence to mention the applicable
+> registry.
+> 
+> Original:
+> Tags in the space from 256 to 32767 (lower half of "1+2") are no
+> longer assigned by First Come First Served; this range is now
+> Specification Required.
+> 
+> Updated:
+> In the "Concise Binary Object Representation (CBOR) Tags" registry
+> [IANA.cbor-tags], tags in the space from 256 to 32767 (lower half of
+> "1+2") are no longer assigned by First Come First Served; this range
+> is now Specification Required.
+> -->
+
+Very good.
+
+Again, thank you for the thorough review. If any of our responses above or changes in the XML file cause concern, by all means let us know.
+
+Carsten and Paul

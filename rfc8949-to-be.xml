@@ -356,7 +356,7 @@ Perhaps:
 -->
 
       <t>Also note that serialization variants are not visible at the generic
-data model level.  This lack of visibility includes the number of bytes of the encoded
+data model level.  This deliberate absence of visibility includes the number of bytes of the encoded
 floating-point value. It also includes the choice of encoding for an "argument" (see
 <xref target="encoding"/>) such as the encoding for an
 integer, the encoding for the length of a text or byte string, the encoding for the number of elements

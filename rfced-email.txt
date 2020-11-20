@@ -76,8 +76,10 @@ in the text format using current xml2rfc tools. The text format uses ^, which is
 
 Serialization variants include the various examples given, so we can’t put them at the same level.
 
-Our proposal is in:
+Our proposal is (unfortunately split) in three commits:
   https://github.com/cbor-wg/CBORbis/commit/9297c1d
+  https://github.com/cbor-wg/CBORbis/commit/9556ba0
+  https://github.com/cbor-wg/CBORbis/commit/
 
 
 > 4) <!-- [rfced]  Would you like to apply italics formatting for the 

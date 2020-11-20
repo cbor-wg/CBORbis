@@ -356,11 +356,11 @@ Perhaps:
 -->
 
       <t>Also note that serialization variants are not visible at the generic
-data model level.  This includes the number of bytes of the encoded
-floating-point value as well as the choice of encoding for an "argument" (see
-<xref target="encoding"/>), for example for an
-integer, for the length of a text or byte string, for the number of elements
-in an array or pairs in a map, or for a tag number.</t>
+data model level.  This lack of visibility includes the number of bytes of the encoded
+floating-point value. It also includes the choice of encoding for an "argument" (see
+<xref target="encoding"/>) such as the encoding for an
+integer, the encoding for the length of a text or byte string, the encoding for the number of elements
+in an array or pairs in a map, or the encoding for a tag number.</t>
       <section anchor="extended-generic-data-models" toc="default">
         <name>Extended Generic Data Models</name>
         <t>This basic generic data model has been extended in this document by the registration

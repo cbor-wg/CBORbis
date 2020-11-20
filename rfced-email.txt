@@ -12,8 +12,7 @@ Thank you for this extensive review. We answer the questions below, but have fix
 
 In our responses below, we sometimes give lengthy background explanations. Feel free to skip them unless you find them useful (or at least interesting).
 
-> 
-> 
+
 > 1) <!-- [rfced]  C++ is currently under development at ISO/IEC, and
 > the current reference [Cplusplus17] is for the 2017 version.
 > Should the sentence below mention an unpublished version?
@@ -26,18 +25,16 @@ In our responses below, we sometimes give lengthy background explanations. Feel 
 > 
 
 We updated this text based on the current status:
-
-https://github.com/cbor-wg/CBORbis/commit/afae360
+  https://github.com/cbor-wg/CBORbis/commit/afae360
 
 (( Background:
-
 We didn’t know whether C++20, which makes these changes, would be published by now.  That is not the case.  Referencing the official ISO/IEC JTC1 document also might lead to a paywall; ISO/IEC 14482 is not among JTC1’s “publicly available standards” (https://standards.iso.org/ittf/PubliclyAvailableStandards/).
 Both problems are addressed by referencing the current pre-publication draft for C++20, ISO/IEC JTC1 SC22 WG21 N 4860, which is a representation of ISO/IEC DIS 14882 but not quite exactly it (which is behind https://www.iso.org/standard/79358.html and costs CHF 118): https://isocpp.org/files/papers/N4860.pdf; isocpp.org is sufficiently quasi-official that it should not go away soon.
 We then no longer need to reference C++17.
 
 In that version, the relevant section for two’s complement is 6.8.1, not 6.8.2; the fragility of section referencing is another reason why we should have a specific document to point to (we also included the less fragile section tags [basic.fundamental] and [expr.shift]).
-
 ))
+
 
 > 2) <!-- [rfced]  Would it be clearer to add parentheses to statements
 > like the following (here in Section 2 and throughout the document).
@@ -49,28 +46,15 @@ Yes, but maybe we can avoid the whole issue by switching to superscript notation
 > parentheses in the text output. 
 
 Our proposal is in:
-
-https://github.com/cbor-wg/CBORbis/commit/50ab1db
+  https://github.com/cbor-wg/CBORbis/commit/50ab1db
 
 (( Background:
-Well, xml2rfc is a bit counterproductive here.
-Obviously, we would want 2<sup>64</sup>
-That works fine in HTML, but creates
-
-2^(64)
-
-in TXT.
-
-That uses ^, which is exclusive-or in C (as used in the Pseudocode appendix).
-It also adds a completely redundant additional level of parentheses.
-
-If we could nudge xml2rfc to use the 2**X convention for plain text, this
-would work much better.
+Well, xml2rfc is a bit counterproductive here. Obviously, we would want 2<sup>64</sup> That works fine in HTML, but creates
+  2^(64)
+in the text format using current xml2rfc tools. The text format uses ^, which is exclusive-or in C (as used in the Pseudocode appendix). It also adds a completely redundant additional level of parentheses.
 ))
 
 
-> 
-> 
 > 3) <!-- [rfced]  We had difficulty parsing the following in Section 2.0:
 > 
 > Current:
@@ -90,15 +74,12 @@ would work much better.
 > argument", see Section 3).
 > -->
 
-Serialization variants include the various examples given, so we can’t put
-them at the same level.
+Serialization variants include the various examples given, so we can’t put them at the same level.
 
 Our proposal is in:
+  https://github.com/cbor-wg/CBORbis/commit/9297c1d
 
-https://github.com/cbor-wg/CBORbis/commit/9297c1d
 
-
-> 
 > 4) <!-- [rfced]  Would you like to apply italics formatting for the 
 > following?
 > 
@@ -126,15 +107,14 @@ https://github.com/cbor-wg/CBORbis/commit/9297c1d
 
 Yes.
 
-((Italics (RFCXML “em”, in today’s HTML style actually oblique) look good in
-HTML but currently cause a fallback that looks like _head_ in TXT.
-This is explained in the last paragraph of section 1.2, so is probably OK.))
+(( Background:
+Italics (RFCXML “em”, in today’s HTML style actually oblique) look good in
+HTML but currently cause a fallback that looks like _head_ in the text format.
+This is explained in the last paragraph of section 1.2, so is probably OK.
+))
 
 We have made these changes (and a few more related ones) in:
-
-https://github.com/cbor-wg/CBORbis/commit/0d44842
-
-
+  https://github.com/cbor-wg/CBORbis/commit/0d44842
 
 
 > 5) <!-- [rfced]  Please review whether the "type" attribute should be 

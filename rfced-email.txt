@@ -141,19 +141,14 @@ I don’t think it is really defined what <artwork type=“hex-dump”> means, a
 So we used <artwork type="hex-dump"> for our ten formatted hex-dumps, and kept <sourcecode type=“pseudocode”> (twice), <sourcecode type=“c”>, and <sourcecode type=“python”> for the four programs in appendix C.
 ))
 
-> 
+
 > 6) <!-- [rfced]  Should the following be included in the sourcecode?
 > 
 > 0b010_11111 0b010_00100 0xaabbccdd 0b010_00011 0xeeff99 0b111_11111
 > -->
-> 
 
-We have done so in the previous examples, so:
-Yes, indeed!
-
-Now in
-
-https://github.com/cbor-wg/CBORbis/commit/b33791e
+We have done so in the previous examples, so: Yes, indeed!
+  https://github.com/cbor-wg/CBORbis/commit/b33791e
 
 
 > 7) <!-- [rfced]  We note that the following simple values are 
@@ -162,17 +157,14 @@ https://github.com/cbor-wg/CBORbis/commit/b33791e
 > Should they be marked with monospace formatting? Should they
 > be capitalized?
 > -->
-> 
 
 Please see our proposal in:
-
-https://github.com/cbor-wg/CBORbis/commit/0b7023d
+  https://github.com/cbor-wg/CBORbis/commit/0b7023d
 
 Note that editing this uncovered a little inaccuracy that was addressed in
+  https://github.com/cbor-wg/CBORbis/commit/029cd21
 
-https://github.com/cbor-wg/CBORbis/commit/029cd21
-
-(( Background:
+(( Background
 They need to be lower case for their use in diagnostic notation, where also typewriter formatting is appropriate.
 The data model discussion (Section 2) uses them in this form as well, and that seems right.
 
@@ -192,7 +184,7 @@ Table 7 is upper case unstyled again (the table entries are rather inconsistentl
 None of this is really black-and-white, but the proposed changes make it a bit more consistent while avoiding the false vs. "false" trap.
 ))
 
-> 
+
 > 8) <!-- [rfced]  In the following sentence in Section 3.4, what is
 > meant by "this" ("this may prefer...")?
 > 
@@ -207,7 +199,7 @@ The preferred serialization.
 
 We don't think a change is needed here.
 
-> 
+
 > 9) <!-- [rfced]  We're having difficulty parsing the following: 
 > 
 > Original:
@@ -229,14 +221,12 @@ We don't think a change is needed here.
 > -->
 > 
 
-Nice.
-Further simplified proposal in:
-
-https://github.com/cbor-wg/CBORbis/commit/d19c18b
+Nice! Further simplified proposal in:
+  https://github.com/cbor-wg/CBORbis/commit/d19c18b
 
 ("Tags" is plural in the sentence, so "data items" can be as well.)
 
-> 
+
 > 10) <!-- [rfced] We have made the following update to improve readability.
 > Please let us know if other changes are necessary.
 > 
@@ -255,16 +245,17 @@ https://github.com/cbor-wg/CBORbis/commit/d19c18b
 > guidance on the handling of this convention in application protocols 
 > and the mapping to platform types for tag number 1.
 > -->
-> 
 
-Please leave the original.
+Please revert to the original wording.
 
-Well, the tag cannot really define what can be used in place of it.
+(( Background
+The tag cannot really define what can be used in place of it.
 But it can be defined in the expectation that it does not really have to provide for null or undefined (adjective!) values as a meaning of the tag because the application protocol can use `null` or `undefined` in place of the tag.
 That gets a bit lost in the new version.
 (Also, Section 3.4.2 really only discusses this for the one tag for epoch-based date/time, not generally.)
+))
 
-> 
+
 > 11) <!-- [rfced]  Should "Infinite" be "Infinity" in the following?
 > 
 > Current:
@@ -272,12 +263,9 @@ That gets a bit lost in the new version.
 > (e.g., with NaN for undefined date/time values or with Infinite for
 > an expiry date that is not set)...
 > -->
-> 
 
 Good catch, yes!
-
-Now
-https://github.com/cbor-wg/CBORbis/commit/0eccd5a
+  https://github.com/cbor-wg/CBORbis/commit/0eccd5a
 
 > 
 > 12) <!-- [rfced]  FYI -  We have changed the exponentiation notation
@@ -287,12 +275,10 @@ https://github.com/cbor-wg/CBORbis/commit/0eccd5a
 > If a protocol includes a field that can express integers with an
 > absolute value of 2**64 or larger using tag numbers 2 or 3...
 > -->
-> 
 
-Indeed (2^64 would be 66).
-Superseded by the superscript conversion.
+Indeed (2^64 would be 66). We fixed this with the superscript conversion above in your question #2.
 
-> 
+
 > 13) <!-- [rfced] We added citations for BCP 14 here. Please let us know any
 > objections.
 > 
@@ -307,11 +293,10 @@ Superseded by the superscript conversion.
 > other than words that could be interpreted as "MAY" in the sense of
 > BCP 14. 
 > -->
-> 
 
 Very good.
 
-> 
+
 > 14) <!-- [rfced] Will it be clear to readers what items "are equal" here?
 > 
 > Original:
@@ -325,12 +310,10 @@ Very good.
 > if they have the same number of bytes/elements and the same values at the
 > same positions.
 > -->
-> 
 
-That change is fine.
-(The original text works for me, but the replacement is also fine.)
+That change is fine. (The original text works for me, but the replacement is also fine.)
 
-> 
+
 > 15) <!-- [rfced] Please review the convention ">term<" (also used in RFC 7049 but
 > in no other published RFC that we could find). Would you like to keep the
 > current convention or would one of the new v3 features work better

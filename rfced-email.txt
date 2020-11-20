@@ -5,6 +5,13 @@
 > Authors,
 > 
 > While reviewing this document during AUTH48, please resolve (as necessary) the following questions, which are also in the XML file.
+
+We give links to a GitHub repo if you want to look at the differences generated for each answer. If you disagree with any of our changes, by all means let us know.
+
+Thank you for this extensive review. We answer the questions below, but have fixed the text directly in rfc8949-to-be.xml.
+
+In our responses below, we sometimes give lengthy background explanations. Feel free to skip them unless you find them useful (or at least interesting).
+
 > 
 > 
 > 1) <!-- [rfced]  C++ is currently under development at ISO/IEC, and

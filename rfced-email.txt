@@ -79,7 +79,11 @@ Serialization variants include the various examples given, so we can’t put the
 Our proposal is (unfortunately split) in three commits:
   https://github.com/cbor-wg/CBORbis/commit/9297c1d
   https://github.com/cbor-wg/CBORbis/commit/9556ba0
-  https://github.com/cbor-wg/CBORbis/commit/
+  https://github.com/cbor-wg/CBORbis/commit/764b8a9
+
+or as a complete diff:
+
+  https://github.com/cbor-wg/CBORbis/compare/61ca0f4...master
 
 
 > 4) <!-- [rfced]  Would you like to apply italics formatting for the 

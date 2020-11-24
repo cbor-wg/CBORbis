@@ -236,14 +236,17 @@ received.</dd>
         </dl>
         <t>Terms and concepts for floating-point values such as Infinity, NaN
 (not a number), negative zero, and subnormal are defined in <xref target="IEEE754" format="default"/>.</t>
-<!-- [rfced]  C++ is currently under development at ISO/IEC, and
-the current reference [Cplusplus17] is for the 2017 version.
-Should the sentence below mention an unpublished version?
+<!-- [rfced] [Cplusplus20] points to a draft pdf version of the 
+specification. There is an HTML version, which will update when
+the specification is finalized. This version is paywalled:
+https://www.iso.org/standard/79358.html
 
 Current:
-   these assumptions are also
-   specified in Sections 6.8.2 and 7.6.7 of the 2020 version of C++,
-   successor of [Cplusplus17].
+   Examples and pseudocode assume that signed integers use two's
+   complement representation and that right shifts of signed integers
+   perform sign extension; these assumptions are also specified in
+   Sections 6.8.1 (basic.fundamental) and 7.6.7 (expr.shift) of the 2020
+   version of C++ (currently available as a final draft, [Cplusplus20]).  
 -->
         <t>Where bit arithmetic or data types are explained, this document uses
 the notation familiar from the programming language C <xref target="C" format="default"/>, except that
@@ -299,27 +302,6 @@ will provide their own application-specific encoders and/or decoders.</t>
 <xref target="encoding" format="default"/>, a data item is one of
 the following:</t>
 
-<!-- [rfced]  Would it be clearer to add parentheses to statements
-like the following (here in Section 2 and throughout the document).
-Superscript formatting could be applied instead, which would add
-parentheses in the text output. 
-
-Current:
-   *  an integer in the range -2**64..2**64-1 inclusive
-
-Perhaps:
-   *  an integer in the range -2**64..(2**64)-1 inclusive
-
-
-Note that the following text may need to be revised if updates are made to
-notation for exponentiation:
-
-Original:
-   Where bit arithmetic or data types are explained, this document uses
-   the notation familiar from the programming language C [C], except
-   that "**" denotes exponentiation and ".." denotes a range that
-   includes both ends given. 
--->
       <ul spacing="normal">
         <li>an integer in the range -2<sup>64</sup>..2<sup>64</sup>-1 inclusive</li>
         <li>a simple value, identified by a number
@@ -336,24 +318,6 @@ the range 0..2<sup>64</sup>-1) and the tag content (a data item)</li>
       </ul>
       <t>Note that integer and floating-point values are distinct in this
 model, even if they have the same numeric value.</t>
-<!-- [rfced]  We had difficulty parsing the following in Section 2.0:
-
-Current:
-   Also note that serialization variants are not visible at the generic
-   data model level, including the number of bytes of the encoded
-   floating-point value or the choice of one of the ways in which an
-   integer, the length of a text or byte string, the number of elements
-   in an array or pairs in a map, or a tag number, (collectively "the
-   argument", see Section 3) can be encoded.
-
-Perhaps:
-   Also note that the following are not visible at the generic data 
-   model level: serialization variants, the number of bytes of the 
-   encoded floating-point value, or the choice of encoding for an 
-   integer, the length of a text or byte string, the number of elements 
-   in an array or pairs in a map, or a tag number (collectively, "the 
-   argument", see Section 3).
--->
 
       <t>Also note that serialization variants are not visible at the generic
 data model level.  This deliberate absence of visibility includes the number of bytes of the encoded
@@ -450,30 +414,6 @@ indefinite, and for major type 7, the byte does not constitute a data
 item at all but terminates an indefinite-length item; all are
 described in <xref target="indefinite" format="default"/>.</dd>
       </dl>
-<!-- [rfced]  Would you like for to apply italics formatting for the 
-following?
-
-Current, Section 3:
-   The initial byte and any additional bytes consumed to construct 
-   the argument are collectively referred to as the "head" of the 
-   data item.
-
-Current, Section 3.1:
-   a tagged data item ("tag") whose tag number, an integer in the 
-   range 0..2**64-1 inclusive, is the argument and whose enclosed 
-   data item ("tag content")
-
-Current, Section 3.4:
-   In CBOR, a data item can be enclosed by a tag to give it some 
-   additional semantics, as uniquely identified by a "tag number". 
-   The tag is major type 6, its argument (Section 3) indicates the 
-   tag number, and it contains a single enclosed data item, the 
-   "tag content". 
-
-Current, Section 3.4:
-   For example, assume that a byte string of length 12 is marked 
-   with a tag of number 2 to indicate it is a positive "bignum"
--->
       <t>The initial byte and any additional bytes consumed to construct the
 argument are collectively referred to as the <em>head</em> of the data item.</t>
       <t>The meaning of this argument depends on the major type.
@@ -677,13 +617,6 @@ as there are type bytes starting an indefinite-length item.</t>
           <t>For example, assume an encoder wants to represent the abstract array
 [1, [2, 3], [4, 5]].  The definite-length encoding would be
 0x8301820203820405:</t>
-<!-- [rfced]  Please review whether the "type" attribute should be 
-set for sourcecode elements in the XML file. If the current list of 
-preferred values for "type"
-(https://www.rfc-editor.org/materials/sourcecode-types.txt) does not
-contain an applicable type, then feel free to suggest a new one.
-Also, it is acceptable to leave the "type" attribute not set.  
--->
           <artwork type="hex-dump"><![CDATA[
 83        -- Array of length 3
    01     -- 1
@@ -787,10 +720,6 @@ that this implies that the UTF-8 bytes of a single Unicode code point
 (scalar value) cannot be spread between chunks: a new chunk of a text
 string can only be started at a code point boundary.</t>
           <t>For example, assume an encoded data item consisting of the bytes:</t>
-<!-- [rfced]  Should the following be included in the sourcecode?
-
-0b010_11111 0b010_00100 0xaabbccdd 0b010_00011 0xeeff99 0b111_11111
--->
           <artwork type="hex-dump"><![CDATA[
 0b010_11111 0b010_00100 0xaabbccdd 0b010_00011 0xeeff99 0b111_11111
 5F              -- Start indefinite-length byte string
@@ -956,12 +885,6 @@ the numeric values assigned and available for simple values.</t>
             </tr>
           </tbody>
         </table>
-<!-- [rfced]  We note that the following simple values are 
-inconsistently formatted:  false, true, null, and undefined.
-
-Should they be marked with monospace formatting? Should they
-be capitalized?
--->
         <t>An encoder <bcp14>MUST NOT</bcp14> issue two-byte sequences that
         start with 0xf8 (major type 7, additional information 24) and continue
         with a byte less than 0x20 (32 decimal).  Such sequences are not
@@ -992,15 +915,6 @@ The encoded data item would start with a byte 0b110_00010 (major type
 6, additional information 2 for the tag number) followed by the
 encoded tag content: 0b010_01100 (major type 2, additional information
 12 for the length) followed by the 12 bytes of the bignum.</t>
-<!-- [rfced]  In the following sentence in Section 3.4, what is
-meant by "this" ("this may prefer...")?
-
-Current:
-   The tag definition may specify a preferred
-   serialization (Section 4.1) that is recommended for generic encoders;
-   this may prefer basic generic data model representations over ones
-   that employ a tag.
--->
         <t>In the extended generic data model, a tag number's
 definition describes the additional semantics
 conveyed with the tag number.
@@ -1015,25 +929,6 @@ serialization (<xref target="preferred" format="default"/>) that is recommended 
 encoders; this may prefer basic generic data model representations
 over ones that employ a tag.</t>
 
-<!-- [rfced]  We're having difficulty parsing the following: 
-
-Original:
-   The tag definition usually restricts what kinds of nested data item
-   or items are valid for such tags.  Tag definitions may restrict their
-   content to a very specific syntactic structure, as the tags defined
-   in this document do, or they may aim at a more semantically defined
-   definition of their content, as for instance tags 40 and 1040 do
-   [RFC8746]: These accept a number of different ways of representing
-   arrays.
-
-Perhaps:
-   The tag definition usually defines which nested data item(s) are
-   valid for such tags. Tag definitions may restrict their
-   content to a very specific syntactic structure, as the tags defined
-   in this document do, or they may define their content more 
-   semantically, for instance, as tags 40 and 1040 do by accepting 
-   multiple ways to represent arrays [RFC8746]. 
--->
 <t>The tag definition usually defines which nested data items are
 valid for such tags.  Tag definitions may restrict their content to a
 very specific syntactic structure, as the tags defined in this
@@ -1041,31 +936,12 @@ document do, or they may define their content more semantically.  An
 example for the latter is how tags 40 and 1040 accept multiple ways to
 represent arrays <xref target="RFC8746" format="default"/>.
 </t>
-
-<!-- [rfced] We have made the following update to improve readability.
-Please let us know if other changes are necessary.
-
-Original:
-   As a matter of convention, many tags do not accept null or undefined
-   values as tag content; instead, the expectation is that a null or
-   undefined value can be used in place of the entire tag; Section 3.4.2
-   provides some further considerations for one specific tag about the
-   handling of this convention in application protocols and in mapping
-   to platform types.
-
-Current:
-   As a matter of convention, many tags do not accept null or undefined
-   values as tag content; instead, a null or undefined value can be used 
-   in place of the entire tag. For example, Section 3.4.2 provides 
-   guidance on the handling of this convention in application protocols 
-   and the mapping to platform types for tag number 1.
--->
         <t>As a matter of convention, many tags do not accept <tt>null</tt> or <tt>undefined</tt>
-values as tag content; instead, a <tt>null</tt> or
-<tt>undefined</tt> value can be used in place of the entire tag. For example,
-<xref target="epochdatetimesect" format="default"/> provides guidance
-on the handling of this convention in application
-protocols and the mapping to platform types for tag number 1.</t>
+values as tag content; instead, the expectation is that a <tt>null</tt> or
+<tt>undefined</tt> value can be used in place of the entire tag; <xref target="epochdatetimesect" format="default"/> 
+provides some further considerations for one specific tag about the
+   handling of this convention in application protocols and in mapping
+   to platform types.</t>
         <t>Decoders do not need to understand tags of every tag number, and tags may be of
 little value in applications where the implementation creating a
 particular CBOR data item and the implementation decoding that stream
@@ -1241,13 +1117,6 @@ requires binary64 support, as binary16 and binary32 provide nonzero
 fractions of seconds only for a short period of time around
 early 1970.  An application that requires tag number 1 support may restrict
 the tag content to be an integer (or a floating-point value) only.</t>
-<!-- [rfced]  Should "Infinite" be "Infinity" in the following?
-
-Current:
-   While emitting tag number 1 values with non-finite tag content values
-   (e.g., with NaN for undefined date/time values or with Infinite for
-   an expiry date that is not set)...
--->
           <t>Note that platform types for date/time may include <tt>null</tt> or <tt>undefined</tt>
 values, which may also be desirable at an application protocol level.
 While emitting tag number 1 values with non-finite tag content values
@@ -1616,13 +1485,6 @@ allow either one.</t>
 obtain specific semantics, the tag needs to appear in the
 deterministic format as well.  Deterministic encoding considerations
 also apply to the content of tags.</t>
-<!-- [rfced]  FYI -  We have changed the exponentiation notation
-from ^ to ** here match the rest of the document:
-
-Current:
-   If a protocol includes a field that can express integers with an
-   absolute value of 2**64 or larger using tag numbers 2 or 3...
--->
           <t>If a protocol includes a field that can express integers with an
 absolute value of 2<sup>64</sup> or larger using tag numbers 2 or 3
 (<xref target="bignums" format="default"/>), the protocol's deterministic encoding needs to specify
@@ -1745,20 +1607,6 @@ capable of understanding as many or as few types of values as is
 required by the protocols in which it is used. This lack of
 restrictions allows CBOR to be used in extremely constrained
 environments.</t>
-<!-- [rfced] We added citations for BCP 14 here. Please let us know any
-objections.
-
-Original:
-   With few exceptions, it is advisory only and
-   explicitly excludes any language from BCP 14 other than words that
-   could be interpreted as "MAY" in the sense of BCP 14. 
-
-Updated:
-   With few exceptions, it is advisory only and
-   explicitly excludes any language from BCP 14 [RFC2119] [RFC8174]
-   other than words that could be interpreted as "MAY" in the sense of
-   BCP 14. 
--->
       <t>The rest of this section discusses some considerations in creating CBOR-based
 protocols.  With few exceptions, it is advisory only and explicitly excludes any language
 from BCP 14 <xref target="RFC2119" format="default"/> <xref target="RFC8174"
@@ -2055,26 +1903,10 @@ are numerically equal (specifically, -0.0 is equal to 0.0); for the
 purpose of map key equivalence, NaN 
 values are equivalent if they have the same significand after
 zero-extending both significands at the right to 64 bits.</t>
-
-<!-- [rfced] Will it be clear to readers what "are equal" here?
-
-Original:
-   (Byte and text) strings are compared byte by byte, arrays element by
-   element, and are equal if they have the same number of bytes/elements
-   and the same values at the same positions. 
-
-Perhaps:
-   Both byte strings and text strings are compared byte by byte; arrays
-   are compared element by element. Strings and arrays are equal
-   if they have the same number of bytes/elements and the same values at the
-   same positions.
--->
-
-          <t>Both byte strings and text strings are compared
-byte by byte, arrays are compared element by element, and are equal if they have
-the same number of bytes/elements and the same values at the same
-positions.
-Two maps are equal if they have the same set of pairs regardless of
+          <t>Both byte strings and text strings are compared 
+byte by byte, arrays are compared element by element, and are equal if they have 
+the same number of bytes/elements and the same values at the same 
+positions.  Two maps are equal if they have the same set of pairs regardless of
 their order; pairs are equal if both the key and value are equal.</t>
           <t>Tagged values are equal if both the tag number and the tag content are equal.
 (Note that a generic decoder that provides processing for a specific
@@ -2098,7 +1930,7 @@ at the generic data model level.</t>
       <section anchor="undefined-values" toc="default">
         <name>Undefined Values</name>
         <t>In some CBOR-based protocols, the simple value (<xref target="fpnocont" format="default"/>) of
-Undefined might be used by an encoder as a substitute for a data item
+<tt>undefined</tt> might be used by an encoder as a substitute for a data item
 with an encoding problem, in order to allow the rest of the enclosing
 data items to be encoded without harm.</t>
       </section>
@@ -2312,27 +2144,6 @@ representing CBOR data items in configuration files may also want to
 consider YAML <xref target="YAML" format="default"/>.)</t>
       <t>The diagnostic notation is loosely based on JSON as it is defined in
 RFC 8259, extending it where needed.</t>
-
-<!-- [rfced] Please review the convention ">term<" (also used in RFC 7049 but
-no other published RFC that we could find). Would you like to keep the
-current convention or would one of the new v3 features work better
-(perhaps <tt>)?
-
-Current:
-   The notation borrows the JSON syntax for numbers (integer and
-   floating-point), True (>true<), False (>false<), Null (>null<), UTF-8
-   strings, arrays, and maps (maps are called objects in JSON; the
-   diagnostic notation extends JSON here by allowing any data item in
-   the key position).  Undefined is written >undefined< as in
-   JavaScript.  
-   ...
-   Byte strings are notated in one of the base encodings, without
-   padding, enclosed in single quotes, prefixed by >h< for base16, >b32<
-   for base32, >h32< for base32hex, >b64< for base64 or base64url (the
-   actual encodings do not overlap, so the string remains unambiguous).
-   For example, the byte string 0x12345678 could be written h'12345678',
-   b32'CI2FM6A', or b64'EjRWeA'.
--->
       <t>The notation borrows the JSON syntax for numbers (integer and
 floating-point), True (&gt;true&lt;), False (&gt;false&lt;), Null (&gt;null&lt;), UTF-8
 strings, arrays, and maps (maps are called objects in JSON; the
@@ -2405,88 +2216,11 @@ to preserve the chunk structure.</t>
 <!-- [rfced] We have the following questions about the IANA Considerations
 section.
 
-a) Section 9: May we align the titles of the subsections in the IANA section?
-(Note that we have removed "MIME Type" from the title of Section 9.3.)
-
-Original:
-   9.  IANA Considerations
-     9.1.  Simple Values Registry
-     9.2.  Tags Registry
-     9.3.  Media Type ("MIME Type") 
-     9.4.  CoAP Content-Format
-     9.5.  The +cbor Structured Syntax Suffix Registration
-
-Perhaps:
-   9.  IANA Considerations
-     9.1.  CBOR Simple Values Registry
-     9.2.  CBOR Tags Registry
-     9.3.  Media Types Registry
-     9.4.  CoAP Content-Formats Registry
-     9.5.  Structured Syntax Suffixes Registry
-
-
-b) Section 9: Would it be helpful to update this introductory paragraph to
-mention the structured syntax suffix registered in Section 9.5?
-
-Current:
-   IANA has created two registries for new CBOR values.  The registries
-   are separate, that is, not under an umbrella registry, and follow the
-   rules in [RFC8126].  IANA has also assigned a new media type and an
-   associated Constrained Application Protocol (CoAP) Content-Format
-   entry.
-
-Perhaps:
-   IANA has created two registries for new CBOR values.  The registries are
-   separate, that is, not under an umbrella registry, and follow the rules in
-   [RFC8126].  IANA has also assigned a new media type, associated CoAP
-   Content-Format entry, and structured syntax suffix.
-
-
-c) Section 9.1: FYI - we have updated "these Standards Actions allocate" to read
-"IANA allocate" here.
-
-Original:
-   It is suggested that these Standards Actions allocate
-   values starting with the number 16 in order to reserve the lower
-   numbers for contiguous blocks (if any).
-
-Updated:
-   It is suggested that IANA  allocate
-   values starting with the number 16 in order to reserve the lower
-   numbers for contiguous blocks (if any).
-
-
-d) Section 9.3: We note that the media type registration does not include the
-"Fragment identifier considerations” entry that appears in the template in
-Section 5.6 of RFC 6838. Should this entry be included?
-
-
 e) Section 9.3: We have made some small changes in the media type registration
 template (see diff file). If no objections, we will ask IANA to update the
 template at https://www.iana.org/assignments/media-types/application/cbor to
 match the updated document.
 
-
-f) The following note in the IANA email dated 16 October 2020 indicates that
-the second registration (i.e., the one with ID 11060) does not appear in the
-document. Should this be added (perhaps to Section 9.4)? Or should this
-registration be removed from the registry? Here is the direct link to the
-"CoAP Content-Formats" registry:
-https://www.iana.org/assignments/core-parameters/core-parameters.xhtml#content-formats.
-
-From IANA email:
-
-ACTION 4:
-
-References to RFC 7049 have been replaced with references to this document for
-the following CoAP Content-Format registrations (note that the second
-registration is not mentioned in the IANA Considerations section):
-
-application/cbor 60 [RFC-ietf-cbor-7049bis-16]
-application/cbor deflate 11060 [RFC-ietf-cbor-7049bis-16]
-
-Please see
-https://www.iana.org/assignments/core-parameters
 -->
 
 
@@ -2578,7 +2312,7 @@ item is "application/cbor" as defined in the "Media Types" registry <xref target
         </dl>
       </section>
       <section anchor="coap-content-format" toc="default">
-        <name>CoAP Content-Format</name>
+        <name>CoAP Content-Format Registry</name>
         <t>The CoAP Content-Format for CBOR has been registered in the "CoAP
         Content-Formats" subregistry within the "Constrained RESTful
         Environments (CoRE) Parameters" registry <xref
@@ -2591,7 +2325,7 @@ item is "application/cbor" as defined in the "Media Types" registry <xref target
       </dl>
       </section>
       <section anchor="the-cbor-structured-syntax-suffix-registration" toc="default">
-        <name>The +cbor Structured Syntax Suffix Registration</name>
+        <name>Structured Syntax Suffix Registry</name>
         <t>The structured syntax suffix <xref
         target="RFC6838" format="default"/> for media types based on a single
         encoded CBOR data item is +cbor, which IANA has registered in the
@@ -2820,20 +2554,14 @@ of UTF-8 from <xref target="RFC3629" format="default"/>, are relevant to CBOR as
       <references>
         <name>Informative References</name>
 
-<!-- [rfced] May we update the [ASN.1] reference to point to the 2015 version?
-https://www.itu.int/rec/T-REC-X.690-201508-I/en
-
-It currently points to the 1994 version.
---> 
-
-        <reference anchor="ASN.1">
+        <reference anchor="ASN.1" target="https://www.itu.int/rec/T-REC-X.690-201508-I/en">
           <front>
             <title>Information Technology - ASN.1 encoding rules: Specification of 
 Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)</title>
             <author>
               <organization>International Telecommunication Union</organization>
             </author>
-            <date year="1994"/>
+            <date year="2015"/>
           </front>
           <seriesInfo name="ITU-T" value="Recommendation X.690"/>
         </reference>
@@ -2887,69 +2615,26 @@ Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Enc
 <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7493.xml"/>
 <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7991.xml"/>
 
-
-<!-- [rfced]  Would you like to update the [ECMA262] reference 
-to point to the 11th Edition (June 2020)? 
-
-https://www.ecma-international.org/publications/standards/Ecma-262.htm
-
-We would also update the following:
-
-   *  the update of references, e.g., from RFC 4627 to [RFC8259], from
-      CNN-TERMS to [RFC7228], and from the 5.1 edition to the 9th
-      edition of [ECMA262]; 
--->
-        <reference anchor="ECMA262" target="https://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf">
+        <reference anchor="ECMA262" target="https://www.ecma-international.org/publications/standards/Ecma-262.htm">
           <front>
-            <title>ECMAScript 2018 Language Specification</title>
+            <title>ECMAScript 2020 Language Specification</title>
             <author>
               <organization>Ecma International</organization>
             </author>
-            <date year="2018" month="June"/>
+            <date year="2020" month="June"/>
           </front>
-          <refcontent>Standard ECMA-262, 9th Edition</refcontent>
+          <refcontent>Standard ECMA-262, 11th Edition</refcontent>
         </reference>
 
-<!-- [rfced]  We have updated the [PCRE] reference; 
-PCRE is written by Philip Hazel.  Andrew Ho appears
-to be the sysadmin (https://sourceforge.net/p/pcre/wiki/Home/) 
-
-Original:
-   [PCRE]     Ho, A., "PCRE - Perl Compatible Regular Expressions",
-              2018, <http://www.pcre.org/>.
-
-Current:
-   [PCRE]     Hazel, P., "PCRE - Perl Compatible Regular Expressions",
-              2018, <https://www.pcre.org/>.
---> 
         <reference anchor="PCRE" target="https://www.pcre.org/">
           <front>
             <title>PCRE - Perl Compatible Regular Expressions</title>
             <author initials="P." surname="Hazel" fullname="Philip Hazel">
               <organization/>
             </author>
-            <date year="2018"/>
           </front>
         </reference>
 
-
-<!-- [rfced]  We have updated the following reference based on 
-information found on the DOI page:
-
-Original:
-   [SIPHASH_LNCS]
-              Aumasson, J. and D. Bernstein, "SipHash: A Fast Short-
-              Input PRF", Lecture Notes in Computer Science pp. 489-508,
-              DOI 10.1007/978-3-642-34931-7_28, 2012,
-              <https://doi.org/10.1007/978-3-642-34931-7_28>.
-
-Current:
-   [SIPHASH_LNCS]
-              Aumasson, J. and D. Bernstein, "SipHash: A Fast Short-
-              Input PRF", Progress in Cryptology - INDOCRYPT 2012, pp.
-              489-508, DOI 10.1007/978-3-642-34931-7_28, 2012,
-              <https://doi.org/10.1007/978-3-642-34931-7_28>.
--->
         <reference anchor="SIPHASH_LNCS">
           <front>
             <title>SipHash: A Fast Short-Input PRF</title>
@@ -3124,23 +2809,18 @@ RFC 7049 errata. Please let us know if any updates are necessary.
     </references>
     <section anchor="examples" toc="default">
       <name>Examples of Encoded CBOR Data Items</name>
-<!-- [rfced] Appendix A: We updated to use the new <u> tag for the Unicode and
-removed the following sentence. Please let us know any objections.
-
-Original:
-   (Note that all these single-character
-   strings could also be represented in native UTF-8 in diagnostic
-   notation, just not in an ASCII-only specification.) 
--->
       <t>The following table provides some CBOR-encoded values in hexadecimal
       (right column), together with diagnostic notation for these values (left
       column).  Note that the string "\u00fc" is one form of diagnostic
       notation for a UTF-8 string containing the single Unicode character <u
       format="num-name-lit">ü</u>.  Similarly, "\u6c34" is a UTF-8 string in
-      diagnostic notation with a single character <u format="num-name-lit">水
-      </u>, often representing "water", and "\ud800\udd51" is a UTF-8 string
+      diagnostic notation with a single character <u format="num-name-lit">水</u>, 
+      often representing "water", and "\ud800\udd51" is a UTF-8 string
       in diagnostic notation with a single character <u
-      format="num-name-lit">𐅑</u>.  In the diagnostic notation provided for
+      format="num-name-lit">𐅑</u>.  (Note that all these single-character 
+      strings could also be represented in native UTF-8 in diagnostic
+      notation, just not in an ASCII-only specification.) 
+      In the diagnostic notation provided for
       bignums, their intended numeric value is shown as a decimal number (such
       as 18446744073709551616) instead of a tagged byte string (such as
       2(h'010000000000000000')).</t>
@@ -4153,7 +3833,7 @@ to the last example in <xref target="indef" format="default"/>).</t>
           <li>the update of references, e.g., from RFC 4627 to 
 <xref target="RFC8259" format="default"/>,
 from CNN-TERMS to <xref target="RFC7228" format="default"/>, and
-from the 5.1 edition to the 9th edition of <xref target="ECMA262" format="default"/>; 
+from the 5.1 edition to the 11th edition of <xref target="ECMA262" format="default"/>; 
 the addition of a reference to <xref target="IEEE754" format="default"/> and importation of required definitions; 
 and the addition of a reference to <xref target="RFC8618" format="default"/> that further illustrates the discussion in
 <xref target="comparison-app" format="default"/>;</li>
@@ -4169,35 +3849,10 @@ no chunks has been added (<xref target="encoding-indicators" format="default"/>)
       <section anchor="changes-in-iana-considerations" toc="default">
         <name>Changes in IANA Considerations</name>
 
-<!-- [rfced] Is "specification" the correct word choice here? Please review
-and let us know if any updates are needed.
-
-Original:
-   The IANA considerations were generally updated (clerical changes,
-   e.g., now pointing to the CBOR working group as the author of the
-   specification). 
--->
-
         <t>The IANA considerations were generally updated (clerical changes,
 e.g., now pointing to the CBOR Working Group as the author of the
 specification).  References to the respective IANA registries were
 added to the informative references.</t>
-
-<!-- [rfced] FYI - We updated the following sentence to mention the applicable
-registry.
-
-Original:
-   Tags in the space from 256 to 32767 (lower half of "1+2") are no
-   longer assigned by First Come First Served; this range is now
-   Specification Required.
-
-Updated:
-   In the "Concise Binary Object Representation (CBOR) Tags" registry
-   [IANA.cbor-tags], tags in the space from 256 to 32767 (lower half of
-   "1+2") are no longer assigned by First Come First Served; this range
-   is now Specification Required.
--->
-
         <t>In the "Concise Binary Object Representation (CBOR) Tags" registry
 	<xref target="IANA.cbor-tags"/>,
 	tags in the space from 256 to 32767 (lower half of

@@ -885,7 +885,6 @@ the numeric values assigned and available for simple values.</t>
             </tr>
           </tbody>
         </table>
-
         <t>An encoder <bcp14>MUST NOT</bcp14> issue two-byte sequences that
         start with 0xf8 (major type 7, additional information 24) and continue
         with a byte less than 0x20 (32 decimal).  Such sequences are not
@@ -1754,7 +1753,8 @@ to be raised by a decoder that would be performing validity checking
 if this were a known case.</li>
           <li>It can emit the unknown item (type, value, and, for tags, the
 decoded tagged data item) to the application calling the decoder,
-and then give the application an indication that the decoder did not recognize that tag
+and then give the application
+an indication that the decoder did not recognize that tag
 number or simple value.</li>
         </ul>
         <t>The latter approach, which is also appropriate for decoders that do
@@ -2820,7 +2820,7 @@ RFC 7049 errata. Please let us know if any updates are necessary.
       in diagnostic notation with a single character <u
       format="num-name-lit">𐅑</u>.  (Note that all these single-character 
       strings could also be represented in native UTF-8 in diagnostic
-      notation, just not in an ASCII-only specification.) 
+      notation, just not if an ASCII-only specification is required.) 
       In the diagnostic notation provided for
       bignums, their intended numeric value is shown as a decimal number (such
       as 18446744073709551616) instead of a tagged byte string (such as
@@ -3865,7 +3865,7 @@ is now Specification Required.</t>
         <name>Changes in Suggestions and Other Informational Components</name>
         <t>While revising the document, beyond the addressing of the errata reports, 
    the working group drew upon nearly seven years of experience with CBOR 
-   in a diverse set of applications.  This led to a number of editorial
+   in a diverse set of applications. This led to a number of editorial
    changes, including adding tables for illustration, but also
    emphasizing some aspects and de-emphasizing others.</t>
         <t>A significant addition is <xref target="cbor-data-models" format="default"/>, which

@@ -857,34 +857,35 @@ the numeric values assigned and available for simple values.</t>
           <tbody>
             <tr>
               <td align="left">0..19</td>
-              <td align="left">Unassigned</td>
+              <td align="left">(unassigned)</td>
             </tr>
             <tr>
               <td align="left">20</td>
-              <td align="left">False</td>
+              <td align="left">false</td>
             </tr>
             <tr>
               <td align="left">21</td>
-              <td align="left">True</td>
+              <td align="left">true</td>
             </tr>
             <tr>
               <td align="left">22</td>
-              <td align="left">Null</td>
+              <td align="left">null</td>
             </tr>
             <tr>
               <td align="left">23</td>
-              <td align="left">Undefined</td>
+              <td align="left">undefined</td>
             </tr>
             <tr>
               <td align="left">24..31</td>
-              <td align="left">Reserved</td>
+              <td align="left">(reserved)</td>
             </tr>
             <tr>
               <td align="left">32..255</td>
-              <td align="left">Unassigned</td>
+              <td align="left">(unassigned)</td>
             </tr>
           </tbody>
         </table>
+
         <t>An encoder <bcp14>MUST NOT</bcp14> issue two-byte sequences that
         start with 0xf8 (major type 7, additional information 24) and continue
         with a byte less than 0x20 (32 decimal).  Such sequences are not
@@ -1070,7 +1071,7 @@ property is <bcp14>NOT RECOMMENDED</bcp14>.</t>
 18446744073709551615 (binary all-ones in 16-bit, 32-bit, and 64-bit).
 These can be used as a convenience for implementers
 who want a single-integer data structure to indicate either the 
-presence or absence of a specific tag.
+presence of a specific tag or absence of a tag.
 That allocation is described in <xref target="I-D.bormann-cbor-notable-tags" section="10" sectionFormat="of" format="default"/>.
 These tags are not intended to occur in actual CBOR data items;
 implementations <bcp14>MAY</bcp14> flag such an occurrence as an error.</t>
@@ -1670,7 +1671,7 @@ CBOR-based protocol could be specified in several layers, in which the
 lower layers don't process the semantics of some of the CBOR data they
 forward.  These layers can't notice any validity errors in data they don't
 process and <bcp14>MUST</bcp14> forward that data as-is.  The first layer that does
-process the semantics of an invalid CBOR item <bcp14>MUST</bcp14> make one of two
+process the semantics of an invalid CBOR item <bcp14>MUST</bcp14> pick one of two
 choices:</t>
         <ol spacing="normal" type="1"><li>Replace the problematic item with an error marker and continue with
 the next item, or</li>
@@ -1752,8 +1753,8 @@ is not a validity error, per se.  This kind of error is more likely
 to be raised by a decoder that would be performing validity checking
 if this were a known case.</li>
           <li>It can emit the unknown item (type, value, and, for tags, the
-decoded tagged data item) to the application calling the decoder
-with an indication that the decoder did not recognize that tag
+decoded tagged data item) to the application calling the decoder,
+and then give the application an indication that the decoder did not recognize that tag
 number or simple value.</li>
         </ul>
         <t>The latter approach, which is also appropriate for decoders that do
@@ -1884,7 +1885,7 @@ semantics but may be enough reason on their own for a protocol to require a
 deterministic encoding format.)</t>
         <t>Applications for constrained devices should consider using small 
    integers as keys if they have maps with a small number of frequently 
-   used and identifiable keys; for instance, a set of 24 or fewer
+   used keys; for instance, a set of 24 or fewer
    keys can be encoded in a single byte as unsigned integers, up to 
    48 if negative integers are also used.  Less frequently
    occurring keys can then use integers with longer encodings.</t>
@@ -2121,7 +2122,7 @@ ideas, just because they are there.</t>
 codepoint space by an IANA registry.  Instead, allocations out of this
 space can only be done by updating this specification.</t>
         <t>For an additional information value of n &gt;= 24, the size of the
-additional data typically is 2<sup>(n-24)</sup> bytes.  Therefore, additional
+additional data typically is 2<sup>n-24</sup> bytes.  Therefore, additional
 information values 28 and 29 should be viewed as candidates for
 128-bit and 256-bit quantities, in case a need arises to add them to
 the protocol.  Additional information value 30 is then the only
@@ -3835,6 +3836,7 @@ to the last example in <xref target="indef" format="default"/>).</t>
 from CNN-TERMS to <xref target="RFC7228" format="default"/>, and
 from the 5.1 edition to the 11th edition of <xref target="ECMA262" format="default"/>; 
 the addition of a reference to <xref target="IEEE754" format="default"/> and importation of required definitions; 
+the addition of references to <xref target="C" format="default"/> and <xref target="Cplusplus20" format="default"/>;
 and the addition of a reference to <xref target="RFC8618" format="default"/> that further illustrates the discussion in
 <xref target="comparison-app" format="default"/>;</li>
           <li>in the discussion of diagnostic notation (<xref target="diagnostic-notation" format="default"/>), 
@@ -3861,9 +3863,9 @@ is now Specification Required.</t>
       </section>
       <section anchor="changes-in-suggestions-and-other-informational-components" toc="default">
         <name>Changes in Suggestions and Other Informational Components</name>
-        <t>While revising the document beyond the addressing of the errata reports, 
+        <t>While revising the document, beyond the addressing of the errata reports, 
    the working group drew upon nearly seven years of experience with CBOR 
-   in a diverse set of applications. This led to a number of editorial
+   in a diverse set of applications.  This led to a number of editorial
    changes, including adding tables for illustration, but also
    emphasizing some aspects and de-emphasizing others.</t>
         <t>A significant addition is <xref target="cbor-data-models" format="default"/>, which

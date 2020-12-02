@@ -2516,7 +2516,7 @@ of UTF-8 from <xref target="RFC3629" format="default"/>, are relevant to CBOR as
           <refcontent>Sixth Edition</refcontent>
         </reference>
 
-        <reference anchor="TIME_T" target="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap04.html#tag_04_16">
+        <reference anchor="TIME_T" target="https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap04.html#tag_04_16">
           <front>
             <title>The Open Group Base Specifications</title>
             <author>
@@ -2583,7 +2583,7 @@ Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Enc
             <author initials="S." surname="Furuhashi" fullname="Sadayuki Furuhashi">
               <organization/>
             </author>
-            <date year="2013"/>
+            <date/>
           </front>
         </reference>
 
@@ -2651,7 +2651,7 @@ Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Enc
           <refcontent>Progress in Cryptology - INDOCRYPT 2012, pp. 489-508</refcontent>
         </reference>
 
-        <reference anchor="SIPHASH_OPEN" target="https://131002.net/siphash/siphash.pdf">
+        <reference anchor="SIPHASH_OPEN" target="https://www.aumasson.jp/siphash/siphash.pdf">
           <front>
             <title>SipHash: a fast short-input PRF</title>
             <author initials="J." surname="Aumasson" fullname="Jean-Philippe Aumasson">

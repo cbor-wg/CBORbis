@@ -42,7 +42,7 @@
         <email>paul.hoffman@icann.org</email>
       </address>
     </author>
-    <date year="2020" month="November"/>
+    <date year="2020" month="December"/>
     <area>Internet</area>
     <keyword>parser</keyword>
     <keyword>decoder</keyword>
@@ -2573,7 +2573,6 @@ Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Enc
             <author>
               <organization>Various</organization>
             </author>
-            <date year="2013"/>
           </front>
         </reference>
 

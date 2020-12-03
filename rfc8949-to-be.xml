@@ -438,10 +438,10 @@ initial byte and following bytes for more compact code (see
         <name>Major Types</name>
         <t>The following lists the major types and the additional information and
 other bytes associated with the type.</t>
-        <dl newline="false" spacing="normal">
+        <dl newline="true" spacing="normal">
           <dt>Major type 0:</dt>
           <dd>
-  an unsigned integer in the range 0..2<sup>64</sup>-1 inclusive.  The value of the
+  An unsigned integer in the range 0..2<sup>64</sup>-1 inclusive.  The value of the
 encoded item is the argument itself.  For example, the
 integer 10 is denoted as the one byte 0b000_01010 (major type 0,
 additional information 10).  The integer 500 would be 0b000_11001
@@ -449,13 +449,13 @@ additional information 10).  The integer 500 would be 0b000_11001
 0x01f4, which is 500 in decimal.</dd>
           <dt>Major type 1:</dt>
           <dd>
-  a negative integer in the range -2<sup>64</sup>..-1 inclusive.  The value of
+  A negative integer in the range -2<sup>64</sup>..-1 inclusive.  The value of
 the item is -1 minus the argument.  For example, the integer
 -500 would be 0b001_11001 (major type 1, additional information 25)
 followed by the two bytes 0x01f3, which is 499 in decimal.</dd>
           <dt>Major type 2:</dt>
           <dd>
-  a byte string.  The number of bytes in the string is equal to the
+  A byte string.  The number of bytes in the string is equal to the
 argument.  For example, a byte
 string whose length is 5 would have an initial byte of 0b010_00101
 (major type 2, additional information 5 for the length), followed by
@@ -466,7 +466,7 @@ bytes 0x01f4 for a length of 500, followed by 500 bytes of binary
 content.</dd>
           <dt>Major type 3:</dt>
           <dd>
-  a text string (<xref target="cbor-data-models" format="default"/>) encoded as UTF-8
+  A text string (<xref target="cbor-data-models" format="default"/>) encoded as UTF-8
 <xref target="RFC3629" format="default"/>. The number of bytes in the string is equal to the
 argument.  A string containing an invalid UTF-8 sequence is
 well-formed but invalid (<xref target="terminology" format="default"/>). This type is provided for
@@ -480,7 +480,7 @@ characters "\" and "n") nor as 0x5c7530303061 (the characters "\",
 "u", "0", "0", "0", and "a").</dd>
           <dt>Major type 4:</dt>
           <dd>
-  an array of data items.  In other formats, arrays are also called lists, sequences, or
+  An array of data items.  In other formats, arrays are also called lists, sequences, or
 tuples (a "CBOR sequence" is something slightly different, though <xref target="RFC8742" format="default"/>).
 The argument is the number of data items in the
 array.  Items in an
@@ -490,7 +490,7 @@ that contains 10 items of any type would have an initial byte of
 length) followed by the 10 remaining items.</dd>
           <dt>Major type 5:</dt>
           <dd>
-  a map of pairs of data items. Maps are also called tables,
+  A map of pairs of data items. Maps are also called tables,
 dictionaries, hashes, or objects (in JSON).  A map is comprised of
 pairs of data items, each pair consisting of a key that is
 immediately followed by a value.  The argument is the number
@@ -507,13 +507,13 @@ well-formed, but it is not valid, and thus it causes indeterminate
 decoding; see also <xref target="map-keys" format="default"/>.</dd>
           <dt>Major type 6:</dt>
           <dd>
-  a tagged data item ("tag") whose tag number, an integer in the range
+  A tagged data item ("tag") whose tag number, an integer in the range
 0..2<sup>64</sup>-1 inclusive, is the argument and
 whose enclosed data item (<em>tag content</em>) is the single encoded data item that follows the head.
 See <xref target="tags" format="default"/>.</dd>
           <dt>Major type 7:</dt>
           <dd>
-  floating-point numbers and simple values, as well as the "break"
+  Floating-point numbers and simple values, as well as the "break"
 stop code.  See <xref target="fpnocont" format="default"/>.</dd>
         </dl>
         <t>These eight major types lead to a simple table showing which of the
@@ -2583,7 +2583,6 @@ Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Enc
             <author initials="S." surname="Furuhashi" fullname="Sadayuki Furuhashi">
               <organization/>
             </author>
-            <date/>
           </front>
         </reference>
 
